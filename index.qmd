@@ -1,0 +1,15 @@
+---
+title: "Welcome to The Evergreen Canna Ledger"
+#subtitle: "Washington Cannabis Industry Insights"
+---
+
+The Evergreen Cannabis Ledger explores data-driven trends across Washington’s cannabis industry — from licensee growth to sales distribution and policy impacts. 
+
+Analyzing Washingtons's CCRS Traceability data submitted by active cannabis license holders can help remove the human aspect of business decision making and effectively move toward a data-based decision framework used widely in many different businesses around the world. 
+
+The key to it all is accessing the data, formatting to analyze and visualize, and then, most importantly, use your interpretation with other knowledge to gain insight and at present time, make key decisions on near-future outcomes with clarity to remain competitive. 
+
+Explore:
+- [Blog Posts](posts/)
+- [Interactive Dashboards](dashboards.qmd)
+- [About Me](about.qmd)

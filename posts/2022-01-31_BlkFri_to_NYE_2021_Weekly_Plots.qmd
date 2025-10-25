@@ -1,0 +1,248 @@
+---
+title: "The Five Ws of WSLCB's CCRS Traceability Report"
+date: 02-01-2022
+categories: [Cannabis, Data, CCRS, WSLCB]
+#image: ../assets/images/ccrs_dashboard.png
+format: html
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+library(lubridate)
+library(ggplot2)
+library(tidyverse)
+library(arrow)
+library(DBI)
+library(duckdb)
+library(fs)
+library(scales)
+
+base_dir <- "C:/Users/theob/OneDrive/Documents/parquet_cannabis_master/arrow"
+duckdb_path <- file.path(dirname(base_dir), "duckdb_master.duckdb")
+
+con <- dbConnect(duckdb::duckdb(), dbdir = duckdb_path, read_only = FALSE)
+
+register_master_parquet <- function(con, base_dir) {
+  master_files <- list.files(base_dir, pattern = "\\.parquet$", full.names = TRUE)
+
+  table_names <- tools::file_path_sans_ext(basename(master_files)) %>%
+    str_replace_all("([a-z])([A-Z])", "\\1_\\2") %>%
+    str_replace_all("[^[:alnum:]_]", "_") %>%
+    str_to_lower()
+
+  walk2(table_names, master_files, ~ {
+    table_name <- paste0(.x, "_master")
+    if (table_name %in% duckdb_list_arrow(con)) {
+      duckdb_unregister_arrow(con, table_name)
+      message("🧹 Unregistered master: ", table_name)
+    }
+
+    dataset <- arrow::open_dataset(.y)
+    duckdb_register_arrow(con, table_name, dataset)
+    message("📦 Registered master: ", table_name)
+  })
+}
+
+# Run it
+register_master_parquet(con, base_dir)
+
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+create_combined_view <- function(con, base_name) {
+  tables <- duckdb_list_arrow(con)
+  relevant_tables <- tables[str_detect(tables, paste0("^", base_name, "_(master|arrow_.*2025)"))]
+
+  if (length(relevant_tables) == 0) {
+    message("⚠️ No tables found for ", base_name)
+    return(invisible(NULL))
+  }
+
+  # Get Arrow schema columns for each table
+  column_lists <- map(relevant_tables, ~ {
+  cols <- names(dbGetQuery(con, glue::glue("SELECT * FROM \"{.x}\" LIMIT 0")))
+  tibble(table = .x, column = cols)
+}) %>% bind_rows()
+
+  # Keep only columns common to all tables
+  common_columns <- column_lists %>%
+    group_by(column) %>%
+    summarise(n_tables = n_distinct(table), .groups = "drop") %>%
+    filter(n_tables == length(relevant_tables)) %>%
+    pull(column)
+
+  if (length(common_columns) == 0) {
+    message("❌ No common columns found across tables for ", base_name)
+    return(invisible(NULL))
+  }
+
+  # (Optional) Log any dropped columns
+  all_cols <- column_lists %>% distinct(column)
+  dropped_cols <- setdiff(all_cols$column, common_columns)
+  if (length(dropped_cols)) {
+    message("⚠️ Dropping columns not in all tables for ", base_name, ": ", paste(dropped_cols, collapse = ", "))
+  }
+
+  # Build UNION ALL
+  union_parts <- map_chr(relevant_tables, ~ {
+    cols <- paste(common_columns, collapse = ", ")
+    glue::glue("SELECT {cols} FROM \"{.x}\"")  # quote in case of special chars
+  })
+
+  union_sql <- glue::glue("
+    CREATE OR REPLACE VIEW {base_name}_all AS
+    {paste(union_parts, collapse = '\nUNION ALL\n')}
+  ")
+
+  dbExecute(con, union_sql)
+  message("✅ Created view: ", base_name, "_all with ", length(relevant_tables), " parts.")
+}
+
+views_to_create <- c("sales_detail", "sale_header", "inventory", "product", "licensee")
+
+walk(views_to_create, ~ create_combined_view(con, .x))
+
+
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+sales_blackfriday_xmas_nye_2021 <- dbGetQuery(con, "
+  SELECT
+    sd.SaleDetailId,
+    sh.LicenseeId,
+    lic.DBA AS BusinessName,
+    sh.SaleDate,
+    CAST(sd.Quantity AS DOUBLE) AS Quantity,
+    CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+    CAST(sd.SalesTax AS DOUBLE) AS SalesTax,
+    CAST(sd.OtherTax AS DOUBLE) AS OtherTax,
+    CAST(sd.Discount AS DOUBLE) AS Discount,
+    
+    prod.Name AS ProductName,
+    prod.Description AS ProductDescription,
+    prod.InventoryType,
+    prod.UnitWeightGrams,
+    
+    (CAST(sd.Quantity AS DOUBLE) * CAST(sd.UnitPrice AS DOUBLE)
+     + CAST(sd.SalesTax AS DOUBLE)
+     + CAST(sd.OtherTax AS DOUBLE)) AS Revenue
+
+  FROM sales_detail_all sd
+  LEFT JOIN sale_header_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+  LEFT JOIN licensee_all lic    ON sh.LicenseeId = lic.LicenseeId
+  LEFT JOIN inventory_all inv   ON sd.InventoryId = inv.InventoryId
+  LEFT JOIN product_all prod    ON inv.ProductId = prod.ProductId
+
+  WHERE sh.SaleDate BETWEEN '2021-11-24' AND '2021-12-31'
+    AND CAST(sd.UnitPrice AS DOUBLE) < 2
+")
+
+#Preprocess Date + Clean
+# Convert SaleDate to Date and calculate week start
+sales_weekly <- sales_blackfriday_xmas_nye_2021 %>%
+  mutate(
+    SaleDate = as.Date(SaleDate),
+    Week = floor_date(SaleDate, unit = "week", week_start = 1)
+  )
+
+```
+Weekly Totals
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Weekly total revenue, units, and discounts table
+weekly_totals <- sales_weekly %>%
+  filter(Revenue > 0) %>%
+  group_by(Week) %>%
+  summarise(
+    TotalRevenue = sum(Revenue, na.rm = TRUE),
+    TotalUnits = sum(Quantity, na.rm = TRUE),
+    TotalDiscount = sum(Discount, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# View table
+kableExtra::kable(weekly_totals)
+
+# Plot weekly revenue
+# ggplot(weekly_totals, aes(x = Week, y = TotalRevenue)) +
+#   geom_line(size = 1.2, color = "darkgreen") +
+#   scale_y_continuous(labels = dollar_format()) +
+#   labs(
+#     title = "Weekly Total Revenue",
+#     x = "Week",
+#     y = "Revenue"
+#   ) +
+#   theme_minimal()
+
+```
+
+Weekly Revenue by License
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+weekly_licensee_summary <- sales_weekly %>%
+  filter(Revenue > 0) %>%
+  group_by(Week, LicenseeId, BusinessName) %>%
+  summarise(
+    WeeklyRevenue = sum(Revenue, na.rm = TRUE),
+    WeeklyUnits = sum(Quantity, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(Week, desc(WeeklyRevenue))
+
+# View top licensees per week
+print(weekly_licensee_summary %>% group_by(Week) %>% slice_max(WeeklyRevenue, n = 5))
+
+# Plot top licensees
+top_licensees <- weekly_licensee_summary %>%
+  group_by(BusinessName) %>%
+  summarise(Total = sum(WeeklyRevenue)) %>%
+  slice_max(Total, n = Inf) %>%
+  pull(BusinessName)
+
+weekly_licensee_summary %>%
+  filter(BusinessName %in% top_licensees) %>%
+  ggplot(aes(x = Week, y = WeeklyRevenue, color = BusinessName)) +
+  geom_line(size = 1.1) +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(
+    title = "Licensee Revenue per Week",
+    x = "Week",
+    y = "Revenue",
+    color = "Licensed Business Name"
+  ) +
+  theme_minimal()
+
+```
+
+Weekly Discounting Analysis
+```{r}
+
+weekly_discounts <- sales_weekly %>%
+  filter(Revenue > 0) %>%
+  group_by(Week) %>%
+  summarise(
+    AvgDiscount = mean(Discount, na.rm = TRUE),
+    TotalDiscount = sum(Discount, na.rm = TRUE),
+    PercentDiscounted = mean(Discount > 0) * 100,
+    .groups = "drop"
+  )
+
+# View table
+#print(weekly_discounts)
+
+# Optional: plot discount trends
+ggplot(weekly_discounts, aes(x = Week)) +
+  geom_line(aes(y = AvgDiscount), color = "purple", size = 1.1) +
+  geom_point(aes(y = AvgDiscount), color = "purple", size = 2) +
+  scale_y_continuous(name = "Average Discount ($)", labels = dollar_format()) +
+  labs(
+    title = "Weekly Average Discount",
+    x = "Week"
+  ) +
+  theme_minimal()
+
+```
