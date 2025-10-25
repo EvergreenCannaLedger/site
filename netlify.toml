@@ -1,7 +1,7 @@
 [build]
 publish = "_site"
-command = "quarto render"
-
-[build.environment]
-QUARTO_VERSION = "1.6.33"  # (latest stable; can adjust later)
-
+command = """
+wget https://quarto.org/download/latest/quarto-linux-amd64.tar.gz
+tar -xzf quarto-linux-amd64.tar.gz
+./quarto-*/bin/quarto render
+"""
