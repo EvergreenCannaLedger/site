@@ -1,5 +1,17 @@
 ---
-title: "Interactive Dashboards"
+title: "Washington Cannabis Dashboards" 
+subtitle: "The Appreciation of Licensees Adopting CCRS"
+description: "Interactive data visualizations from CCRS monthly licensee reporting"
+format:
+  html:
+    theme: flatly
+    toc: true
+    embed-resources: false
+execute:
+  echo: false
+  warning: false
+  message: false
+editor: visual
 ---
 
 # Washington Cannabis Dashboards
@@ -10,9 +22,242 @@ Below are interactive dashboards exploring:
 -   Product category growth
 -   Retail vs wholesale comparisons
 
-::: dashboard
-<iframe src="https://your-shinyapp.shinyapps.io/licensee_dashboard/" width="100%" height="600">
+```{r setup, include=FALSE, echo=FALSE, message=FALSE, error=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+#| label: licensee_counts_plot
+#| fig-cap: "Number of licensees reporting monthly (Dec 2021 - May 2025)"
 
-</iframe>
-:::
 
+library(tidyverse)
+library(DBI)
+library(dplyr)
+library(lubridate)
+library(plotly)
+library(arrow)
+library(duckdb)
+library(fs)
+
+#Clean Slate Function
+unregister_all_arrow <- function(con) {
+  walk(duckdb_list_arrow(con), ~ {
+    duckdb_unregister_arrow(con, .x)
+    message("🧹 Unregistered: ", .x)
+  })
+}
+
+#unregister_all_arrow(con)
+
+# Header cleaner helper function
+to_snake <- function(x) {
+  x %>%
+    tools::file_path_sans_ext() %>%
+    str_replace_all("([a-z])([A-Z])", "\\1_\\2") %>%
+    str_replace_all("[^[:alnum:]_]", "_") %>%
+    str_to_lower()
+}
+
+```
+
+```{r, echo=FALSE, message=FALSE, error=FALSE}
+
+# set paths
+base_dir <- "C:/Users/theob/OneDrive/Documents/parquet_cannabis_master/arrow"
+duckdb_path <- file.path(dirname(base_dir), "duckdb_master.duckdb")
+
+# Connect to DuckDB
+con <- dbConnect(duckdb::duckdb(), dbdir = duckdb_path, read_only = FALSE)
+
+# Register base files (historical master data)
+register_master_parquet <- function(con, base_dir) {
+  master_files <- list.files(base_dir, pattern = "\\.parquet$", full.names = TRUE)
+
+  table_names <- tools::file_path_sans_ext(basename(master_files)) %>%
+    str_replace_all("([a-z])([A-Z])", "\\1_\\2") %>%
+    str_replace_all("[^[:alnum:]_]", "_") %>%
+    str_to_lower()
+
+  walk2(table_names, master_files, ~ {
+    table_name <- paste0(.x, "_master")
+    if (table_name %in% duckdb_list_arrow(con)) {
+      duckdb_unregister_arrow(con, table_name)
+      message("🧹 Unregistered master: ", table_name)
+    }
+
+    dataset <- arrow::open_dataset(.y)
+    duckdb_register_arrow(con, table_name, dataset)
+    message("📦 Registered master: ", table_name)
+  })
+}
+
+# Register master files safely
+register_master_parquet(con, base_dir)
+
+duckdb::duckdb_list_arrow(con)
+
+```
+
+```{r}
+
+#Register new monthly folders (already done before, but include here for completeness)
+register_monthly_parquet_to_duckdb <- function(db_path, parquet_folders) {
+  con <- dbConnect(duckdb::duckdb(), dbdir = db_path, read_only = FALSE)
+
+  for (folder in parquet_folders) {
+    month_label <- basename(folder)
+    parquet_files <- list.files(folder, pattern = "\\.parquet$", full.names = TRUE)
+
+    table_names <- tools::file_path_sans_ext(basename(parquet_files)) %>%
+      str_replace_all("([a-z])([A-Z])", "\\1_\\2") %>%
+      str_replace_all("[^[:alnum:]_]", "_") %>%
+      str_to_lower()
+
+    walk2(table_names, parquet_files, ~ {
+      table_name <- paste0(.x, "_", month_label)
+      if (table_name %in% duckdb_list_arrow(con)) {
+        duckdb_unregister_arrow(con, table_name)
+        message("🧹 Unregistered: ", table_name)
+      }
+
+      dataset <- arrow::open_dataset(.y)
+      duckdb_register_arrow(con, table_name, dataset)
+      message("📌 Registered monthly: ", table_name)
+    })
+  }
+
+  return(con)
+}
+
+#Register monthly files safely
+monthly_dirs <- dir_ls(base_dir, recurse = FALSE, type = "directory")
+monthly_arrow_dirs <- monthly_dirs[str_detect(monthly_dirs, "arrow_[a-z]+2025")]
+register_monthly_parquet_to_duckdb(duckdb_path, monthly_arrow_dirs)
+
+```
+
+```{r}
+# Create unified views (master + monthly)
+create_combined_view <- function(con, base_name) {
+  tables <- duckdb_list_arrow(con)
+  relevant_tables <- tables[str_detect(tables, paste0("^", base_name, "_(master|arrow_.*2025)"))]
+
+  if (length(relevant_tables) == 0) {
+    message("⚠️ No tables found for ", base_name)
+    return(invisible(NULL))
+  }
+
+  # Get Arrow schema columns for each table
+  column_lists <- map(relevant_tables, ~ {
+  cols <- names(dbGetQuery(con, glue::glue("SELECT * FROM \"{.x}\" LIMIT 0")))
+  tibble(table = .x, column = cols)
+}) %>% bind_rows()
+
+  # Keep only columns common to all tables
+  common_columns <- column_lists %>%
+    group_by(column) %>%
+    summarise(n_tables = n_distinct(table), .groups = "drop") %>%
+    filter(n_tables == length(relevant_tables)) %>%
+    pull(column)
+
+  if (length(common_columns) == 0) {
+    message("❌ No common columns found across tables for ", base_name)
+    return(invisible(NULL))
+  }
+
+  # (Optional) Log any dropped columns
+  all_cols <- column_lists %>% distinct(column)
+  dropped_cols <- setdiff(all_cols$column, common_columns)
+  if (length(dropped_cols)) {
+    message("⚠️ Dropping columns not in all tables for ", base_name, ": ", paste(dropped_cols, collapse = ", "))
+  }
+
+  # Build UNION ALL
+  union_parts <- map_chr(relevant_tables, ~ {
+    cols <- paste(common_columns, collapse = ", ")
+    glue::glue("SELECT {cols} FROM \"{.x}\"")  # quote in case of special chars
+  })
+
+  union_sql <- glue::glue("
+    CREATE OR REPLACE VIEW {base_name}_all AS
+    {paste(union_parts, collapse = '\nUNION ALL\n')}
+  ")
+
+  dbExecute(con, union_sql)
+  message("✅ Created view: ", base_name, "_all with ", length(relevant_tables), " parts.")
+}
+
+```
+
+```{r}
+
+views_to_create <- c(
+  "sales_detail", "sale_header", "inventory", "product",
+  "areas", "licensee", "plant", "strains", "contacts"
+)
+
+walk(views_to_create, ~ create_combined_view(con, .x))
+
+```
+
+```{r}
+
+monthly_sales <- dbGetQuery(con, "
+WITH base AS (
+SELECT
+sh.LicenseeId,
+DATE_TRUNC('month', CAST(sh.SaleDate AS DATE)) AS Month,
+CAST(sd.Quantity AS DOUBLE) * CAST(sd.UnitPrice AS DOUBLE) +
+CAST(sd.SalesTax AS DOUBLE) + CAST(sd.OtherTax AS DOUBLE) AS Revenue
+FROM sales_detail_all sd
+JOIN sale_header_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+WHERE DATE(CAST(sh.SaleDate AS DATE)) BETWEEN '2021-12-01' AND '2025-05-31'
+AND CAST(sd.UnitPrice AS DOUBLE) < 200
+),
+grouped AS (
+SELECT
+Month,
+LicenseeId,
+SUM(Revenue) AS TotalRevenue
+FROM base
+GROUP BY Month, LicenseeId
+),
+licensee_counts AS (
+SELECT
+Month,
+COUNT(DISTINCT LicenseeId) AS LicenseeCount
+FROM grouped
+GROUP BY Month
+ORDER BY Month
+)
+SELECT * FROM licensee_counts
+")
+
+# Convert Month to date type
+
+monthly_sales <- monthly_sales %>%
+mutate(Month = as.Date(Month))
+
+# Plotly bar chart
+
+fig <- plot_ly(
+data = monthly_sales,
+x = ~Month,
+y = ~LicenseeCount,
+type = "bar",
+marker = list(color = "#2C7BB6")
+) %>%
+layout(
+title = "Number of Licensees Reporting Monthly (Dec 2021 - May 2025)",
+xaxis = list(title = "Month"),
+yaxis = list(title = "Licensee Count"),
+hovermode = "x unified"
+)
+
+fig
+
+```
+
+Coming Soon:
+Future dashboards will visualize:
+1. Product category growth over time
+2. Retail vs wholesale revenue comparisons
+3. Regional and facility-level insights
