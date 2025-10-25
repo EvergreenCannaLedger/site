@@ -1,8 +1,17 @@
 [build]
   command = """
+  # Install R base
+  apt-get update && apt-get install -y --no-install-recommends r-base
+
+  # Install Quarto CLI
   mkdir -p /tmp/quarto
   wget -q https://github.com/quarto-dev/quarto-cli/releases/download/v1.6.33/quarto-1.6.33-linux-amd64.tar.gz -O /tmp/quarto/quarto.tar.gz
   tar -xzf /tmp/quarto/quarto.tar.gz -C /tmp/quarto
+
+  # Render site
   /tmp/quarto/quarto-1.6.33/bin/quarto render . --no-cache --debug
   """
   publish = "_site"
+
+[build.environment]
+  QUARTO_VERSION = "1.6.33"
