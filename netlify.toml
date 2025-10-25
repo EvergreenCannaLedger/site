@@ -1,7 +1,8 @@
 [build]
   command = """
-  # Install R base
-  apt-get update && apt-get install -y --no-install-recommends r-base
+  # Install R base using sudo since Netlify build environment is non-root
+  sudo apt-get update -y
+  sudo apt-get install -y --no-install-recommends r-base
 
   # Install Quarto CLI
   mkdir -p /tmp/quarto
