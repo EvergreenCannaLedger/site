@@ -1,0 +1,38 @@
+{
+  "about.qmd": {
+    "about.html": "3b85e7c6"
+  },
+  "index.qmd": {
+    "index.html": "08a80719"
+  },
+  "dashboards.qmd": {
+    "dashboards.html": "7c63da43"
+  },
+  "posts/2021-09-01-title.qmd": {
+    "2021-09-01-title.html": "0a661fc2"
+  },
+  "posts/2021-09-01-ccrs-intro.qmd": {
+    "2021-09-01-ccrs-intro.html": "06571fd5"
+  },
+  "2022-01-31_BlkFri_to_NYE_2021_Trend.qmd": {
+    "2022-01-31_BlkFri_to_NYE_2021_Trend.html": "b35b813a"
+  },
+  "2022-01-31_BlkFri_to_NYE_2021_Plots.qmd": {
+    "2022-01-31_BlkFri_to_NYE_2021_Plots.html": "ec6b371d"
+  },
+  "posts/2021-01-31_BlkFri_to_NYE_2021_Weekly_Tables.qmd": {
+    "2021-01-31_BlkFri_to_NYE_2021_Weekly_Tables.html": "442e14fb"
+  },
+  "posts/2022-01-31_BlkFri_to_NYE_2021_Weekly_Plots.qmd": {
+    "2022-01-31_BlkFri_to_NYE_2021_Weekly_Plots.html": "d0aaa396"
+  },
+  "2022-01-31_BlkFri_to_NYE_2021_Weekly_Plots.qmd": {
+    "2022-01-31_BlkFri_to_NYE_2021_Weekly_Plots.html": "b194f751"
+  },
+  "posts/2022-01-31_BlkFri_to_NYE_2021_Plots.qmd": {
+    "2022-01-31_BlkFri_to_NYE_2021_Plots.html": "9d0b36de"
+  },
+  "posts/2021-12-13_ccrs-intro.qmd": {
+    "2021-12-13_ccrs-intro.html": "210ca9f9"
+  }
+}
