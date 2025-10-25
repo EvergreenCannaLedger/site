@@ -3,5 +3,5 @@ publish = "_site"
 command = """
 wget https://github.com/quarto-dev/quarto-cli/releases/download/v1.6.33/quarto-1.6.33-linux-amd64.tar.gz
 tar -xzf quarto-1.6.33-linux-amd64.tar.gz
-./quarto-1.6.33/bin/quarto render
+./quarto-1.6.33/bin/quarto render . --no-execute
 """
