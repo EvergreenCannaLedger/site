@@ -1,0 +1,320 @@
+---
+title: "Black Friday to New Year’s 2021: A First Look at Sales Behavior in Washington’s CCRS Era"
+format: html
+editor: visual
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+library(tidyverse)
+library(arrow)
+library(DBI)
+library(duckdb)
+library(fs)
+library(lubridate)
+library(scales)
+
+base_dir <- "C:/Users/theob/OneDrive/Documents/parquet_cannabis_master/arrow"
+duckdb_path <- file.path(dirname(base_dir), "duckdb_master.duckdb")
+
+con <- dbConnect(duckdb::duckdb(), dbdir = duckdb_path, read_only = FALSE)
+
+register_master_parquet <- function(con, base_dir) {
+  master_files <- list.files(base_dir, pattern = "\\.parquet$", full.names = TRUE)
+
+  table_names <- tools::file_path_sans_ext(basename(master_files)) %>%
+    str_replace_all("([a-z])([A-Z])", "\\1_\\2") %>%
+    str_replace_all("[^[:alnum:]_]", "_") %>%
+    str_to_lower()
+
+  walk2(table_names, master_files, ~ {
+    table_name <- paste0(.x, "_master")
+    if (table_name %in% duckdb_list_arrow(con)) {
+      duckdb_unregister_arrow(con, table_name)
+      message("🧹 Unregistered master: ", table_name)
+    }
+
+    dataset <- arrow::open_dataset(.y)
+    duckdb_register_arrow(con, table_name, dataset)
+    message("📦 Registered master: ", table_name)
+  })
+}
+
+# Run it
+register_master_parquet(con, base_dir)
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+create_combined_view <- function(con, base_name) {
+  tables <- duckdb_list_arrow(con)
+  relevant_tables <- tables[str_detect(tables, paste0("^", base_name, "_(master|arrow_.*2025)"))]
+
+  if (length(relevant_tables) == 0) {
+    message("⚠️ No tables found for ", base_name)
+    return(invisible(NULL))
+  }
+
+  # Get Arrow schema columns for each table
+  column_lists <- map(relevant_tables, ~ {
+  cols <- names(dbGetQuery(con, glue::glue("SELECT * FROM \"{.x}\" LIMIT 0")))
+  tibble(table = .x, column = cols)
+}) %>% bind_rows()
+
+  # Keep only columns common to all tables
+  common_columns <- column_lists %>%
+    group_by(column) %>%
+    summarise(n_tables = n_distinct(table), .groups = "drop") %>%
+    filter(n_tables == length(relevant_tables)) %>%
+    pull(column)
+
+  if (length(common_columns) == 0) {
+    message("❌ No common columns found across tables for ", base_name)
+    return(invisible(NULL))
+  }
+
+  # (Optional) Log any dropped columns
+  all_cols <- column_lists %>% distinct(column)
+  dropped_cols <- setdiff(all_cols$column, common_columns)
+  if (length(dropped_cols)) {
+    message("⚠️ Dropping columns not in all tables for ", base_name, ": ", paste(dropped_cols, collapse = ", "))
+  }
+
+  # Build UNION ALL
+  union_parts <- map_chr(relevant_tables, ~ {
+    cols <- paste(common_columns, collapse = ", ")
+    glue::glue("SELECT {cols} FROM \"{.x}\"")  # quote in case of special chars
+  })
+
+  union_sql <- glue::glue("
+    CREATE OR REPLACE VIEW {base_name}_all AS
+    {paste(union_parts, collapse = '\nUNION ALL\n')}
+  ")
+
+  dbExecute(con, union_sql)
+  message("✅ Created view: ", base_name, "_all with ", length(relevant_tables), " parts.")
+}
+
+views_to_create <- c("sales_detail", "sale_header", "inventory", "product", "licensee")
+
+walk(views_to_create, ~ create_combined_view(con, .x))
+
+
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+sales_blackfriday_xmas_nye_2021 <- dbGetQuery(con, "
+  SELECT
+    sd.SaleDetailId,
+    sh.LicenseeId,
+    lic.DBA AS BusinessName,
+    sh.SaleDate,
+    CAST(sd.Quantity AS DOUBLE) AS Quantity,
+    CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+    CAST(sd.SalesTax AS DOUBLE) AS SalesTax,
+    CAST(sd.OtherTax AS DOUBLE) AS OtherTax,
+    CAST(sd.Discount AS DOUBLE) AS Discount,
+    
+    prod.Name AS ProductName,
+    prod.Description AS ProductDescription,
+    prod.InventoryType,
+    prod.UnitWeightGrams,
+    
+    (CAST(sd.Quantity AS DOUBLE) * CAST(sd.UnitPrice AS DOUBLE)
+     + CAST(sd.SalesTax AS DOUBLE)
+     + CAST(sd.OtherTax AS DOUBLE)) AS Revenue
+
+  FROM sales_detail_all sd
+  LEFT JOIN sale_header_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+  LEFT JOIN licensee_all lic    ON sh.LicenseeId = lic.LicenseeId
+  LEFT JOIN inventory_all inv   ON sd.InventoryId = inv.InventoryId
+  LEFT JOIN product_all prod    ON inv.ProductId = prod.ProductId
+
+  WHERE sh.SaleDate BETWEEN '2021-11-24' AND '2021-12-31'
+    AND CAST(sd.UnitPrice AS DOUBLE) < 2
+")
+
+```
+
+Top Product Types by Revenue
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+sales_blackfriday_xmas_nye_2021 %>%
+  group_by(InventoryType) %>%
+  summarise(
+    TotalRevenue = sum(Revenue, na.rm = TRUE),
+    UnitsSold = sum(Quantity, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(TotalRevenue)) %>%
+  ggplot(aes(x = reorder(InventoryType, TotalRevenue), y = TotalRevenue)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(
+    title = "💰 Revenue by Product Type (Black Friday - NYE 2021)",
+    x = "Product Type",
+    y = "Total Revenue"
+  ) +
+  theme_minimal()
+
+
+```
+
+Revenue vs Units Sold by Type See if some product types sell lots of units but earn less (or vice versa):
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+sales_blackfriday_xmas_nye_2021 %>%
+  group_by(InventoryType) %>%
+  summarise(
+    TotalRevenue = sum(Revenue, na.rm = TRUE),
+    TotalUnits = sum(Quantity, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = TotalUnits, y = TotalRevenue, label = InventoryType)) +
+  geom_point(color = "darkgreen", size = 4) +
+  geom_text(nudge_y = 5, check_overlap = TRUE) +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(
+    title = "📦 Units Sold vs Revenue by Product Type",
+    x = "Units Sold",
+    y = "Revenue"
+  ) +
+  theme_minimal()
+
+
+```
+
+Daily Sales Trend by Product Type
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+sales_blackfriday_xmas_nye_2021 %>%
+  mutate(SaleDate = as.Date(SaleDate)) %>%
+  group_by(SaleDate, InventoryType) %>%
+  summarise(DailyRevenue = sum(Revenue, na.rm = TRUE), .groups = "drop") %>%
+  ggplot(aes(x = SaleDate, y = DailyRevenue, color = InventoryType)) +
+  geom_line(size = 1) +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(
+    title = "📈 Daily Revenue Trend by Product Type",
+    x = "Date",
+    y = "Revenue"
+  ) +
+  theme_minimal()
+
+
+```
+
+Group by BusinessName and InventoryType This answers questions like: Who sold the most usable cannabis? Which stores had the most revenue from pre-rolls?
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+sales_blackfriday_xmas_nye_2021 %>%
+  filter(Revenue > 0) %>%
+  group_by(BusinessName, InventoryType) %>%
+  summarise(
+    TotalRevenue = sum(Revenue, na.rm = TRUE),
+    TotalUnits = sum(Quantity, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(TotalRevenue)) %>%
+  ggplot(aes(x = reorder(BusinessName, TotalRevenue), y = TotalRevenue, fill = InventoryType)) +
+  geom_col() +
+  coord_flip() +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(
+    title = "💰 Revenue by Product Type and Business",
+    x = "Retailer",
+    y = "Revenue"
+  ) +
+  theme_minimal()
+
+```
+
+Normalize Revenue by UnitWeightGrams This gives you revenue per gram — useful for comparing product efficiency, price compression, or margin trends.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+sales_blackfriday_xmas_nye_2021 %>%
+  filter(Revenue > 0) %>%
+  mutate(UnitWeightGrams = as.numeric(UnitWeightGrams)) %>%
+  filter(!is.na(UnitWeightGrams), UnitWeightGrams > 0) %>%
+  mutate(RevenuePerGram = Revenue / UnitWeightGrams) %>%
+  group_by(InventoryType) %>%
+  summarise(
+    AvgRevenuePerGram = mean(RevenuePerGram, na.rm = TRUE),
+    MedianRevenuePerGram = median(RevenuePerGram, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = reorder(InventoryType, AvgRevenuePerGram), y = AvgRevenuePerGram)) +
+  geom_col(fill = "darkorange") +
+  coord_flip() +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(
+    title = "⚖️ Avg Revenue per Gram by Product Type",
+    x = "Product Type",
+    y = "Revenue per Gram ($)"
+  ) +
+  theme_minimal()
+
+```
+
+Analyze Discount Behavior by Product Type This identifies which products get discounted most — helps you spot pricing pressure, clearance items, or strategic promotions.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+sales_blackfriday_xmas_nye_2021 %>%
+  filter(Revenue > 0) %>%
+  group_by(InventoryType) %>%
+  summarise(
+    AvgDiscount = mean(Discount, na.rm = TRUE),
+    MedianDiscount = median(Discount, na.rm = TRUE),
+    PercentDiscounted = mean(Discount > 0) * 100,
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = reorder(InventoryType, AvgDiscount), y = AvgDiscount)) +
+  geom_col(fill = "purple") +
+  coord_flip() +
+  labs(
+    title = "💸 Average Discount by Product Type",
+    x = "Product Type",
+    y = "Avg Discount ($)"
+  ) +
+  theme_minimal()
+
+
+```
+
+Goal 2: Compute Total Revenue per Licensee This answers: Who made the most money during Black Friday → New Year’s Eve 2021?
+
+```{r, message=FALSE, warning=FALSE}
+
+
+# Clean and prepare the dataset
+sales_licensee_summary <- sales_blackfriday_xmas_nye_2021 %>%
+  filter(Revenue > 0) %>%
+  group_by(LicenseeId, BusinessName) %>%
+  summarise(
+    TotalRevenue = sum(Revenue, na.rm = TRUE),
+    Transactions = n(),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(TotalRevenue))
+
+# View the number of unique licensees
+n_licensees <- n_distinct(sales_licensee_summary$LicenseeId)
+cat("✅ Number of unique licensees:", n_licensees, "\n")
+
+library(kableExtra)
+kable(sales_licensee_summary)
+
+```
+
+When Washington’s **Cannabis Central Reporting System (CCRS)** went live in December 2021, the transition marked the first statewide attempt to standardize traceability after BioTrack’s phase-out. To understand how licensees were performing during those pivotal early weeks, we analyzed nearly **12 thousand transactions** covering the **Black Friday–Christmas–New Year’s 2021** period.
+
+The dataset captures point-of-sale activity reported by a handful of early CCRS adopters—primarily the Lucid retail group and Green Lady Lacey—and offers a snapshot of how products, pricing, and discounting behaved across inventory types.

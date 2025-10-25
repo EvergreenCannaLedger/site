@@ -1,0 +1,27 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "The Evergreen Canna Ledger"
+  site-url: https://www.evergreencannaledger.org
+  description: "Washington's Cannabis Open Data Ledger"
+  navbar:
+    right:
+      - text: "Home"
+        href: index.qmd
+      - text: "Blog"
+        href: posts/
+      - text: "Dashboards"
+        href: dashboards.qmd
+      - text: "About"
+        href: about.qmd
+  page-footer:
+    left: "© 2025 Evergreen Canna Ledger"
+    right: "Open Data for Washington's Cannabis Industry"
+format:
+  html:
+    theme: flatly
+    css: assets/css/custom.css
+
+
