@@ -1,9 +1,8 @@
 [build]
 publish = "_site"
 command = """
-wget -q https://github.com/quarto-dev/quarto-cli/releases/download/v1.6.33/quarto-1.6.33-linux-amd64.tar.gz
-tar -xzf quarto-1.6.33-linux-amd64.tar.gz
-# Run only within your project folder, not Quarto’s internal files
-cd ${NETLIFY_BUILD_BASE}/repo
-./quarto-1.6.33/bin/quarto render ./ --no-execute --no-cache --debug
+mkdir -p /tmp/quarto
+wget -q https://github.com/quarto-dev/quarto-cli/releases/download/v1.6.33/quarto-1.6.33-linux-amd64.tar.gz -O /tmp/quarto/quarto.tar.gz
+tar -xzf /tmp/quarto/quarto.tar.gz -C /tmp/quarto
+/tmp/quarto/quarto-1.6.33/bin/quarto render . --no-execute --no-cache --debug
 """
