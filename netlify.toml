@@ -1,14 +1,11 @@
 [build]
 publish = "_site"
 command = """
-# Install R first
-apt-get update && apt-get install -y --no-install-recommends r-base
-
-# Download and extract Quarto
+# Install Quarto locally (R is already available in this image)
 mkdir -p /tmp/quarto
 wget -q https://github.com/quarto-dev/quarto-cli/releases/download/v1.6.33/quarto-1.6.33-linux-amd64.tar.gz -O /tmp/quarto/quarto.tar.gz
 tar -xzf /tmp/quarto/quarto.tar.gz -C /tmp/quarto
 
-# Render the site using Quarto and R
+# Render your site
 /tmp/quarto/quarto-1.6.33/bin/quarto render . --no-cache --debug
 """
