@@ -1,7 +1,12 @@
 ---
-title: "Black Friday to New Year’s 2021: A First Look at Sales Behavior in Washington’s CCRS Era"
+title: "Black Friday to New Year’s 2021 in Washington’s CCRS Era"
+subtitle: "A First Look at Sales Behavior at Year-End Holiday Season"
+date: 2022-01-31
+categories: [CCRS, Cannabis, Sales, Holiday]
 format: html
-editor: visual
+editor: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
@@ -136,8 +141,11 @@ sales_blackfriday_xmas_nye_2021 <- dbGetQuery(con, "
 
 ```
 
-Top Product Types by Revenue
+When Washington’s **Cannabis Central Reporting System (CCRS)** went live in December 2021, the transition marked the first statewide attempt to standardize traceability after BioTrack’s phase-out. To understand how licensees were performing during those pivotal early weeks, we analyzed nearly **12 thousand transactions** covering the **Black Friday–Christmas–New Year’s 2021** period.
 
+The dataset captures point-of-sale activity reported by a handful of early CCRS adopters—primarily the Lucid retail group and Green Lady Lacey—and offers a snapshot of how products, pricing, and discounting behaved across inventory types covering nearly **12 thousand transactions** covering the **Black Friday–Christmas–New Year’s 2021** period.
+
+Top Product Types by Revenue
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 
@@ -315,6 +323,4 @@ kable(sales_licensee_summary)
 
 ```
 
-When Washington’s **Cannabis Central Reporting System (CCRS)** went live in December 2021, the transition marked the first statewide attempt to standardize traceability after BioTrack’s phase-out. To understand how licensees were performing during those pivotal early weeks, we analyzed nearly **12 thousand transactions** covering the **Black Friday–Christmas–New Year’s 2021** period.
 
-The dataset captures point-of-sale activity reported by a handful of early CCRS adopters—primarily the Lucid retail group and Green Lady Lacey—and offers a snapshot of how products, pricing, and discounting behaved across inventory types.

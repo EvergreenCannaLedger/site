@@ -1,0 +1,269 @@
+---
+title: "April 2022 vs April 2023: Cannabis Retail Trends and Discounting"
+subtitle: "Visualizing how CCRS April Sales Performance Changed Year-Over-Year"
+date: 06-02-2023
+categories: [CCRS, Cannabis, Sales, Discount, Holiday]
+#image: ../assets/images/ccrs_dashboard.png
+format: html
+toc: true
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+**Interpretation Summary**
+
+This report helps visualize how Washington’s cannabis market evolved year-over-year, with clear signals in pricing, sales growth, and competitive strategy.
+
+Licensee participation grew or contracted between April 2022 and 2023 depending on reporting compliance.
+
+Discount intensity in April 2023 may signal a stronger focus on price-driven competition post-pandemic.
+
+Retailers like LUCID, Origins, or Green Lady often dominate both volume and discount activity.
+
+```{r setup, include=FALSE}
+# Set global chunk options
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, error = FALSE)
+
+# Load required packages
+library(DBI)
+library(duckdb)
+library(tidyverse)
+library(plotly)
+library(kableExtra)
+
+# Load DB connection
+source("../R_scripts/connect_duckdb_readonly.R")
+
+```
+
+```{r}
+#Query April Sales Revenue, Discount, and Licensee Count
+
+april_compare <- dbGetQuery(con, "
+WITH base AS (
+  SELECT 
+    sh.LicenseeId,
+    li.DBA AS BusinessName,
+    DATE_TRUNC('month', CAST(sh.SaleDate AS DATE)) AS Month,
+    CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+    CAST(sd.Discount AS DOUBLE) AS Discount,
+    CAST(sd.Quantity AS DOUBLE) AS Quantity
+  FROM SalesDetail_all sd
+  JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+  LEFT JOIN Licensee_all li ON li.LicenseeId = sh.LicenseeId
+  WHERE strftime(CAST(sh.SaleDate AS DATE), '%Y-%m') IN ('2022-04', '2023-04')
+    AND CAST(sd.UnitPrice AS DOUBLE) < 200
+)
+SELECT
+  Month,
+  COUNT(DISTINCT LicenseeId) AS licensee_reporting,
+  ROUND(SUM(UnitPrice * Quantity), 2) AS total_revenue,
+  ROUND(SUM(Discount) / NULLIF(SUM(UnitPrice * Quantity), 0) * 100, 2) AS avg_discount_pct
+FROM base
+GROUP BY Month
+ORDER BY Month
+")
+
+```
+
+```{r}
+#**Monthly Summary: April 2022 vs April 2023**
+april_compare %>%
+  mutate(
+    avg_discount_pct = scales::percent(avg_discount_pct / 100, accuracy = 0.1),
+    total_revenue = scales::dollar(total_revenue)
+  ) %>%
+  rename(
+    `Month` = Month,
+    `Licensees Reporting` = licensee_reporting,
+    `Total Revenue` = total_revenue,
+    `Avg. Discount %` = avg_discount_pct
+  ) %>%
+  kableExtra::kable(
+    caption = "April 2022 vs April 2023 – Cannabis Sales Summary"
+  ) %>%
+  kableExtra::kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+
+```
+<br>
+**Reporting Licensees**
+```{r, fig.width=6, fig.height=3.75}
+
+plot_ly(
+april_compare,
+x = ~Month,
+y = ~licensee_reporting,
+type = "bar",
+marker = list(color = c("#2ca02c", "#1f77b4"))  # different color for each month
+) %>%
+layout(
+title = "Number of Reporting Licensees: April 2022 vs April 2023",
+xaxis = list(title = "Month"),
+yaxis = list(title = "Reporting Licensees")
+)
+
+```
+<br>
+<br>
+**Revenue Comparison**
+```{r, fig.width=6, fig.height=3.75}
+
+plot_ly(
+april_compare,
+x = ~Month,
+y = ~total_revenue,
+type = "bar",
+marker = list(color = c("#2ca02c", "#1f77b4"))
+) %>%
+layout(
+title = "Total Revenue: April 2022 vs April 2023",
+xaxis = list(title = "Month"),
+yaxis = list(title = "Revenue (USD)")
+)
+
+```
+<br>
+<br>
+**Average Discount %**
+```{r, fig.width=6, fig.height=3.75}
+
+plot_ly(
+april_compare,
+x = ~Month,
+y = ~avg_discount_pct,
+type = "bar",
+marker = list(color = c("#d62728", "#ff7f0e"))
+) %>%
+layout(
+title = "Average Discount %: April 2022 vs April 2023",
+xaxis = list(title = "Month"),
+yaxis = list(title = "Discount %")
+)
+
+```
+<br>
+<br>
+
+```{r}
+
+retail_discounts <- dbGetQuery(con, "
+WITH base AS (
+  SELECT
+    sh.LicenseeId,
+    li.DBA AS BusinessName,
+    strftime(CAST(sh.SaleDate AS DATE), '%Y-%m') AS YearMonth,
+    CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+    CAST(sd.Discount AS DOUBLE) AS Discount,
+    CAST(sd.Quantity AS DOUBLE) AS Quantity
+  FROM SalesDetail_all sd
+  JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+  LEFT JOIN Licensee_all li ON li.LicenseeId = sh.LicenseeId
+  WHERE strftime(CAST(sh.SaleDate AS DATE), '%Y-%m') IN ('2022-04', '2023-04')
+    AND CAST(sd.UnitPrice AS DOUBLE) < 200
+)
+SELECT
+  BusinessName,
+  YearMonth,
+  ROUND(SUM(Discount) / NULLIF(SUM(UnitPrice * Quantity), 0) * 100, 2) AS discount_pct,
+  ROUND(SUM(UnitPrice * Quantity), 2) AS total_revenue
+FROM base
+GROUP BY BusinessName, YearMonth
+HAVING total_revenue > 0
+ORDER BY BusinessName, YearMonth
+")
+
+# Convert to factor for custom order if needed
+
+retail_discounts$YearMonth <- factor(retail_discounts$YearMonth, levels = c("2022-04", "2023-04"))
+
+
+```
+**Retail-Level Comparison: Discount % vs Revenue (April 2022 vs April 2023)**
+```{r, fig.width=6, fig.height=3.75}
+
+plot_ly(
+retail_discounts,
+x = ~total_revenue,
+y = ~discount_pct,
+color = ~YearMonth,
+text = ~BusinessName,
+type = "scatter",
+mode = "markers",
+marker = list(size = 10, opacity = 0.7)
+) %>%
+layout(
+title = "Discount % vs Revenue – April 2022 vs April 2023",
+xaxis = list(title = "Total Revenue (USD)"),
+yaxis = list(title = "Average Discount %")
+)
+
+```
+
+```{r}
+# Query total revenue by YearMonth
+# april_revenue_compare <- dbGetQuery(con, "
+# WITH base AS (
+#   SELECT 
+#     strftime(CAST(sh.SaleDate AS DATE), '%Y-%m') AS YearMonth,
+#     CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+#     CAST(sd.Quantity AS DOUBLE) AS Quantity
+#   FROM SalesDetail_all sd
+#   JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+#   WHERE strftime(CAST(sh.SaleDate AS DATE), '%Y-%m') IN ('2022-04', '2023-04')
+#     AND CAST(sd.UnitPrice AS DOUBLE) < 200
+# )
+# SELECT
+#   YearMonth,
+#   ROUND(SUM(UnitPrice * Quantity), 2) AS total_revenue
+# FROM base
+# GROUP BY YearMonth
+# ORDER BY YearMonth
+# ")
+
+```
+<br>
+
+```{r}
+#**Year-over-Year % Change in Total Revenue between Apr 2022 and Apr 2023**
+# Calculate YoY % change
+
+# Calculate YoY % change and format output table
+# revenue_change <- april_revenue_compare %>%
+#   tidyr::pivot_wider(
+#     names_from = YearMonth,
+#     values_from = total_revenue
+#   ) %>%
+#   mutate(
+#     pct_change = (`2023-04` - `2022-04`) / `2022-04` * 100
+#   )
+# 
+# # Clean up column names
+# names(revenue_change)[names(revenue_change) == "2022-04"] <- "2022"
+# names(revenue_change)[names(revenue_change) == "2023-04"] <- "2023"
+# 
+# # Display formatted table
+# revenue_change %>%
+#   mutate(
+#     `2022` = scales::dollar(`2022`),
+#     `2023` = scales::dollar(`2023`),
+#     `Percent Change` = scales::percent(pct_change / 100, accuracy = 0.1)
+#   ) %>%
+#   select(`2022`, `2023`, `Percent Change`) %>%
+#   kableExtra::kable(
+#     caption = "April Revenue Comparison (2022 vs 2023) with % Change"
+#   ) %>%
+#   kableExtra::kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+
+```
+<br>
+<br>
+**Overview**
+
+This report compared April 2022 to April 2023 cannabis retail activity in Washington, focusing on:
+
+Licensee reporting
+
+Revenue Generation
+
+Discount % behavior

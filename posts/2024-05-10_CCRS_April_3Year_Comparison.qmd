@@ -1,0 +1,222 @@
+---
+title: "What Washington Retailers Did for 4/20: April Sales Trends 2022–2024"
+subtitle: "Washington Retailers Show Maturity in 4/20 Strategies: Sales Triple, Discounts Steady"
+date: 2024-05-01
+categories: [Cannabis, Holiday, Sales, Discount, 3Years]
+format: html
+toc: true
+editor:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, error = FALSE)
+
+library(DBI)
+library(duckdb)
+library(tidyverse)
+library(lubridate)
+library(plotly)
+library(kableExtra)
+library(scales)
+
+# Connect to DuckDB
+source("../R_scripts/connect_duckdb_readonly.R")
+
+april_monthly <- dbGetQuery(con, "
+WITH base AS (
+SELECT
+DATE_TRUNC('month', CAST(sh.SaleDate AS DATE)) AS Month,
+sh.LicenseeId,
+CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+CAST(sd.Discount AS DOUBLE) AS Discount,
+CAST(sd.Quantity AS DOUBLE) AS Quantity
+FROM SalesDetail_all sd
+JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+WHERE strftime(CAST(sh.SaleDate AS DATE), '%Y-%m') IN ('2022-04', '2023-04', '2024-04')
+AND CAST(sd.UnitPrice AS DOUBLE) < 200
+)
+SELECT
+Month,
+COUNT(DISTINCT LicenseeId) AS licensee_reporting,
+ROUND(SUM(UnitPrice * Quantity), 2) AS total_revenue,
+ROUND(SUM(Discount) / NULLIF(SUM(UnitPrice * Quantity), 0) * 100, 2) AS avg_discount_pct
+FROM base
+GROUP BY Month
+ORDER BY Month
+") %>%
+mutate(Year = year(Month))
+```
+**The Bottom Line Up Front**  
+Three Aprils into CCRS reporting, Washington’s cannabis retail sector has entered a new equilibrium:
+
++ More participants 
++ Higher sales  and 
++ Smarter pricing strategies  
+
+The 4/20 holiday remains a clear driver of April revenue, but the surrounding data show the maturing normalization of a statewide retail system that’s no longer defined solely by its biggest day of the year.\
+
+
+**This analysis:**  
+
++ Compares April sales trends over 3 years
+
++ Shows both monthly and weekly granularity
+
++ Highlights differences in revenue and discounting behavior
+
++ Ready to expand (e.g., transactions, product types, regions)
+
+**Contact me if you want summaries for:**  
+
++ Top retailers by revenue per year
+
++ Product categories split
+
++ Deep-Dive Report
+\
+\
+
+**Overview**  
+Every April, Washington’s cannabis retailers prepare for the 4/20 holiday, the single busiest day on the cannabis retail calendar. Using CCRS data compiled through DuckDB, The Evergreen Canna Ledger analyzed three years of April performance—2022, 2023, and 2024—to understand how participation, total revenue, and discount behavior evolved during this key retail window.
+
+The data reveal a clear pattern: participation and revenue have expanded sharply, while discount strategies have become more measured and sustainable over time.  
+\
+**Monthly Comparison Plot**
+```{r}
+
+plot_ly(april_monthly, x = ~factor(Year)) %>%
+add_bars(y = ~total_revenue, name = "Revenue", marker = list(color = "#1f77b4")) %>%
+add_lines(y = ~avg_discount_pct * 1e5, name = "Discount % (×100k)", yaxis = "y2", line = list(color = "#d62728")) %>%
+layout(
+title = "April Revenue & Discount % (2022–2024)",
+xaxis = list(title = "Year"),
+yaxis = list(title = "Revenue (USD)"),
+yaxis2 = list(overlaying = "y", side = "right", title = "Discount % (×100k)", showgrid = FALSE),
+barmode = "group",
+width = 700, height = 400
+)
+
+```
+From 2022 to 2024, the number of retailers reporting April sales grew more than fourfold, while total monthly revenue expanded nearly six times. This growth reflects both increased CCRS compliance and broader retail coverage across Washington’s market.
+
+The 2023 season marked a turning point: retailers generated over $5 million in April sales with minimal average discounting, showing that demand remained strong even without deep markdowns. By April 2024, both participation and discounting normalized, with more than 60 licensees and a modest 5% average discount rate, suggesting healthy competition and strategic pricing.  
+<br>
+**Monthly Summary Table**
+```{r}
+
+april_monthly %>%
+mutate(
+total_revenue = dollar(total_revenue),
+avg_discount_pct = percent(avg_discount_pct / 100, accuracy = 0.1)
+) %>%
+select(Year, licensee_reporting, total_revenue, avg_discount_pct) %>%
+kable(
+caption = "April Monthly Summary (2022–2024)",
+col.names = c("Year", "Licensees Reporting", "Total Revenue", "Avg. Discount %")
+) %>%
+kable_styling(full_width = FALSE)
+
+
+```
+
+```{r}
+
+april_weekly <- dbGetQuery(con, "
+WITH base AS (
+SELECT
+DATE_TRUNC('week', CAST(sh.SaleDate AS DATE)) AS WeekStart,
+strftime(CAST(sh.SaleDate AS DATE), '%Y') AS Year,
+sh.LicenseeId,
+CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+CAST(sd.Discount AS DOUBLE) AS Discount,
+CAST(sd.Quantity AS DOUBLE) AS Quantity
+FROM SalesDetail_all sd
+JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+WHERE strftime(CAST(sh.SaleDate AS DATE), '%Y-%m') IN ('2022-04', '2023-04', '2024-04')
+AND CAST(sd.UnitPrice AS DOUBLE) < 200
+)
+SELECT
+WeekStart,
+Year,
+COUNT(DISTINCT LicenseeId) AS licensee_reporting,
+ROUND(SUM(UnitPrice * Quantity), 2) AS total_revenue,
+ROUND(SUM(Discount) / NULLIF(SUM(UnitPrice * Quantity), 0) * 100, 2) AS avg_discount_pct
+FROM base
+GROUP BY WeekStart, Year
+ORDER BY WeekStart
+")
+
+```
+<br>
+\
+**Query: April 2022–2024 Weekly Summary**
+**Weekly Revenue Line Chart**
+```{r}
+plot_ly(april_weekly, x = ~WeekStart, y = ~total_revenue, color = ~Year,
+type = "scatter", mode = "lines+markers") %>%
+layout(
+title = "Weekly Revenue in April (2022–2024)",
+xaxis = list(title = "Week Start"),
+yaxis = list(title = "Revenue (USD)"),
+width = 700, height = 400
+)
+```
+**Weekly Discount % Line Chart**
+```{r}
+plot_ly(april_weekly, x = ~WeekStart, y = ~avg_discount_pct, color = ~Year,
+type = "scatter", mode = "lines+markers") %>%
+layout(
+title = "Weekly Discount % in April (2022–2024)",
+xaxis = list(title = "Week Start"),
+yaxis = list(title = "Avg. Discount %"),
+width = 700, height = 400
+)
+
+```
+<br>  
+**Discount Behavior Over Time**  
+The shift in average discount percentage tells the story of maturing retail discipline:
+
++ 2022: Retailers leaned heavily on promotional markdowns, averaging nearly 10% off list prices, with spikes above 15–20% in some weeks.
+
++ 2023: Discounting dropped to near-zero, suggesting confidence in steady baseline demand.
+
++ 2024: Discounts rose slightly (4–6%)—likely strategic rather than desperate—reflecting a balance between competition and profitability.
+
+This evolution suggests that as CCRS data matured, retailers learned to optimize rather than over-rely on promotions, using 4/20 as a targeted engagement moment instead of a margin-cutting event.  
+<br>
+\
+**Weekly Summary Table**
+```{r}
+april_weekly %>%
+mutate(
+total_revenue = dollar(total_revenue),
+avg_discount_pct = percent(avg_discount_pct / 100, accuracy = 0.1)
+) %>%
+arrange(Year, WeekStart) %>%
+kable(
+caption = "Weekly Summary of April Sales (2022–2024)",
+col.names = c("Week Start", "Year", "Licensees Reporting", "Revenue", "Avg. Discount %")
+) %>%
+kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+```
+<br>  
+**Weekly Patterns: The 4/20 Surge**  
+
+| Year | Peak Week (Start Date) | Weekly Revenue | Avg. Discount % | Licensees Reporting |
+| :--- | ---------------------: | -------------: | --------------: | ------------------: |
+| 2022 |                 Apr 18 |         $684 K |           5.1 % |                   6 |
+| 2023 |                 Apr 17 |        $1.55 M |           1.3 % |                  11 |
+| 2024 |                 Apr 15 |        $2.45 M |           6.2 % |                  40 |  
+<br>
+Across all three years, the third week of April—the week containing April 20th—was consistently the highest-grossing.
+
++ In 2022, fewer than 10 licensees were active, generating under $1 million during the 4/20 week.
+
++ By 2023, the same period nearly doubled in revenue, with discounting largely subdued.
+
++ In 2024, the 4/20 week exceeded $2.4 million, involving 40 retailers—a sign of market expansion and stronger retail organization.
+
++ This week-over-week buildup illustrates how 4/20 continues to anchor the state’s retail sales calendar, even as the surrounding weeks show more stable baseline demand.

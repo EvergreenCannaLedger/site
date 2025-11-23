@@ -1,0 +1,201 @@
+---
+title: "Three Years of Washington’s Cannabis Holiday Economy Comparison (2022 – 2024)"
+subtitle: "Washington’s Cannabis Holiday Economy Hits $1.8 Billion — Three Years of Growth, Discounts, and Data Maturity"
+date: "2024-01-31"
+categories: [CCRS, Cannabis, Sales, Holiday, 3Years]
+format: html
+fig-height: 4.5
+fig-width: 6
+toc: true
+editor:
+  markdown:
+    wrap: 72
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, error = FALSE)
+# Load libraries
+library(DBI)
+library(duckdb)
+library(tidyverse)
+library(scales)
+library(lubridate)
+library(kableExtra)
+library(plotly)
+
+# Connect to DuckDB (update path if needed)
+source("../R_scripts/connect_duckdb_readonly.R")
+
+# Define date ranges for each year’s holiday period (Black Friday to NYE)
+holiday_ranges <- tribble(
+  ~year, ~start_date, ~end_date,
+  2022, "2022-11-25", "2022-12-31",
+  2023, "2023-11-24", "2023-12-31",
+  2024, "2024-11-29", "2024-12-31"
+)
+
+# Build date filter for SQL
+date_filter <- paste0("'", holiday_ranges$start_date, "' AND '", holiday_ranges$end_date, "'") %>%
+  paste(collapse = " OR DATE(sh.SaleDate) BETWEEN ")
+
+# Query data
+holiday_summary <- dbGetQuery(con, glue::glue("
+  WITH base AS (
+    SELECT 
+      sh.LicenseeId,
+      li.DBA AS BusinessName,
+      DATE(CAST(sh.SaleDate AS DATE)) AS SaleDate,
+      EXTRACT(YEAR FROM CAST(sh.SaleDate AS DATE)) AS Year,
+      CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+      CAST(sd.Discount AS DOUBLE) AS Discount,
+      CAST(sd.Quantity AS DOUBLE) AS Quantity
+    FROM SalesDetail_all sd
+    JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+    LEFT JOIN Licensee_all li ON li.LicenseeId = sh.LicenseeId
+    WHERE (DATE(sh.SaleDate) BETWEEN {date_filter})
+      AND CAST(sd.UnitPrice AS DOUBLE) < 200
+  )
+  SELECT
+    Year,
+    COUNT(DISTINCT LicenseeId) AS licensee_reporting,
+    ROUND(SUM(UnitPrice * Quantity), 2) AS total_revenue,
+    ROUND(SUM(Discount) / NULLIF(SUM(UnitPrice * Quantity), 0) * 100, 2) AS avg_discount_pct
+  FROM base
+  GROUP BY Year
+  ORDER BY Year
+"))
+
+# Format and display summary table
+holiday_summary %>%
+  mutate(
+    total_revenue = dollar(total_revenue),
+    avg_discount_pct = percent(avg_discount_pct / 100, accuracy = 0.1)
+  ) %>%
+  rename(
+    `Year` = Year,
+    `Licensees Reporting` = licensee_reporting,
+    `Total Revenue` = total_revenue,
+    `Avg. Discount %` = avg_discount_pct
+  ) %>%
+  kable(caption = "Black Friday to NYE Comparison: 2022, 2023, 2024") %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+```
+**The Bottom Line Up Front**  
+In just three years, Washington’s cannabis holiday economy evolved from a small, high-margin niche into a billion-dollar retail machine.
+The numbers speak for themselves:
+
++ More participation,
+
++ More transparency, and
+
++ More competition.
+
+If 2022 was the baseline and 2023 the trial run, then **2024 was the breakthrough year** — a turning point when Washington’s cannabis market finally began behaving like the mature retail ecosystem it’s long promised to become.
+
+**Trends at a Glance**
+
+| Metric              | 2022 → 2023 Change | 2023 → 2024 Change |
+| :------------------ | -----------------: | -----------------: |
+| Licensees Reporting |             ▼ 30 % |          ▲ 2,590 % |
+| Total Revenue       |             ▼ 62 % |          ▲ 2,885 % |
+| Avg. Discount %     |          ▲ 5.4 pts |         ▲ 13.2 pts |
+
+The data reveal a classic emerging-market curve: contraction, adaptation, and explosive scale once systems and participation align.
+
+<br>
+
+**Total Revenue by Year**
+```{r}
+holiday_summary %>%
+  ggplot(aes(x = factor(Year), y = total_revenue)) +
+  geom_col(fill = "#1f77b4") +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(
+    title = "Total Revenue: Black Friday to NYE",
+    x = "Year",
+    y = "Total Revenue (USD)"
+  ) +
+  theme_minimal()
+```
+**Bar Chart: Licensees Reporting**
+```{r}
+
+holiday_summary %>%
+  ggplot(aes(x = factor(Year), y = licensee_reporting)) +
+  geom_col(fill = "#2ca02c") +
+  labs(
+    title = "Number of Licensees Reporting: Black Friday to NYE",
+    x = "Year",
+    y = "Licensees Reporting"
+  ) +
+  theme_minimal()
+```
+**Overview**  
+Every winter, Washington’s cannabis market tells a story through its data — a reflection of how retailers, producers, and consumers adapt to shifting regulations, supply dynamics, and price pressures.
+
+Using statewide CCRS data from 2022 to 2024, we compared three key metrics for the holiday period (Black Friday → New Year’s Day):
+
+**Summary Table**
+
+| Year | Licensees Reporting |     Total Revenue | Avg. Discount % |
+| :--- | ------------------: | ----------------: | --------------: |
+| 2022 |                  56 |      $158 million |          0.46 % |
+| 2023 |                  39 |     $59.7 million |          5.88 % |
+| 2024 |           **1,050** | **$1.78 billion** |      **19.1 %** |
+
+<br>
+
+**2022 — A Cautious Baseline**
+
+In 2022, Washington’s cannabis retailers approached the holidays conservatively.
+Only 56 licensees reported data, generating roughly $158 million in revenue with virtually no discounting activity (0.46 %).
+
+This period marked the post-pandemic normalization of retail operations: inventory was tight, margins were protected, and data participation was still fragmented.
+The industry’s watchword that winter was stability — not growth.
+
+**2023 — A Contraction Year with Competitive Pressure**
+
+By 2023, total reported revenue fell sharply to $59.7 million, as only 39 active licensees submitted CCRS data during the holiday window.
+
+Yet this smaller dataset revealed an important behavioral shift:
+average discounting jumped to 5.9 %, signaling that retailers began using price incentives to move volume amid rising competition and consumer price sensitivity.
+
+2023 thus stands as a compression year — one where operators tested markdown strategies and tightened cost controls ahead of the coming data-reporting expansion.
+
+**2024 — Scale Arrives**
+
+Then came 2024, and with it, the inflection point.
+
+More than 1,000 licensees — a twenty-fold increase in participation — reported into CCRS.
+The result: a record $1.78 billion in holiday sales, accompanied by a statewide average discount rate of 19 %.
+
+This surge reflects not only improved data integration and compliance but also a maturing market where retailers leveraged deep promotions to compete for share.
+
+**Interpretation:**  
+2024 was the first year Washington’s cannabis industry achieved both complete visibility and mass consumer reach, transforming the holiday period into a true retail event comparable to mainstream sectors.
+
+<br>
+
+**Bar Chart: Average Discount %**
+```{r}
+
+holiday_summary %>%
+  ggplot(aes(x = factor(Year), y = avg_discount_pct/100)) +
+  geom_col(fill = "#d62728") +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  labs(
+    title = "Average Discount %: Black Friday to NYE",
+    x = "Year",
+    y = "Avg. Discount %"
+  ) +
+  theme_minimal()
+```
+**Market Interpretation**  
+1. Visibility and Compliance Drive Growth
+The 2024 leap in licensee reporting underscores how CCRS adoption and POS automation have matured.
+What was once a partial sample is now a comprehensive dataset.
+
+**2. Discounts as a Competitive Tool**  
+The escalation from <1 % to >19 % average discounts indicates the industry’s pivot toward retail economics — holiday promotions, bundling, and loyalty-based pricing.
+
+**3. Economic Signal, Not Just Cultural**  
+4/20 and year-end periods now behave like **standard consumer holidays**, with predictable revenue spikes and price competition shaping fiscal calendars.

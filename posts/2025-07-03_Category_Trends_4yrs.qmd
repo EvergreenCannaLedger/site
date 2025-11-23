@@ -1,0 +1,321 @@
+---
+title: "Category Evolution 2021–2025: How Washington’s Cannabis Market Grew, Flattened, and Specialized"
+subtitle: "From Flower to Formulation in Washington’s Cannabis Categories Evolved from Craft to Commerce"
+date: "2025-07-03"
+categories: [CCRS, Cannabis, Sales, Product, 4Years]
+format: html
+fig-height: 4.5
+fig-width: 6
+toc: true
+editor:
+  markdown:
+    wrap: 72
+---
+
+**The Bottom Line Up Front**  
+By 2025, Washington’s cannabis sector has matured into a multi-tier retail ecosystem:
+
++ Commodities at the base,
+
++ Concentrates as the profit engine, and
+
++ Edibles as the mass-market frontier.
+
+Where 2021 looked like a boutique craft industry, 2025 looks like a full retail economy — one that behaves more like alcohol, coffee, or CPG snack categories than a novelty substance.
+
+The future now depends less on legalization headlines and more on branding, vertical integration, and consumer segmentation.
+
+**Structural Insights**  
+Flower Is Fully Commoditized
+Volume up 10× since 2022, average price <$2/gram. Producers survive on efficiency and contracting.
+
+Concentrates Are the Cash Engine
+Price stability and margin integrity show brand loyalty and cross-category versatility (vape, dab, cart).
+
+Edibles Are the New Growth Driver
+Edibles now account for nearly 15% of statewide revenue, mirroring beverage and snack segmentation.
+
+Niche and Wellness Formats Are Stabilizing
+Topicals, tinctures, and transdermals maintain small but steady segments — a predictable, mature structure akin to supplements.
+
+**Overview**  
+Over five years, Washington’s legal cannabis market transformed from a small, high-margin boutique sector into a scaled agricultural-retail ecosystem moving billions in volume.
+
+Using CCRS data from 2021–2025, this analysis tracks **category-level performance** — who led, who lagged, and where the state’s cannabis economy is heading.
+
+The numbers tell a dramatic story:
+
++ Flower volumes exploded, but average prices fell below $2 per gram.
+
++ Concentrates and edibles gained pricing power, driving premium revenue growth.
+
++ Infused and packaged mixes emerged as mid-tier staples bridging convenience and potency.
+
++ Topicals, tinctures, and niche forms maintained small but loyal markets.
+
+<br>
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, error = FALSE)
+
+library(DBI)
+library(duckdb)
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(kableExtra)
+library(plotly)
+
+source("../R_scripts/connect_duckdb_readonly.R")
+
+# Query category-level trends
+category_summary <- dbGetQuery(con, "
+  WITH sales_base AS (
+    SELECT 
+      sd.SaleDetailId,
+      sh.SaleDate,
+      pr.InventoryType,
+      CAST(sd.Quantity AS DOUBLE) AS Quantity,
+      CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+      CAST(sd.Discount AS DOUBLE) AS Discount
+    FROM SalesDetail_all sd
+    JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+    JOIN Inventory_all inv ON sd.InventoryId = inv.InventoryId
+    JOIN Product_all pr ON inv.ProductId = pr.ProductId
+    WHERE (sd.IsDeleted IS NULL OR sd.IsDeleted NOT IN ('TRUE', 'true'))
+      AND (sh.IsDeleted IS NULL OR sh.IsDeleted NOT IN ('TRUE', 'true'))
+      AND (inv.IsDeleted IS NULL OR inv.IsDeleted NOT IN ('TRUE', 'true'))
+      AND (pr.IsDeleted IS NULL OR pr.IsDeleted NOT IN ('TRUE', 'true'))
+      AND CAST(sd.UnitPrice AS DOUBLE) < 200
+  )
+
+  SELECT 
+    EXTRACT(YEAR FROM DATE(SaleDate)) AS Year,
+    InventoryType,
+    SUM(Quantity) AS UnitsSold,
+    ROUND(SUM(Quantity * UnitPrice), 2) AS Revenue,
+    ROUND(AVG(UnitPrice), 2) AS AvgUnitPrice
+  FROM sales_base
+  GROUP BY 1, 2
+  ORDER BY Year, Revenue DESC
+")
+
+# Format for publication
+category_summary %>%
+  mutate(
+    Revenue = dollar(Revenue),
+    AvgUnitPrice = dollar(AvgUnitPrice)
+  ) %>%
+  rename(
+    `Year` = Year,
+    `Category` = InventoryType,
+    `Units Sold` = UnitsSold,
+    `Total Revenue` = Revenue,
+    `Avg. Unit Price` = AvgUnitPrice
+  ) %>%
+  arrange(Category, Year) %>%
+  kable("html", caption = "Product Category Trends (2021–2024)") %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+
+```
+
+```{r, include=FALSE}
+
+category_summary_clean <- category_summary %>%
+  mutate(
+    Year = as.integer(Year),
+    InventoryType = str_trim(InventoryType),
+    Revenue = as.numeric(Revenue),
+    UnitsSold = as.numeric(UnitsSold),
+    AvgUnitPrice = as.numeric(AvgUnitPrice)
+  )
+
+# Identify top categories by total revenue (sum over all years)
+top_categories <- category_summary_clean %>%
+  group_by(InventoryType) %>%
+  summarise(total_revenue = sum(Revenue, na.rm = TRUE)) %>%
+  arrange(desc(total_revenue)) %>%
+  slice_head(n = 10) %>%
+  pull(InventoryType)
+
+# Filter to top categories only for clarity
+category_top <- category_summary_clean %>%
+  filter(InventoryType %in% top_categories)
+
+```
+
+```{r}
+
+# --- 1. Revenue over time
+revenue_plot <- ggplot(category_top, aes(x = Year, y = Revenue, color = InventoryType)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  scale_y_continuous(labels = label_dollar(scale = 1e-6, suffix = "M")) +
+  labs(
+    title = "Total Revenue by Category Over Time",
+    y = "Revenue (Millions)",
+    x = "Year",
+    color = "Category"
+  ) +
+  theme_minimal()
+
+revenue_plotly <- ggplotly(revenue_plot)
+
+revenue_plotly
+
+```
+
+<br>
+**Edibles: From Niche to Mainstream**  
+Edibles — both solid and liquid — surged in 2024–2025.
+
+| Year | Solid Edible Revenue | Liquid Edible Revenue | Avg Unit Price |
+| :--- | -------------------: | --------------------: | -------------: |
+| 2022 |                $1.9M |                $0.86M |         $12–17 |
+| 2023 |                $8.5M |                 $1.9M |         $12–18 |
+| 2024 |                $334M |                 $164M |         $10–17 |
+| 2025 |            **$436M** |             **$203M** |     **$10–17** |
+
+<br>
+**Observation**  
+The “snack-ification” of cannabis has arrived.
+Solid edibles (chews, baked goods) are now a half-billion-dollar category, while liquid edibles and drinkables are approaching **$200M**.
+The steady per-unit pricing shows **consumer normalization** — edibles are no longer a novelty, they’re a staple.
+
+<br>
+```{r}
+# --- 2. Units sold over time
+units_plot <- ggplot(category_top, aes(x = Year, y = UnitsSold, color = InventoryType)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  scale_y_continuous(labels = label_number(scale = 1e-6, suffix = "M")) +
+  labs(
+    title = "Units Sold by Category Over Time",
+    y = "Units Sold (Millions)",
+    x = "Year",
+    color = "Category"
+  ) +
+  theme_minimal()
+
+units_plotly <- ggplotly(units_plot)
+
+units_plotly
+
+```
+
+<br>
+**Mid-Tier Expansion: Infused & Packaged Mixes**  
+Once obscure, Cannabis Mix Infused and Cannabis Mix Packaged now represent nearly $250M combined revenue in 2025.
+
++ Infused Mix: $167.8M (up 19% YoY)
+
++ Packaged Mix: $84M (down slightly from 2024’s $106M)
+
+These “bridge categories” combine flower with extracts or pre-packaged convenience — catering to value-driven consumers seeking ready-to-use products.
+Average unit prices hover near $9–10, confirming a stable mid-shelf positioning.
+
+**The Premium Edge: High-End Concentrates and Topicals**  
+
+| Product                     | Avg Unit Price (2025) | Revenue |
+| :-------------------------- | --------------------: | ------: |
+| **Ethanol Concentrate**     |                $22.80 |  $49.8M |
+| **Topical Ointment**        |                $22.27 |  $41.3M |
+| **Non-Solvent Concentrate** |                $30.50 |  $12.3M |
+| **CO₂ Concentrate**         |                $20.60 |  $13.5M |
+
+
+These small-volume but high-margin categories anchor the upper end of the retail price spectrum, serving medical and wellness-oriented buyers.
+Notably, the Non-Solvent Concentrate segment has sustained $30+/unit pricing for three consecutive years, outperforming all other concentrate types on per-unit value.
+
+
+**Commodities and Byproducts: The Low-End Expansion**  
+At the other end of the curve, Flower Lot, Unlotted Flower, and Other Material categories exploded in sheer volume. This confirms a mature supply-chain phase — raw cannabis is now treated like a commodity crop.
+
+| Category           | 2025 Units Sold | Avg Price | Comment                           |
+| :----------------- | --------------: | --------: | :-------------------------------- |
+| Flower Lot         |            490M |     $1.12 | Bulk agricultural product         |
+| Flower Unlotted    |            233M |     $0.41 | Likely processor throughput       |
+| Other Material Lot |            205M |     $0.60 | Byproduct sales and waste streams |
+
+The price compression at this end underwrites the margin room for processors and retailers at the top.
+
+<br>
+**The Big Two: Flower and Concentrates**  
+**Useable Cannabis**
+
++ 2021: 38k units, $701K revenue, $18.16/unit
+
++ 2025: 123 million units, $1.57B revenue, $18.59/unit
+
+Despite volume expansion of >3,000x, flower pricing has remained remarkably stable in retail terms — a sign of commoditization offset by branding and consistency.
+The data suggest growers are competing on scale, while retailers rely on product differentiation (strain lineage, terpene labeling) to sustain mid-teens per-unit pricing.
+
+**Concentrate for Inhalation**
+
++ 2021: $36K revenue
+
++ 2022: $74M
+
++ 2024: $1.36B
+
++ 2025: $1.75B
+
+Concentrates remain Washington’s economic backbone, accounting for roughly **40–45% of all cannabis revenue up to May 2025**.
+
+Average price per gram has held around $17–19, even as total volume climbed beyond 130 million units — a rare instance where scale didn’t crush price integrity.
+Consumers appear willing to pay for potency and convenience.
+
+**Interpretation:**  
+Concentrates are now the oil of the cannabis economy — high-margin, logistics-friendly, and increasingly brand-defined.
+
+<br>
+**Emerging Niches and Curiosities**  
+While they barely register in total volume, several niche categories are showing steady experimentation and price elasticity:
+
++ Suppository: $74.51/unit, up 30% YoY
+
++ Transdermal: $11.54/unit, small but consistent volume
+
++ Capsules: ~$14/unit, maintaining medical market traction
+
++ Clones & Seeds: <$3/unit, reflecting agricultural base demand
+
+These reflect the diversification of Washington’s cannabis economy — from high-THC recreational products to wellness, cultivation, and R&D inputs.
+
+<br>
+```{r}
+
+# --- 3. Avg. unit price
+price_plot <- ggplot(category_top, aes(x = Year, y = AvgUnitPrice, color = InventoryType)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(
+    title = "Avg. Unit Price by Category Over Time",
+    y = "Average Unit Price (USD)",
+    x = "Year",
+    color = "Category"
+  ) +
+  theme_minimal()
+
+price_plotly <- ggplotly(price_plot)
+
+price_plotly
+
+```
+<br>
+The pricing landscape now mirrors consumer packaged goods:
+commodity base, strong mid-tier competition, and premium niches maintaining identity through quality and consistency.
+
+<br>
+**Market Growth at a Glance**
+
+| Year     | Total Revenue | Top Category                   | Avg. Price Range (Top 3 Categories) |
+| :------- | ------------: | :----------------------------- | :---------------------------------- |
+| **2021** |       ≈ $1.0M | Usable Cannabis                | $15–18 per unit                     |
+| **2022** |          $95M | Concentrate for Inhalation     | $9–16                               |
+| **2023** |          $55M | Usable Cannabis                | $17–21                              |
+| **2024** |         $3.3B | Concentrate for Inhalation     | $10–19                              |
+| **Jan-May 2025** |     **$4.2B** | **Concentrate for Inhalation** | **$10–18**                  |
+
+<br>
+From 2021’s early-stage artisanal market to 2025’s billion-dollar scale, the data reveal a tenfold jump in total revenue and a massive broadening of licensee participation, especially post-2023 when full CCRS compliance took hold.

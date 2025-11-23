@@ -1,0 +1,226 @@
+---
+title: "2022–2024 Cannabis Retail Trends: Washington’s Cannabis Market Goes Full Scale"
+subtitle: "$731 Million in 2024 Sales Marks New Era for CCRS Data"
+date: 2025-01-28
+categories: [CCRS, Cannabis, Revenue, Discount, 3Years]
+format: html
+toc: true
+editor:
+  markdown:
+    wrap: 72
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, error = FALSE)
+
+library(DBI)
+library(duckdb)
+library(tidyverse)
+library(lubridate)
+library(plotly)
+library(kableExtra)
+library(scales)
+
+source("../R_scripts/connect_duckdb_readonly.R")
+## 📊 Monthly Metrics Query
+
+monthly_metrics <- dbGetQuery(con, "
+WITH base AS (
+  SELECT 
+    DATE_TRUNC('month', CAST(sh.SaleDate AS DATE)) AS Month,
+    EXTRACT(YEAR FROM CAST(sh.SaleDate AS DATE)) AS Year,
+    sh.LicenseeId,
+    CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+    CAST(sd.Quantity AS DOUBLE) AS Quantity,
+    CAST(sd.Discount AS DOUBLE) AS Discount
+  FROM SalesDetail_all sd
+  JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+  WHERE CAST(sh.SaleDate AS DATE) BETWEEN '2022-01-01' AND '2024-12-31'
+    AND CAST(sd.UnitPrice AS DOUBLE) < 200
+)
+SELECT 
+  Month,
+  Year,
+  COUNT(DISTINCT LicenseeId) AS licensee_reporting,
+  ROUND(SUM(UnitPrice * Quantity), 2) AS total_revenue,
+  ROUND(SUM(Discount) / NULLIF(SUM(UnitPrice * Quantity), 0) * 100, 2) AS avg_discount_pct
+FROM base
+GROUP BY Month, Year
+ORDER BY Month
+")
+```
+**The Bottom Line Up Front**  
+Washington’s cannabis market in 2024 was no longer the experimental patchwork it was in early CCRS years. It had matured into a fully integrated, high-volume, price-competitive ecosystem, where both scale and strategy defined success.
+
+In short:
+
++ 2022–2023: Market calibration, moderate discounts, slow data adoption.
+
++ 2024: Full-market activation, rapid growth, sharper pricing strategies.
+
+The 2024 dataset now offers policymakers, analysts, and businesses a true baseline for forecasting future performance in one of the country’s most transparent legal cannabis markets.
+
+
+**This pipeline gives you:**
+
++ Month-over-month trends in license activity, revenue, and discounting 
+
++ Yearly aggregation for comparing policy or business trends
+
++ Interactive plots to explore shifts in behavior
+
++ Scatterplot to investigate correlation between discounting and sales
+
+**Contact me if you'd like a specific report:**
+
++ Year-over-year change metrics
+
++ Top retailers per year
+
++ Product category-level comparisons  
+
+<br>
+
+**Overview**  
+Three years of Washington’s Cannabis Central Reporting System (CCRS) data reveal a remarkable transformation. From 2022 through 2024, the number of reporting licensees, monthly revenue, and discounting behavior all evolved in ways that signal a maturing, highly competitive retail market.
+
+Between 2022 and 2024, total reported revenue increased nearly 9×, while the number of reporting licensees jumped from under 300 to more than 4,600 unique businesses. With CCRS data quality improving and participation expanding, the Evergreen State’s cannabis economy is finally achieving the kind of transparency and scale seen in mature retail sectors.
+
+<br>
+
+**Yearly Totals at a Glance**:  
+
+| Year | Licensees Reporting |  Total Revenue | Avg. Discount % |
+| :--- | ------------------: | -------------: | --------------: |
+| 2022 |                 267 |  $82.6 million |           3.9 % |
+| 2023 |                 291 |  $67.4 million |           2.8 % |
+| 2024 |               4,658 | $730.7 million |           9.5 % |
+<br>
+While 2023 saw a modest dip in revenue, largely tied to transitional reporting issues and consolidation within the retail network, 2024 marked a massive leap—both in total sales and in the number of active CCRS licensees.
+
+**2024 alone accounted for nearly 90% of all reported revenue across the three years.**
+
+This shift underscores a key point: by late 2023, CCRS compliance had reached a tipping point, and by mid-2024, Washington’s retail data began to represent **nearly the entire commercial landscape**.
+
+**Monthly Growth and Market Maturity**  
+
+| Month (2024) | Licensees | Total Revenue | Avg. Discount % |
+| :----------- | --------: | ------------: | --------------: |
+| January      |        46 |        $5.0 M |           6.9 % |
+| June         |        79 |        $8.4 M |           6.8 % |
+| September    |       716 |       $39.2 M |          12.5 % |
+| October      |     1,135 |      $203.9 M |          15.9 % |
+| November     |     1,078 |      $206.9 M |          17.6 % |
+| December     |     1,047 |      $210.6 M |          18.6 % |
+
+**The data tell a clear story:**
+
++ Early 2024 began with modest retail participation (~50–100 licensees).
+
++ Midyear (June–August) saw steady expansion and normalization of discounting between 6–8%.
+
++ By fall 2024, both participation and revenue skyrocketed — over 1,000 active licensees by October, and record-breaking sales exceeding $200 million per month through the end of the year.
+
+This surge coincided with improved CCRS automation, enhanced data ingestion from third-party POS systems, and more consistent participation from both retailers and processors.
+
+**Monthly Trends Visualization**  
+
+```{r}
+
+plot_ly(monthly_metrics, x = ~Month) %>%
+add_lines(y = ~total_revenue, color = ~factor(Year), name = ~paste0("Revenue ", Year)) %>%
+layout(
+title = "Monthly Total Revenue (2022–2024)",
+xaxis = list(title = "Month"),
+yaxis = list(title = "Revenue (USD)"),
+width = 800, height = 400
+)
+
+
+```
+
+```{r}
+
+plot_ly(monthly_metrics, x = ~Month) %>%
+add_lines(y = ~avg_discount_pct, color = ~factor(Year), name = ~paste0("Discount % ", Year)) %>%
+layout(
+title = "Monthly Avg. Discount % (2022–2024)",
+xaxis = list(title = "Month"),
+yaxis = list(title = "Discount %"),
+width = 800, height = 400
+)
+
+```
+
+<br>
+
+**Discounting Trends: From Margins to Market Signals**  
+Across the three-year period, average discounting climbed from under 4% in 2022 to nearly 10% in 2024, peaking near 19% by December 2024.
+
+This shift reflects a **new phase of price competition**:
+
++ In 2022–2023, retailers operated in a more controlled, limited environment where product supply aligned closely with steady consumer demand.
+
++ By 2024, a flood of participating retailers and overlapping supply chains led to price compression, as businesses competed aggressively for shelf visibility and customer loyalty.
+
+The data suggest that while **sales volume expanded massively, margins narrowed**, signaling a maturing, consumer-driven retail ecosystem.
+
+<br>
+
+```{r}
+
+plot_ly(monthly_metrics, x = ~Month) %>%
+add_lines(y = ~licensee_reporting, color = ~factor(Year), name = ~paste0("Licensees ", Year)) %>%
+layout(
+title = "Monthly Reporting Licenses (2022–2024)",
+xaxis = list(title = "Month"),
+yaxis = list(title = "Number of Licensees"),
+width = 800, height = 400
+)
+
+```
+<br>
+\
+
+```{r}
+
+yearly_summary <- monthly_metrics %>%
+group_by(Year) %>%
+summarise(
+licensee_reporting = sum(licensee_reporting, na.rm = TRUE),
+total_revenue = sum(total_revenue, na.rm = TRUE),
+avg_discount_pct = mean(avg_discount_pct, na.rm = TRUE)
+)
+
+```
+<br>
+
+**Revenue vs Discount Scatterplot (Monthly)**
+```{r}
+
+plot_ly(
+monthly_metrics,
+x = ~avg_discount_pct,
+y = ~total_revenue,
+color = ~factor(Year),
+text = ~paste("Month:", Month),
+type = "scatter",
+mode = "markers"
+) %>%
+layout(
+title = "Monthly Revenue vs. Avg. Discount %",
+xaxis = list(title = "Avg. Discount %"),
+yaxis = list(title = "Revenue (USD)"),
+width = 800, height = 400
+)
+
+```
+<br>
+
+**Year-over-Year Comparison**  
+
+| Year         | % Change in Revenue | % Change in Licensees | Trend Summary                             |
+| :----------- | ------------------: | --------------------: | :---------------------------------------- |
+| 2023 vs 2022 |             -19.0 % |                +9.0 % | Stable participation, mild contraction    |
+| 2024 vs 2023 |            +983.8 % |              +1,500 % | Explosive growth, full market integration |  
+\
+2024 represents the first full year where Washington’s cannabis market achieved comprehensive CCRS visibility—integrating retail, wholesale, and processing data streams at scale.

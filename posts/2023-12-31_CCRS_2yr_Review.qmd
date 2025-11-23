@@ -1,0 +1,271 @@
+---
+title: "Washington Retail Market: Two Years of Expansion, Correction, and Renewal (Dec 2021–Dec 2023)"
+subtitle: "Two Years In, Washington’s Cannabis Retail Market Finds Its Footing"
+date: 2023-12-31
+categories: [Cannabis, CCRS, Revenue, Discount, Licensees]
+format: html
+toc: true
+editor:
+  markdown:
+    wrap: 72
+---
+
+**The Bottom Line Up Front**  
+The data revealed an industry transitioning out of its onboarding phase into a steady operational rhythm.  2022’s surge captured the “great normalization” of CCRS retail data; 2023 represents the first full year of true trend comparability, where growth rates slowed but reliability improved.
+
+As of December 2023, Washington’s cannabis retail sector appears stable, data-rich, and increasingly efficient — a sign that the Evergreen State’s open-data framework is now supporting genuine market intelligence for both regulators and the industry itself.
+
+```{r setup, include=FALSE}
+# Load libraries
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, error = FALSE)
+
+library(DBI)
+library(duckdb)
+library(tidyverse)
+library(lubridate)
+library(plotly)
+library(scales)
+library(kableExtra)
+
+# Connect to DuckDB
+source("../R_scripts/connect_duckdb_readonly.R")
+```
+**Overview**  
+Between December 2021 and December 2023, Washington’s cannabis retail landscape evolved from a fragmented set of early CCRS participants into a broad, maturing network of consistently reporting licensees.
+Using CCRS sales data integrated through DuckDB, The Evergreen Canna Ledger tracked monthly and quarterly changes in revenue, participation, and discounting behavior across two years of industry data.
+
+What emerges is a story of early growth, mid-cycle correction, and late-stage stabilization—a pattern consistent with normalization in new regulatory markets.
+
+```{r}
+
+#**Data Query – Monthly Sales (Dec 2021 - Dec 2023)**
+
+monthly_data <- dbGetQuery(con, "
+WITH base AS (
+SELECT
+DATE_TRUNC('month', CAST(sh.SaleDate AS DATE)) AS Month,
+sh.LicenseeId,
+CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+CAST(sd.Discount AS DOUBLE) AS Discount,
+CAST(sd.Quantity AS DOUBLE) AS Quantity
+FROM SalesDetail_all sd
+JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+WHERE DATE(sh.SaleDate) BETWEEN '2021-12-01' AND '2023-12-31'
+AND CAST(sd.UnitPrice AS DOUBLE) < 200
+)
+SELECT
+Month,
+COUNT(DISTINCT LicenseeId) AS licensee_reporting,
+ROUND(SUM(UnitPrice * Quantity), 2) AS total_revenue,
+ROUND(SUM(Discount) / NULLIF(SUM(UnitPrice * Quantity), 0) * 100, 2) AS avg_discount_pct
+FROM base
+GROUP BY Month
+ORDER BY Month
+")
+
+
+```
+<br>
+**Monthly Licensees Reporting Writing**
+```{r}
+
+plot_ly(
+monthly_data,
+x = ~Month,
+y = ~licensee_reporting,
+type = "bar",
+marker = list(color = "#1f77b4")
+) %>%
+layout(
+title = "Number of Reporting Licensees (Dec 2021 - Dec 2023)",
+xaxis = list(title = "Month"),
+yaxis = list(title = "Licensees Reporting"),
+width = 600, height = 375
+)
+
+```
+**Participation and Growth**  
+In December 2021, only 8 licensees were actively reporting, generating roughly $2.7 million in sales.
+By December 2022, participation surged to 51 active licensees, moving over $16.5 million in monthly retail volume—an increase of more than 500% in reported revenue and sixfold growth in participation.
+
+The first half of 2023, however, saw a contraction in both revenue and reporting, as several smaller or seasonal operators dropped from the dataset.
+From January to March 2023, licensee counts fell from 31 to 13, while monthly revenue dropped by nearly half—from $6.7 million to $3.3 million.
+
+This retrenchment was followed by steady re-entry: by late 2023, the active licensee count recovered to 39, suggesting renewed reporting consistency and stronger compliance coverage.
+
+
+```{r}
+
+quarterly_data <- monthly_data %>%
+mutate(Quarter = floor_date(Month, "quarter")) %>%
+group_by(Quarter) %>%
+summarise(
+total_revenue = sum(total_revenue),
+avg_discount_pct = mean(avg_discount_pct),
+.groups = "drop"
+)
+
+```
+<br>
+**Quarterly Revenue & Discount Trends**
+**Revenue by Quarter**
+```{r}
+
+plot_ly(
+quarterly_data,
+x = ~Quarter,
+y = ~total_revenue,
+type = "bar",
+marker = list(color = "#2ca02c")
+) %>%
+layout(
+title = "Quarterly Revenue (Dec 2021 - Dec 2023)",
+xaxis = list(title = "Quarter"),
+yaxis = list(title = "Total Revenue (USD)"),
+width = 600, height = 375
+)
+
+```
+
+**Discount % by Quarter**
+```{r}
+
+plot_ly(
+quarterly_data,
+x = ~Quarter,
+y = ~avg_discount_pct,
+type = "scatter",
+mode = "lines+markers",
+line = list(color = "#d62728")
+) %>%
+layout(
+title = "Average Discount % by Quarter",
+xaxis = list(title = "Quarter"),
+yaxis = list(title = "Avg. Discount %"),
+width = 600, height = 375
+)
+
+```
+
+**Year-over-Year & Month-over-Month % Change in Revenue**
+```{r}
+
+monthly_pct_change <- monthly_data %>%
+arrange(Month) %>%
+mutate(
+YoY_change = (total_revenue / lag(total_revenue, 12) - 1) * 100,
+MoM_change = (total_revenue / lag(total_revenue, 1) - 1) * 100
+)
+
+```
+
+**YoY Revenue Change**
+```{r}
+
+plot_ly(
+monthly_pct_change,
+x = ~Month,
+y = ~YoY_change,
+type = "scatter",
+mode = "lines+markers",
+line = list(color = "#9467bd")
+) %>%
+layout(
+title = "Year-over-Year Revenue Change (%)",
+xaxis = list(title = "Month"),
+yaxis = list(title = "YoY % Change"),
+width = 600, height = 375
+)
+
+```
+**MoM Revenue Change**
+```{r}
+
+plot_ly(
+monthly_pct_change,
+x = ~Month,
+y = ~MoM_change,
+type = "scatter",
+mode = "lines+markers",
+line = list(color = "#ff7f0e")
+) %>%
+layout(
+title = "Month-over-Month Revenue Change (%)",
+xaxis = list(title = "Month"),
+yaxis = list(title = "MoM % Change"),
+width = 600, height = 375
+)
+
+```
+Notably, while total revenue peaked in late 2022, the 2023 rebound suggests the market has stabilized around a sustainable revenue band of $15–20 million per quarter, with more balanced pricing strategies and consistent consumer demand.  
+
+
+<br>
+**Scatter Plot: Revenue vs. Discount %**
+```{r}
+
+plot_ly(
+data = monthly_data,
+x = ~avg_discount_pct,
+y = ~total_revenue,
+type = "scatter",
+mode = "markers+text",
+text = ~format(Month, "%b-%y"),
+marker = list(size = 10, color = "#17becf")
+) %>%
+layout(
+title = "Monthly Revenue vs. Avg. Discount %",
+xaxis = list(title = "Avg. Discount %"),
+yaxis = list(title = "Total Revenue"),
+width = 600, height = 375
+)
+
+```
+**Discounting Behavior**  
+Discount trends provide insight into how retailers managed price pressure through this adjustment period.
+
++ Early 2022: Discounts fluctuated wildly—from −2% in January to 21% in February—indicating experimental pricing and data entry inconsistencies as CCRS reporting expanded.
+
++ Late 2022: Discounts tightened to near zero, reflecting confident retail margins and strong demand.
+
++ 2023: Average markdowns hovered between 1–6%, suggesting more strategic, seasonal discounting rather than widespread price compression.
+
+This steadier pricing approach aligns with the maturing competitive environment—where differentiation is increasingly driven by product category mix and brand identity rather than blunt price cuts.
+
+<br>  
+
+**Summary Table – Monthly CCRS Data**
+```{r}
+
+monthly_data %>%
+mutate(
+total_revenue = dollar(total_revenue),
+avg_discount_pct = percent(avg_discount_pct / 100, accuracy = 0.1)
+) %>%
+kable(
+caption = "Monthly Summary of CCRS Sales – Dec 2021 to Dec 2023",
+col.names = c("Month", "Licensees", "Revenue", "Avg. Discount %")
+) %>%
+kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+
+```
+<br>
+**Revenue Dynamics Summary Table**  
+At the quarterly level, total retail sales moved through three distinct cycles:
+
+| Quarter | Total Revenue | Avg. Discount % | Phase                     |
+| :------ | ------------: | --------------: | :------------------------ |
+| Q1 2022 |        $11.9M |            8.3% | Market onboarding         |
+| Q3 2022 |        $20.9M |            2.3% | Expansion & normalization |
+| Q4 2022 |        $42.7M |           −0.6% | Peak retail activity      |
+| Q1 2023 |        $13.9M |            0.7% | Correction                |
+| Q3 2023 |        $18.4M |            2.5% | Recovery                  |
+| Q4 2023 |        $19.1M |            5.4% | Holiday resurgence        |
+<br>
+**Year-over-Year Context**  
+When compared to the prior year:
++ April 2023 saw revenue up 247% YoY — a direct reflection of improved compliance reporting and seasonal 4/20 demand.
+
++ Mid-2023 months held relatively stable YoY growth between +80% and +125%, while
+
++ Late 2023 (September–December) showed lower YoY figures, between −35% and −65%, signaling a normalization effect after the reporting surge of late 2022.

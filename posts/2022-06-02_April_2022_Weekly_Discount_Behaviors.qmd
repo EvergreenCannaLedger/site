@@ -1,0 +1,163 @@
+---
+title: "What Marijuana Retailers Did for 4/20: Discounting Behavior in April 2022"
+date: 06-02-2022
+categories: [Cannabis, CCRS, Weekly, Discount, Sales, Holiday]
+#image: ../assets/images/ccrs_dashboard.png
+format: html
+toc: true
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+Despite popular belief that deep discounts drive 4/20 success, the data suggest a more nuanced picture. Washington’s strongest performers in April 2022 leveraged loyalty, brand equity, and consistent pricing strategies as much as they relied on markdowns.  As the state’s cannabis market matures, future 4/20 seasons may hinge more on timing, product mix, and customer segmentation than sheer discount depth.  
+
+The below CCRS dataset is not large nor comes with much depth, however, we were able to gain business insights in this analysis mostly from the few licences that did correctly input their information into the CCRS report.  
+
+Retailer Discounting Activity Around 4/20 (April 2022)
+```{r setup, include=FALSE}
+# Set global chunk options
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, error = FALSE)
+
+# Load required packages
+library(DBI)
+library(duckdb)
+library(tidyverse)
+library(plotly)
+
+# Load DB connection
+source("../R_scripts/connect_duckdb_readonly.R")
+
+duckdb::duckdb_list_arrow(con)
+
+dbListTables(con)
+
+
+discounts_weekly <- dbGetQuery(con, "
+WITH base AS (
+SELECT
+sh.LicenseeId,
+li.DBA AS BusinessName,
+DATE_TRUNC('week', CAST(sh.SaleDate AS DATE)) AS WeekStart,
+CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+CAST(sd.Discount AS DOUBLE) AS Discount,
+CAST(sd.Quantity AS DOUBLE) AS Quantity
+FROM SalesDetail_all sd
+JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+LEFT JOIN Licensee_all li ON li.LicenseeId = sh.LicenseeId
+WHERE DATE(sh.SaleDate) BETWEEN '2022-04-01' AND '2022-04-30'
+AND CAST(sd.UnitPrice AS DOUBLE) < 200
+)
+SELECT
+BusinessName,
+WeekStart,
+ROUND(SUM(Discount) / NULLIF(SUM(UnitPrice * Quantity), 0) * 100, 2) AS discount_pct,
+ROUND(SUM(UnitPrice * Quantity), 2) AS total_revenue
+FROM base
+GROUP BY BusinessName, WeekStart
+HAVING total_revenue > 0
+ORDER BY BusinessName, WeekStart
+")
+
+```
+
+Weekly Discount % and Revenue Around 4/20
+```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+
+top_businesses <- discounts_weekly %>%
+group_by(BusinessName) %>%
+summarise(total_rev = sum(total_revenue)) %>%
+top_n(6, total_rev) %>%
+pull(BusinessName)
+
+filtered <- discounts_weekly %>%
+filter(BusinessName %in% top_businesses)
+
+plot_ly(filtered,
+x = ~WeekStart,
+y = ~total_revenue,
+color = ~BusinessName,
+type = 'scatter',
+mode = 'lines+markers') %>%
+plotly::layout(
+title = "Weekly Revenue Around 4/20 (April 2022)",
+xaxis = list(title = "Week"),
+yaxis = list(title = "Total Revenue")
+)
+
+
+```
+Figure 1. Weekly revenue trends for top six retailers
+(plotly interactive line chart)
+
+This figure illustrates how total weekly revenue evolved through April 2022. “Suspended Brands” spiked sharply the week of 4/18 — likely driven by bulk holiday promotions or large-scale wholesale transfers — whereas “Lucid” and “Green Lady Lacey” show smooth, high-discount consistency across all four April weeks.
+
+
+Discount % by Week – Same Businesses
+```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+
+plot_ly(filtered,
+x = ~WeekStart,
+y = ~discount_pct,
+color = ~BusinessName,
+type = 'scatter',
+mode = 'lines+markers') %>%
+plotly::layout(
+title = "Weekly Discount % Around 4/20 (April 2022)",
+xaxis = list(title = "Week"),
+yaxis = list(title = "Discount %")
+)
+
+```
+Figure 2. Discount % vs. Revenue among top retailers
+A scatter plot comparing total April revenue against mean weekly discount percentage reveals that moderate discounting (10–30%) was most effective in maintaining revenue levels. The highest earners did not necessarily discount most deeply — suggesting that strategic brand positioning, not just markdowns, influenced 4/20 outcomes.
+
+
+Table: Discount & Revenue by Week (Top Retailers)
+```{r, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+
+library(kableExtra)
+
+filtered %>%
+arrange(BusinessName, WeekStart) %>%
+mutate(
+discount_pct = scales::percent(discount_pct / 100, accuracy = 0.1),
+total_revenue = scales::dollar(total_revenue)
+) %>%
+kable(caption = "Weekly Discount % and Revenue by Retailer (April 2022)") %>%
+kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+
+```
+
+
+
+Explanation of What This Does:
+
+| Component                      | Purpose                                                              |
+| ------------------------------ | -------------------------------------------------------------------- |
+| `SaleDate`                     | Groups sales by week (i.e. 4/4, 4/11, 4/18, 4/25)                    |
+| `discount_pct`                 | Weekly discount percent: `SUM(Discount) / SUM(UnitPrice * Quantity)` |
+| `total_revenue`                | Weekly revenue per business                                          |
+| `top_businesses`               | Focuses plots on top 6 businesses by revenue                         |
+| `lineplots`                    | Generates interactive line charts for both revenue and discounting   |
+| `table`                        | Nicely formatted summary table for reference or export               |
+
+
+
+
+
+During April 2022, Washington’s cannabis retailers entered one of the most competitive 4/20 seasons since the state’s market began tracking sales. To understand how the major players approached the holiday, we analyzed DuckDB CCRS data for April 1–30, 2022, covering weekly sales, average discounts, and total revenue by licensee.
+
+Across the dataset, 14 distinct retail licensees reported transactions in April 2022. Six stood out for both sales volume and activity surrounding the 4/20 weekend:
+
+Suspended Brands led by a wide margin with more than $4.0 million in sales during the week of April 18.
+
+Landrace followed with over $1.4 million in weekly revenue and little to no discounting — indicating strong brand pricing power.
+
+Green Lady Lacey and Lucid both showed steady discount programs of 28–30% across April, suggesting consistent promotional strategies rather than one-time 4/20 blowouts.
+
+Origins maintained moderate discounting (6–17%) but achieved over $500 K per week, indicating a high-volume, moderate-discount approach.
+
+Pink Grassland LLC held prices firm (0% discounting) while sustaining smaller but steady weekly sales around $100–140 K.
+
+Overall, discount intensity varied widely: most retailers offering >25% discounts tended to preserve or slightly increase revenue through the holiday, while zero-discount retailers showed stable but flat weekly performance.

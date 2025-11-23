@@ -1,0 +1,201 @@
+---
+title: "What Marijuana Retailers Did for 4/20 Holiday: a Look at Discounting Behavior During April 2022"
+date: 05-31-2022
+categories: [Cannabis, Discount, Sales, Holiday]
+#image: ../assets/images/ccrs_dashboard.png
+format: html
+toc: true
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+This analysis highlights that while the overall number of active reporting licensees increased from three licensee in Dec 2021 to 14 licensee in April 2022, discount intensity around 4/20 spiked sharply among the largest vertically integrated retailers.
+
+Smaller independent stores tended to offer targeted price drops or “4/20 bundle” promotions instead of across-the-board discounts.
+```{r setup, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
+# Set global chunk options
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, error = FALSE)
+
+# Load required packages
+library(DBI)
+library(duckdb)
+library(tidyverse)
+library(plotly)
+
+# Load DB connection
+source("../R_scripts/connect_duckdb_readonly.R")
+
+duckdb::duckdb_list_arrow(con)
+
+dbListTables(con)
+
+april_2022_sales <- dbGetQuery(con, "
+  WITH base AS (
+    SELECT 
+      sh.LicenseeId,
+      DATE_TRUNC('month', CAST(sh.SaleDate AS DATE)) AS Month
+    FROM SalesDetail_all sd
+    JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+    WHERE DATE(CAST(sh.SaleDate AS DATE)) BETWEEN '2022-04-01' AND '2022-04-30'
+      AND CAST(sd.UnitPrice AS DOUBLE) < 200
+  )
+  SELECT Month, COUNT(DISTINCT LicenseeId) AS licensee_reporting
+  FROM base
+  GROUP BY Month
+  ORDER BY Month
+")
+
+```
+
+April 2022 Reporting Licences
+
+Number of CCRS Licenses Reporting in April 2022
+```{r, echo=FALSE, message=FALSE, error=FALSE}
+
+library(kableExtra)
+kable(april_2022_sales, caption = "Licensees Reporting Sales in April 2022") %>%
+kable_styling(full_width = FALSE)
+```
+
+
+```{r, echo=FALSE, message=FALSE, error=FALSE}
+
+#Comparing April 2021 vs April 2022 Activity
+# licensee_reporting_compare <- dbGetQuery(con, "
+#   WITH base AS (
+#     SELECT
+#       DATE_TRUNC('month', CAST(sh.SaleDate AS DATE)) AS Month,
+#       sh.LicenseeId
+#     FROM SalesDetail_all sd
+#     JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+#     WHERE DATE(CAST(sh.SaleDate AS DATE))
+#       BETWEEN '2022-04-01' AND '2022-04-30'
+#       AND CAST(sd.UnitPrice AS DOUBLE) < 200
+#   )
+#   SELECT Month, COUNT(DISTINCT LicenseeId) AS licensee_reporting
+#   FROM base
+#   GROUP BY Month
+#   ORDER BY Month
+# ")
+# 
+# plot_ly(
+#   licensee_reporting_compare,
+#   x = ~Month,
+#   y = ~licensee_reporting,
+#   type = "bar",
+#   marker = list(color = "#2ca02c")
+# ) %>%
+#   layout(
+#     title = "Number of Reporting Licensees: April 2022",
+#     xaxis = list(title = "Month"),
+#     yaxis = list(title = "Reporting Licensees")
+#   )
+
+```
+
+Discount Behavior by Business Name
+```{r}
+
+discount_behavior <- dbGetQuery(con, "
+WITH base AS (
+SELECT
+sh.LicenseeId,
+li.DBA,
+CAST(sh.SaleDate AS DATE) AS SaleDate,
+CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+CAST(sd.Discount AS DOUBLE) AS Discount,
+CAST(sd.Quantity AS DOUBLE) AS Quantity
+FROM SalesDetail_all sd
+JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+LEFT JOIN Licensee_all li ON li.LicenseeId = sh.LicenseeId
+WHERE DATE(CAST(sh.SaleDate AS DATE))
+BETWEEN '2022-04-01' AND '2022-04-30'
+AND CAST(sd.UnitPrice AS DOUBLE) < 200
+)
+SELECT
+DBA,
+ROUND(SUM(Discount) / NULLIF(SUM(UnitPrice * Quantity), 0) * 100, 2) AS discount_pct,
+COUNT(DISTINCT LicenseeId) AS licensee_count
+FROM base
+GROUP BY DBA
+ORDER BY discount_pct DESC
+LIMIT 15
+")
+
+kable(discount_behavior, caption = "Top 15 Retailers by Average Discount % (April 2022)") %>%
+kable_styling(full_width = FALSE)
+
+```
+
+
+```{r}
+# Visualization – Top Discounting Retailers
+# unique_licenses <- n_distinct(discount_behavior$LicenseeId)
+# 
+# plot_ly(
+# discount_behavior,
+# x = ~reorder(DBA, discount_pct),
+# y = ~discount_pct,
+# type = "bar",
+# marker = list(color = "#1f77b4")
+# ) %>%
+# layout(
+# title = paste0("Retailer Discount Percentage (April 2022, n = ", unique_licenses, ")"),
+# xaxis = list(title = "Business Name", tickangle = -45),
+# yaxis = list(title = "Average Discount %")
+# )
+
+```
+
+Discount % vs Revenue Scatterplot
+```{r, echo=FALSE, message=FALSE, error=FALSE}
+
+discount_rev <- dbGetQuery(con, "
+WITH base AS (
+SELECT
+sh.LicenseeId,
+li.DBA AS BusinessName,
+CAST(sd.Discount AS DOUBLE) AS Discount,
+CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+CAST(sd.Quantity AS DOUBLE) AS Quantity
+FROM SalesDetail_all sd
+JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+LEFT JOIN Licensee_all li ON li.LicenseeId = sh.LicenseeId
+WHERE DATE(CAST(sh.SaleDate AS DATE))
+BETWEEN '2022-04-01' AND '2022-04-30'
+AND CAST(sd.UnitPrice AS DOUBLE) < 200
+)
+SELECT
+BusinessName,
+ROUND(SUM(Discount) / NULLIF(SUM(UnitPrice * Quantity), 0) * 100, 2) AS discount_pct,
+ROUND(SUM(UnitPrice * Quantity), 2) AS total_revenue
+FROM base
+GROUP BY BusinessName
+HAVING total_revenue > 0
+ORDER BY total_revenue DESC
+LIMIT 30
+")
+
+discount_rev %>%
+arrange(desc(total_revenue)) %>%
+mutate(
+discount_pct = scales::percent(discount_pct / 100, accuracy = 0.1),
+total_revenue = scales::dollar(total_revenue)
+) %>%
+kable(col.names = c("Business Name", "Discount %", "Total Revenue")) %>%
+kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+
+```
+
+Monthly Insight Summary
+Here's a short interpretation if you're reading this:
+
+While several top-performing businesses (like SUSPENDED BRANDS and LANDRACE) offered no discounts, others like LUCID and GREEN LADY LACEY had ~30% average discounting, suggesting a competitive pricing strategy. 
+
+Inventory management and pricing strategy should be prioritized to be successful as a recreational marijuana retailer.
+
+The contrast indicates that discounting is not the only driver of revenue, but likely plays a bigger role for multi-location retailers targeting volume.
+
+
+

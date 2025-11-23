@@ -1,7 +1,7 @@
 ---
 title: "The Five Ws of WSLCB's CCRS Traceability Report"
 date: 02-01-2022
-categories: [Cannabis, Data, CCRS, WSLCB]
+categories: [CCRS, Cannabis, Holiday]
 #image: ../assets/images/ccrs_dashboard.png
 format: html
 editor: 

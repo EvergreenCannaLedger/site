@@ -1,0 +1,226 @@
+---
+title: "Washington’s 4/20 Evolution: From Niche Retailers to $128 Million Month — April 2025 Sets a New Benchmark"
+subtitle: "Four Years April Cannabis Summary: 2022–2025"
+date: "2025-05-01"
+categories: [Cannabis, Discount, Revenue, Holiday, 4Years]
+format: html
+toc: true
+editor:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, error = FALSE)
+
+library(DBI)
+library(duckdb)
+library(tidyverse)
+library(plotly)
+library(lubridate)
+library(scales)
+library(kableExtra)
+
+# Connect to DuckDB
+source("../R_scripts/connect_duckdb_readonly.R")
+
+april_monthly <- dbGetQuery(con, "
+WITH base AS (
+SELECT
+sh.LicenseeId,
+DATE_TRUNC('month', CAST(sh.SaleDate AS DATE)) AS Month,
+CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+CAST(sd.Quantity AS DOUBLE) AS Quantity,
+CAST(sd.Discount AS DOUBLE) AS Discount
+FROM SalesDetail_all sd
+JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+WHERE strftime(CAST(sh.SaleDate AS DATE), '%Y-%m') IN
+('2022-04', '2023-04', '2024-04', '2025-04')
+AND CAST(sd.UnitPrice AS DOUBLE) < 200
+)
+SELECT
+strftime(Month, '%Y-%m') AS YearMonth,
+COUNT(DISTINCT LicenseeId) AS licensee_reporting,
+ROUND(SUM(UnitPrice * Quantity), 2) AS total_revenue,
+ROUND(SUM(Discount) / NULLIF(SUM(UnitPrice * Quantity), 0) * 100, 2) AS avg_discount_pct
+FROM base
+GROUP BY YearMonth
+ORDER BY YearMonth
+")
+```
+**The Bottom Line Up Front**  
+From $1.5 M in 2022 to $127.9 M in 2025, April’s cannabis revenue surge reflects not just consumer enthusiasm, but the structural maturity of Washington’s legal cannabis market.
+What began as a handful of retailers reporting sales during the 4/20 holiday is now a comprehensive economic snapshot of a fully functioning, highly competitive industry.
+
+As CCRS participation and analytical visibility continue improving, April 2025 may be remembered as the moment Washington’s cannabis data went from fragmented experiment to economic benchmark.
+
+
+**Market Interpretation**
+What does this mean for the broader cannabis economy?
+
+**Scale & Data Coverage:**  
+The 2025 data mark the first true baseline year for statewide analytics — virtually the entire legal market is now visible through CCRS.
+
+**Price Compression:**  
+The jump in discounting percentages indicates growing competition and narrower margins, typical of a stabilizing retail sector.
+
+**Predictable Seasonality:**  
+The 4/20 period has become a reliable economic indicator, offering early insight into annual sales trajectories, similar to how December holiday spending predicts retail performance in other industries.
+
+**Policy & Planning:**  
+For regulators and industry groups, the rapid increase in reporting licensees underscores the success of data transparency mandates and POS integration efforts over the past two years.
+
+
+
+**Overview**  
+Every April, Washington’s cannabis retailers brace for the industry’s biggest day — 4/20, the unofficial consumer holiday celebrating cannabis culture.  From 2022 through 2025, the state’s CCRS sales data paint a vivid picture of how far the market has come: from a small cluster of early-reporting licensees to a full-scale, competitive retail ecosystem generating nine-figure monthly revenues.
+
+
+**Monthly Comparison Table**  
+
+**Total Revenue by April**
+
+| Year | Licensees Reporting | Total Revenue | Avg. Discount % |
+| :--- | ------------------: | ------------: | --------------: |
+| 2022-04 |                  14 |        $1.5 M |           9.7 % |
+| 2023-04 |                  16 |        $5.2 M |           0.5 % |
+| 2024-04 |                  62 |        $8.5 M |           5.1 % |
+| 2025-04 |           **1,045** |  **$127.9 M** |      **12.4 %** |
+
+<br>
+
+In just three years, April sales expanded over 80-fold, a reflection of:
+
++ The growing number of CCRS-compliant retailers,
+
++ Improved reporting automation across point-of-sale systems, and
+
++ Increased consumer participation around the 4/20 promotional period.
+
+While 2022–2023 were still in the data-onboarding phase, 2024 and especially 2025 mark the first truly complete statewide picture of 4/20 performance.
+
+```{r}
+ 
+april_weekly <- dbGetQuery(con, "
+WITH base AS (
+SELECT
+sh.LicenseeId,
+li.DBA AS BusinessName,
+strftime(CAST(sh.SaleDate AS DATE), '%Y-%m') AS YearMonth,
+DATE_TRUNC('week', CAST(sh.SaleDate AS DATE)) AS WeekStart,
+CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+CAST(sd.Quantity AS DOUBLE) AS Quantity,
+CAST(sd.Discount AS DOUBLE) AS Discount
+FROM SalesDetail_all sd
+JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+LEFT JOIN Licensee_all li ON li.LicenseeId = sh.LicenseeId
+WHERE strftime(CAST(sh.SaleDate AS DATE), '%Y-%m') IN
+('2022-04', '2023-04', '2024-04', '2025-04')
+AND CAST(sd.UnitPrice AS DOUBLE) < 200
+)
+SELECT
+YearMonth,
+WeekStart,
+COUNT(DISTINCT LicenseeId) AS licensee_reporting,
+ROUND(SUM(UnitPrice * Quantity), 2) AS total_revenue,
+ROUND(SUM(Discount) / NULLIF(SUM(UnitPrice * Quantity), 0) * 100, 2) AS avg_discount_pct
+FROM base
+GROUP BY YearMonth, WeekStart
+ORDER BY YearMonth, WeekStart
+")
+
+```
+<br>
+**Weekly Summaries within Each April**
+
+**Weekly Plot: Revenue per Week (Aprils Only)**
+```{r}
+
+plot_ly(
+april_weekly,
+x = ~WeekStart,
+y = ~total_revenue,
+color = ~YearMonth,
+type = "scatter",
+mode = "lines+markers"
+) %>%
+layout(
+title = "Weekly Revenue Trends for April (2022–2025)",
+xaxis = list(title = "Week"),
+yaxis = list(title = "Total Revenue (USD)")
+)
+
+```
+
+**Weekly Plot: Discount % per Week**
+```{r}
+
+plot_ly(
+april_weekly,
+x = ~WeekStart,
+y = ~avg_discount_pct,
+color = ~YearMonth,
+type = "scatter",
+mode = "lines+markers"
+) %>%
+layout(
+title = "Weekly Discount % for April (2022–2025)",
+xaxis = list(title = "Week"),
+yaxis = list(title = "Average Discount %")
+)
+
+```
+<br>  
+
+**The Weekly Story Behind 4/20**
+
+| Year |          Peak Week | Revenue (USD) | Avg. Discount % |
+| :--- | -----------------: | ------------: | --------------: |
+| 2022 |        Apr 18 – 24 |       $5.47 M |           5.1 % |
+| 2023 |        Apr 17 – 23 |       $12.4 M |           1.3 % |
+| 2024 |        Apr 15 – 21 |       $19.6 M |           6.2 % |
+| 2025 | **Mar 31 – Apr 6** |    **$310 M** |      **20.8 %** |
+
+<br>
+
+Each year, Washington’s 4/20 sales activity has shifted slightly earlier in April — a by-product of longer promotional calendars and pre-holiday discounting.
+
++ In 2022, the 4/20 surge was modest but clear: a 5 M-plus week among fewer than 10 retailers.
+
++ By 2023, that surge doubled to more than 12 M in sales, still among just 15 licensees.
+
++ 2024 expanded both participation (≈40 retailers) and total April sales, setting the stage for scale.
+
++ And in 2025, Washington reached a new era: over 800 active retail reporters generated $310 M during the first week of April alone, followed by a sustained monthlong sales wave above $100 M.
+
+<br>
+**Discounting Behavior Around 4/20**  
+Discounting has become the key competitive lever during April.
+In 2022–2023, most retailers kept discounts conservative (5–10 %), targeting margin stability.
+By 2025, however, discounts averaged 12 % across April, peaking near 21 % in the first week, as retailers fought to capture early-season shoppers.
+
+The trend suggests a more mature price war dynamic:
+
+Larger operators leveraging volume promotions,
+
+Smaller boutiques differentiating through niche products rather than deep discounts, and
+
+Statewide consumer sensitivity to holiday deals rivaling mainstream retail events like Black Friday.
+
+<br>
+**Weekly Summary**  
+```{r}
+
+april_weekly %>%
+mutate(
+avg_discount_pct = percent(avg_discount_pct / 100, accuracy = 0.1),
+total_revenue = dollar(total_revenue)
+) %>%
+arrange(YearMonth, WeekStart) %>%
+kable(
+caption = "Weekly Summary for April 2022–2025",
+col.names = c("Month", "Week", "Licensees", "Total Revenue", "Avg. Discount %")
+) %>%
+kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+
+```

@@ -1,0 +1,174 @@
+---
+title: "Washington Retail Momentum — Licensee Reporting and Discounting (Dec 2021 - Dec 2022)"
+subtitle: "How Cannabis Sales and Discounting Evolved in 2022"
+date: 02-01-2023
+categories: [CCRS, Cannabis, Monthly, Discount]
+#image: ../assets/images/ccrs_dashboard.png
+format: html
+toc: true
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+<br> 
+**Interpretive Summary**
+
+The 2022 trajectory underscores a maturing Washington cannabis retail ecosystem. Rather than relying on steep price competition, most retailers achieved growth through steady CCRS entry and reporting, consistent pricing, and expanding consumer access.
+
+This period marked the state’s first stable data baseline for comparing retail performance trends — setting the stage for 2023’s focus on category-specific and regional dynamics.
+<br> 
+
+<br>
+**Quarterly Observations**
+
+Q1 2022: Erratic pricing behavior — February’s 21% average discount spike likely reflected early inventory clearing by smaller operators.
+
+Q2 2022: Stabilization around 5–10% discounts, with moderate sales momentum and 14–18 active licensees.
+
+Q3 2022: Expansion phase — participation exceeded 20 licensees for the first time, paired with steady discount compression to below 3%.
+
+Q4 2022: Strongest revenue quarter of the year, led by November–December growth exceeding $13M monthly. Discount averages returned near zero, signaling high consumer demand despite minimal markdowns.
+<br>
+
+```{r setup, include=FALSE}
+
+# Set global chunk options
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, error = FALSE)
+
+# Load required packages
+library(DBI)
+library(duckdb)
+library(tidyverse)
+library(plotly)
+library(kableExtra)
+
+# Load DB connection
+source("../R_scripts/connect_duckdb_readonly.R")
+
+```
+
+```{r, echo = TRUE}
+#Query Monthly Sales, Discount, and Licensee Count
+
+monthly_sales <- dbGetQuery(con, "
+WITH base AS (
+SELECT
+sh.LicenseeId,
+DATE_TRUNC('month', CAST(sh.SaleDate AS DATE)) AS Month,
+CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+CAST(sd.Quantity AS DOUBLE) AS Quantity,
+CAST(sd.Discount AS DOUBLE) AS Discount
+FROM SalesDetail_all sd
+JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+WHERE DATE(sh.SaleDate) BETWEEN '2021-12-01' AND '2022-12-31'
+AND CAST(sd.UnitPrice AS DOUBLE) < 200
+)
+SELECT
+Month,
+COUNT(DISTINCT LicenseeId) AS licensee_reporting,
+ROUND(SUM(UnitPrice * Quantity), 2) AS total_revenue,
+ROUND(SUM(Discount) / NULLIF(SUM(UnitPrice * Quantity), 0) * 100, 2) AS avg_discount_pct
+FROM base
+GROUP BY Month
+ORDER BY Month
+")
+```
+
+**Licensees Reporting by Month**
+```{r}
+
+plot_ly(
+monthly_sales,
+x = ~Month,
+y = ~licensee_reporting,
+type = "bar",
+marker = list(color = "#2ca02c")
+) %>%
+layout(
+title = "Number of Reporting Licensees (Dec 2021 - Dec 2022)",
+xaxis = list(title = "Month"),
+yaxis = list(title = "Licensees Reporting")
+)
+
+```
+Figure 1. Monthly Licensee Reporting (Dec 2021–Dec 2022)
+A simple line plot of licensee reporting count vs. Month shows exponential growth through 2022, peaking at 51 active retailers by year-end.
+ 
+<br> 
+
+**Total Monthly Revenue**
+<br> 
+```{r}
+
+plot_ly(
+monthly_sales,
+x = ~Month,
+y = ~total_revenue,
+type = "scatter",
+mode = "lines+markers",
+line = list(color = "#1f77b4")
+) %>%
+layout(
+title = "Total Revenue by Month (Dec 2021 - Dec 2022)",
+xaxis = list(title = "Month"),
+yaxis = list(title = "Revenue (USD)")
+)
+
+```
+Figure 2. Total Revenue and Average Discount Percent
+An overlay plot illustrates the inverse relationship between price discounting and sales growth: as discounts narrowed, total revenue rose steadily — suggesting that broad market participation, not aggressive markdowns, was driving sales expansion.
+```{r}
+
+```
+
+**Average Discount % by Month**
+```{r}
+plot_ly(
+monthly_sales,
+x = ~Month,
+y = ~avg_discount_pct,
+type = "scatter",
+mode = "lines+markers",
+line = list(color = "#d62728")
+) %>%
+layout(
+title = "Average Discount % by Month (Dec 2021 - Dec 2022)",
+xaxis = list(title = "Month"),
+yaxis = list(title = "Discount %")
+)
+
+```
+Figure 3. Total Average Discount Percent by Month
+An overlay plot illustrates the average discount percent on a monthly basis. As discounts narrowed, total revenue rose steadily — suggesting that markdowns may correlate to THC levels in products or shrewd inventory management during the calendar year. Peak discount rates were found in February and April 2022, then rates trended downward with lowest levels reached in November 2022.  
+
+**Summary Table**
+```{r}
+
+monthly_sales %>%
+arrange(Month) %>%
+mutate(
+avg_discount_pct = scales::percent(avg_discount_pct / 100, accuracy = 0.1),
+total_revenue = scales::dollar(total_revenue)
+) %>%
+kable(caption = "Monthly CCRS Sales Metrics (Dec 2021 - Dec 2022)") %>%
+kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+
+```
+<br>
+
+**Summary Narrative**
+
+As Washington’s cannabis market transitioned into 2022, retail reporting and sales volume began to show clear signs of post-pandemic normalization. Using CCRS licensee data aggregated through DuckDB, The Evergreen Canna Ledger tracked monthly sales, total revenue, and average discount levels from December 2021 through December 2022.
+
+At the start of the period — December 2021 — only 8 licensees actively reported sales, generating roughly $2.7 million in total revenue. By December 2022, that number had grown to 51 active licensees and $16.6 million in total monthly revenue — a sixfold increase in participation and over a fivefold increase in sales.
+
+This rapid growth highlights two key dynamics:
+
+Market Expansion:
+Throughout the first half of 2022, the number of reporting licensees grew from 8 to 18 by May, mirroring the state’s ongoing onboarding of retailers submitting CCRS data consistently. Revenue followed the same trajectory, climbing from $1.5 million in April to over $6.5 million by July.
+
+Discount Normalization:
+After early volatility — with average discounts swinging between -2% and 21% in the first quarter — retailers converged toward modest markdowns of 0–3% by the end of 2022. This stabilization indicates that price corrections and promotional strategies were maturing as competition intensified.
+
+<br>

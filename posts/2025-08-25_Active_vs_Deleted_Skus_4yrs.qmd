@@ -1,0 +1,274 @@
+---
+title: "Deleted vs. Active SKUs Among Licensees For Use in Branding and Product Lifecycle Analyses  (2021–2025)"
+subtitle: "How SKU Lifecycles Reveal Brand Discipline in Washington’s Cannabis Market"
+date: "2025-08-25"
+categories: [CCRS, Cannabis, Product, Lifecycle]
+format: html
+fig-width: 8
+fig-height: 10
+toc: true
+editor:
+  markdown:
+    wrap: 72
+---
+
+**The Bottom Line Up Front**  
+The Washington cannabis marketplace is evolving from growth through addition to refinement through deletion. Where once success meant more SKUs, now it’s about fewer, better, longer-lived products.
+
+In that sense, SKU churn is not failure — it’s constructive feedback. It reflects a maturing ecosystem learning to balance innovation with brand identity.
+
+## For Branding 
++ Do brands with high SKU churn have stronger or weaker naming consistency?
+
++ Are some licensees experimenting more (lots of deleted SKUs)?
+
+## For Lifecycle  
++ Track SKU survivorship: what % of SKUs survive X months?
+
++ Flag licensees with unusually high SKU mortality rates.
+
+## Business Acumen Challenge  
+**Q1:** Do brands with high SKU churn have weaker naming consistency?  
+**Q2:** Are some licensees experimenting more (lots of deleted SKUs)?  
+**Q3:** Track SKU survivorship — % of SKUs surviving X months.  
+**Q4:** Flag licensees with high SKU mortality (high deletion %).
+
+```{r, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+# Load libraries
+library(tidyverse)
+library(DBI)
+library(stringr)
+library(ggplot2)
+library(kableExtra)
+library(dplyr)
+library(tidyr)
+library(plotly)
+
+source("../R_scripts/connect_duckdb_readonly.R")
+
+# Exclude labs or non-retail licensees
+
+# Add exclusion list based on known labs / testing facilities
+lab_keywords <- c("lab", "labs", "analytics", "testing")
+
+# Add branding flag
+product_info <- dbGetQuery(con, "
+  SELECT DISTINCT LicenseeId, ProductId, InventoryType, Name AS ProductName, Description
+  FROM Product_clean
+  WHERE IsDeleted IS NULL OR UPPER(IsDeleted) != 'TRUE'
+")
+
+# 1. Pull product-level data with deletion status
+product_lifecycle <- dbGetQuery(con, "
+  SELECT DISTINCT LicenseeId, ProductId, CreatedDate, IsDeleted
+  FROM Product_clean
+  WHERE LicenseeId IS NOT NULL
+") %>%
+  mutate(
+    LifecycleStatus = case_when(
+      toupper(as.character(IsDeleted)) == "TRUE" ~ "Deleted",
+      TRUE ~ "Active"
+    ),
+    CreatedDate = as.Date(CreatedDate)
+  )
+
+# 2. Load licensee metadata and de-duplicate
+licensee_metadata <- dbGetQuery(con, "
+  SELECT DISTINCT LicenseeId, DBA, Name, County
+  FROM Licensee_all
+")
+
+# 3. Filter out lab testing companies
+licensee_metadata <- licensee_metadata %>%
+  filter(!str_detect(tolower(DBA), "lab|testing|analytics"))
+
+```
+**Building the Lifecycle Dataset**  
+To understand SKU health, three key tables were joined and aggregated:
+
+| Dataset             | Purpose                                 |       Rows |
+| :------------------ | :-------------------------------------- | ---------: |
+| `product_info`      | Product-level inventory, name, and type | 16,460,559 |
+| `product_lifecycle` | Product creation and deletion events    |  7,450,688 |
+| `licensee_metadata` | Business and location attributes        |      1,884 |
+
+These were used to create the Licensee Lifecycle_Stats Table — summarizing active and deleted SKUs per licensee — and the SKU Survivorship Table, which calculated the percentage of SKUs surviving six months.
+```{r}
+
+# 4. Aggregate lifecycle status per licensee
+licensee_lifecycle_stats <- product_lifecycle %>%
+  group_by(LicenseeId, LifecycleStatus) %>%
+  summarise(SKU_Count = n(), .groups = "drop") %>%
+  pivot_wider(
+    names_from = LifecycleStatus,
+    values_from = SKU_Count,
+    values_fill = 0
+  ) %>%
+  mutate(
+    Total_SKUs = Active + Deleted,
+    Pct_Deleted = round(100 * Deleted / Total_SKUs, 2)
+  )
+
+# Join with metadata
+licensee_brand_lifecycle <- licensee_lifecycle_stats %>%
+  left_join(licensee_metadata %>% distinct(LicenseeId, .keep_all = TRUE), by = "LicenseeId")
+
+
+```
+
+```{r}
+
+
+product_info <- product_info %>%
+  left_join(licensee_metadata %>% select(LicenseeId, DBA), by = "LicenseeId", relationship = "many-to-many") %>%
+  mutate(
+    self_branded = str_detect(tolower(ProductName), tolower(DBA)) |
+                   str_detect(tolower(Description), tolower(DBA))
+  )
+
+product_with_lifecycle <- product_info %>%
+  left_join(product_lifecycle %>% select(ProductId, LifecycleStatus), by = "ProductId", relationship = "many-to-many")
+
+branding_vs_lifecycle <- product_with_lifecycle %>%
+  group_by(LicenseeId, LifecycleStatus) %>%
+  summarise(
+    SKUs = n(),
+    Branded = sum(self_branded, na.rm = TRUE),
+    PctBranded = round(100 * Branded / SKUs, 1),
+    .groups = "drop"
+  ) %>%
+  left_join(licensee_metadata, by = "LicenseeId", relationship = "many-to-many")
+
+```
+```{r}
+today <- "2025-08-31" #Sys.Date()
+
+sku_survivorship <- product_lifecycle %>%
+  mutate(
+    AgeMonths = as.numeric(difftime(today, CreatedDate, units = "days")) / 30,
+    Survived6mo = AgeMonths >= 6 & LifecycleStatus == "Active"
+  ) %>%
+  group_by(LicenseeId) %>%
+  summarise(
+    Total = n(),
+    Survived6mo = sum(Survived6mo, na.rm = TRUE),
+    PctSurvived6mo = round(100 * Survived6mo / Total, 1),
+    .groups = "drop"
+  ) %>%
+  left_join(licensee_metadata, by = "LicenseeId")
+
+```
+**Defining Active vs. Deleted SKUs**  
+Each product in CCRS is tracked from creation through possible deletion.
+We defined:
+
++ Active: Products currently listed and not marked as deleted.
+
++ Deleted: Products removed from the active system (either reformulated, renamed, or discontinued).
+
+Across 1,324 licensees, the median operator maintained between 9,000 and 12,000 active SKUs — with a small share showing measurable deletion activity.
+
+```{r}
+licensee_lifecycle_full <- licensee_brand_lifecycle %>%
+  distinct(LicenseeId, .keep_all = TRUE) %>%
+  left_join(sku_survivorship %>% distinct(LicenseeId, .keep_all = TRUE), by = "LicenseeId") %>%
+  rename(DBA = DBA.x)
+
+licensee_lifecycle_full %>%
+  filter(
+    Total_SKUs > 20,
+    !is.na(Pct_Deleted),
+    Pct_Deleted > 0,
+    Pct_Deleted <= 100,
+    !is.na(DBA)
+  ) %>%
+  slice_max(Pct_Deleted, n = 25) %>%
+  ggplot(aes(x = reorder(DBA, Pct_Deleted), y = Pct_Deleted)) +
+  geom_col(fill = "tomato") +
+  coord_flip() +
+  labs(
+    title = "Percent of Deleted SKUs by Licensee",
+    subtitle = "Top licensees (excluding labs) with highest SKU deletion rates (min. 20 SKUs)",
+    x = "Licensee (DBA)",
+    y = "% Deleted"
+  ) +
+  theme_minimal(base_size = 13)
+```
+## Patterns in SKU Churn
+**Key Findings**
+
+The majority of licensees (≈95%) reported no deleted SKUs — a sign of product stability or static reporting.
+
+A small but meaningful minority (<5%) showed churn rates exceeding 10–25%, suggesting active experimentation or seasonal turnover.
+
+Deletion peaks often correspond with brand reformulations, packaging changes, or strain reclassification events following state compliance updates.
+
+**Top Churn Drivers**
+
+1. **Rebranding:** New product names under the same formulation (e.g., “Cured Resin” → “Live Cured Resin”).
+
+2. **SKU Consolidation:** Streamlining duplicate UPCs or package sizes.
+
+3. **Seasonal SKUs:** Holiday drops, limited runs, and cross-licensee collaborations.
+
+<br>
+**Survivorship and Market Maturity**
+
+| Metric                   |    Median | High Performer                               | Low Performer                |
+| :----------------------- | --------: | :------------------------------------------- | :--------------------------- |
+| **Total SKUs**           |    10,851 | 70,838                                       | <100                         |
+| **% Survived ≥6 months** | **97.5%** | 100% (*Evergreen Market – Renton Highlands*) | 91% (*Small farm licensees*) |
+
+On average, 97% of SKUs survived six months, indicating that most active products remain stable once introduced.
+However, a few licensees — often multi-store operators — maintain rapid turnover, balancing large active portfolios with aggressive SKU pruning.
+
+<br>
+To complement churn, we calculated SKU survivorship — the percentage of SKUs still active ≥6 months post-creation:
+
+**Interpreting Brand Behavior**  
+The blend of Active, Deleted, and Survived SKUs offers a behavioral window into brand strategy:
+Every product tells a story — from creation to deletion.  
+As Washington’s cannabis market enters its second decade, product turnover has become one of the clearest indicators of brand maturity and market experimentation.
+
+| Brand Behavior         | SKU Signature                 | Strategic Implication                                              |
+| :--------------------- | :---------------------------- | :----------------------------------------------------------------- |
+| **Stable Core Brands** | High Active, Low Deleted      | Mature portfolio with consistent labeling and compliance control   |
+| **Experimenters**      | Moderate Active, High Deleted | Testing formulations or packaging (common in mid-sized processors) |
+| **Dormant Licensees**  | Low Active, Few or No Deleted | Limited sales or inactive reporting                                |
+| **High Survivors**     | 100% 6-month retention        | Strong product-market fit, reliable sell-through                   |
+
+<br>
+**Branding Consistency and Churn**  
+By comparing branding detection (via product name/description matching against licensee DBA) with lifecycle data:
+
++ **Self-branded products** remain a small fraction of total SKUs (<5%), echoing prior ECL findings.
+
++ Brands with the highest deletion rates tend to show lower naming consistency — hinting at experimental portfolios or co-packing arrangements.
+
++ Conversely, high-survivorship brands display strong lexical uniformity (stable naming conventions, SKU prefixes, and descriptors).
+
+The conclusion is churned SKUs reveal experimentation and surviving SKUs reflect name identity.
+
+**County-Level Observations**  
+Mapping deleted vs. active SKUs by licensee county showed geographic nuances:
+
++ King and Spokane counties dominate total SKU creation, but deletion rates remain low — emphasizing market stability.
+
++ Smaller counties (e.g., Skagit, Okanogan) exhibit higher proportional churn, driven by boutique processors testing niche products.
+
+This aligns with broader trends: **urban stability, rural experimentation.**
+
+**Why SKU Lifecycle Matters**  
+SKU churn isn’t just noise — it’s a signal.  
+Tracking deletion and survivorship helps identify:
+
++ Emerging innovators (high churn, frequent product refreshes)
+
++ Operationally consistent brands (stable SKUs, long retention)
+
++ Compliance bottlenecks (spikes in deletions following CCRS schema changes)
+
+For regulators and analysts alike, SKU lifecycle metrics offer a **leading indicator** of product-market fitness and business discipline.

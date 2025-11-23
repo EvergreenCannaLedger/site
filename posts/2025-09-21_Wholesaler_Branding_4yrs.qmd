@@ -1,0 +1,341 @@
+---
+title: "Behind the Brands: A Look at Wholesalers in Washington's Cannabis Industry"
+subtitle: "How Washington’s Wholesalers Built a Two-Tier System of Scale and Specialization"
+date: "2025-09-21"
+categories: [CCRS, Cannabis, Wholesale, Product Diversity, 4Years]
+format: html
+fig-width: 8
+fig-height: 5
+toc: true
+editor:
+  markdown:
+    wrap: 72
+---
+
+**The Bottom Line Up Front**  
+Washington’s wholesale cannabis market is becoming a mirror image of its retail tier:  
+
++ Broad distributors resemble supermarkets — moving volume with minimal branding.
++ Small “Other” licensees act like boutique suppliers — innovating at the genetic or formulation level.
+
+Together, they form a dual-engine supply chain — one optimized for efficiency, the other for experimentation.
+The numbers may be quiet, but they reveal a sophisticated balance between scale, specialization, and brand invisibility — the hidden architecture of Washington’s cannabis economy. 
+
+| Trend                            | Interpretation                                                                                                               |
+| :------------------------------- | :--------------------------------------------------------------------------------------------------------------------------- |
+| **Flower Dominates Production**  | Even among non-flower specialists, most distributors maintain flower SKUs for margin stability.                              |
+| **Clones and Seeds Rising**      | Genetic and starter material categories (plants, clones, seeds) are expanding quietly — often outside consumer view.         |
+| **Concentrates Stay High-Value** | Concentrate for Inhalation leads SKU diversity among smaller wholesalers, suggesting sustained product development interest. |
+| **Private Label Pipeline**       | The low self-branding rate points to continued demand for private-label or co-packed products.                               |
+
+The wholesale layer is evolving into a modular supply system — one where cultivators, extractors, and distributors collaborate fluidly, rather than vertically integrate.
+
+
+**Understanding the Dataset**
+We analyzed 1,388 wholesale licensees, combining production, product registration, and branding data through mid-2025.
+
+Key indicators included:
+
++ Total SKUs per licensee
+
++ Distinct product types (InventoryType)
+
++ First and last created dates
+
++ First and last sale dates
+
++ Branding behavior (SelfBranded, PercentSelfBranded, and BrandingCategory)
+
+These variables together reveal whether a wholesaler functions as a **brand owner**, **private-label producer**, or **unbranded raw-material supplier**.
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+# Load libraries
+library(tidyverse)
+library(DBI)
+library(stringr)
+library(ggplot2)
+library(kableExtra)
+
+source("../R_scripts/connect_duckdb_readonly.R")
+
+# product_diversity <- dbGetQuery(con, "
+# SELECT
+#   LicenseeId,
+#   COUNT(DISTINCT ProductId) AS TotalSKUs,
+#   COUNT(DISTINCT InventoryType) AS DistinctTypes,
+#   SUM(CASE 
+#         WHEN InventoryType IN (
+#           'Usable Cannabis',
+#           'Flower Lot',
+#           'Flower Unlotted',
+#           'Wet Flower'
+#         ) THEN 1 ELSE 0 
+#       END) AS FlowerSKUs
+# FROM Product_all
+# WHERE IsDeleted IS NULL OR IsDeleted NOT IN ('true', 'TRUE')
+# GROUP BY LicenseeId
+# ")
+
+# Load product diversity with first/last created and sold dates
+product_diversity <- dbGetQuery(con, "
+SELECT
+  p.LicenseeId,
+  COUNT(DISTINCT p.ProductId) AS TotalSKUs,
+  COUNT(DISTINCT p.InventoryType) AS DistinctTypes,
+  SUM(CASE 
+        WHEN p.InventoryType IN (
+          'Usable Cannabis',
+          'Flower Lot',
+          'Flower Unlotted',
+          'Wet Flower'
+        ) THEN 1 ELSE 0 
+      END) AS FlowerSKUs,
+  MIN(p.CreatedDate) AS FirstProductCreated,
+  MAX(p.CreatedDate) AS LastProductCreated,
+  MIN(s.CreatedDate) AS FirstSaleDate,
+  MAX(s.CreatedDate) AS LastSaleDate
+FROM Product_clean p
+LEFT JOIN Inventory_all i
+  ON p.ExternalIdentifier = i.ExternalIdentifier
+LEFT JOIN SalesDetail_all s
+  ON i.InventoryId = s.InventoryId
+WHERE p.IsDeleted IS NULL OR p.IsDeleted NOT IN ('true', 'TRUE')
+GROUP BY p.LicenseeId"
+)
+
+
+product_diversity <- product_diversity %>%
+  mutate(
+    OnlyFlower = (DistinctTypes == 1 & FlowerSKUs == TotalSKUs),
+    BroadSKU = (DistinctTypes > 1)
+  )
+
+wholesaler_profiles <- product_diversity %>%
+  left_join(
+    dbGetQuery(con, "
+      SELECT LicenseeId, DBA
+      FROM Licensee_all
+      WHERE IsDeleted IS NULL OR IsDeleted NOT IN ('true', 'TRUE')
+    "),
+    by = "LicenseeId"
+  )
+
+wholesaler_profiles <- wholesaler_profiles %>% distinct()
+
+product_info <- dbGetQuery(con, "
+  SELECT 
+    LicenseeId,
+    ProductId,
+    InventoryType,
+    Name AS ProductName,
+    Description
+  FROM Product_all
+  WHERE IsDeleted IS NULL OR IsDeleted NOT IN ('true', 'TRUE')
+")
+
+# Join licensee DBA
+product_info <- product_info %>%
+  left_join(wholesaler_profiles %>% select(LicenseeId, DBA), by = "LicenseeId", relationship = "many-to-many") %>%
+  mutate(
+    self_branded = str_detect(tolower(ProductName), tolower(DBA)) |
+                   str_detect(tolower(Description), tolower(DBA))
+  )
+
+#Summarize: % of SKUs that are self-branded
+self_brand_summary <- product_info %>%
+  distinct(LicenseeId, ProductId, self_branded) %>%   # <-- IMPORTANT FIX
+  group_by(LicenseeId) %>%
+  summarise(
+    TotalSKUs = n(),
+    SelfBrandedSKUs = sum(self_branded, na.rm = TRUE),
+    PercentSelfBranded = round(100 * SelfBrandedSKUs / TotalSKUs, 1),
+    .groups = "drop"
+  )
+
+#Combine
+wholesaler_summary <- wholesaler_profiles %>%
+  left_join(self_brand_summary, by = "LicenseeId") %>%
+  mutate(
+    BrandingCategory = case_when(
+      OnlyFlower ~ "Flower Only",
+      BroadSKU ~ "Broad SKU Mix",
+      TRUE ~ "Other"
+    )
+  )
+
+wholesaler_summary <- wholesaler_summary %>%
+  rename(
+    TotalSKUs_Active = TotalSKUs.x,
+    TotalSKUs_WithBranding = TotalSKUs.y
+  )
+
+```
+
+## Flower Only Licenses  
+**Classify Wholesaler SKU Breadth**
+```{r, include=TRUE}
+
+product_diversity <- product_diversity %>%
+  mutate(
+    OnlyFlower = (DistinctTypes == 1 & FlowerSKUs == TotalSKUs),
+    BroadSKU = (DistinctTypes > 1)
+  )
+
+kable(product_diversity %>% filter(OnlyFlower == 'TRUE'))
+
+```
+
+<br>
+These 29 operations, often new or transitional licensees, are monoculture wholesalers — listing only unbranded flower.
+
+They rarely report sales activity, suggesting either limited market access or supply-side testing before formal retail engagement.
+
+In short: they grow, not brand.
+
+<br>
+**Market Interpretation**
+
+1. Branding is Concentrated at Retail:  
+Retailers and vertically integrated brands hold the consumer mindshare — wholesalers function as the silent partners.
+
+2. The Long Tail of Micro-Wholesalers:  
+Dozens of licensees operate with ≤10 SKUs, often supplying regional stores or testing new formulations.
+
+3. Commoditization Continues:  
+With “Only Flower” and “Other Material” products still entering the system in 2025, bulk categories remain accessible and price-driven.
+
+4. Innovation Moves Upstream:  
+The ‘Other’ wholesalers — clones, concentrates, edibles, genetics — may represent the next phase of differentiation, focusing on value-added inputs rather than finished goods.
+
+## Detect Self Branding SKUs by Category
+```{r, include=FALSE}
+
+
+ggplot(wholesaler_summary, aes(x = BrandingCategory, y = PercentSelfBranded)) +
+  geom_boxplot(outlier.shape = NA, fill = "grey90", width = 0.4) +
+  geom_jitter(width = 0.25, alpha = 0.4, color = "darkblue") +
+  labs(
+    title = "Self-Branded SKU % by Wholesaler Type",
+    x = "Wholesaler Type",
+    y = "% Self-Branded SKUs"
+  ) +
+  theme_minimal(base_size = 14)
+
+
+```
+**The Broad SKU Majority**  
+Roughly 90% of active wholesalers fall into the “Broad SKU Mix” category — distributors with large, multi-type portfolios:
+
+| Example Wholesalers      | Total SKUs | Distinct Types | Percent Self-Branded | Branding Category |
+| :----------------------- | ---------: | -------------: | -------------------: | :---------------- |
+| *SALISH COAST COMPANY*   |      6,121 |              9 |                  0 % | Broad SKU Mix     |
+| *CANNABIS GLASS*         |     26,385 |             11 |                  0 % | Broad SKU Mix     |
+| *KALEAFA*                |      5,628 |             14 |                  0 % | Broad SKU Mix     |
+| *CANNABIS COUNTRY STORE* |     12,465 |              9 |                  0 % | Broad SKU Mix     |
+
+These firms operate as regional distributors rather than house brands — high SKU diversity, but low self-branding.
+
+They source and resell across categories, serving as aggregators of volume rather than architects of identity.
+```{r, include=FALSE}
+## Wholesaler Summary
+# Explore 'Other' category in more detail
+# other_wholesalers <- wholesaler_summary %>%
+#   filter(BrandingCategory == "Other") %>%
+#   left_join(product_info, select(-DBA), by = "LicenseeId", relationship = "many-to-many") %>%
+#   filter(!is.na(InventoryType))  # In case we bring that in later
+# 
+# # Count product types within 'Other' group
+# type_counts <- dbGetQuery(con, "
+#   SELECT LicenseeId, InventoryType, COUNT(*) AS TypeSKUCount
+#   FROM Product_clean
+#   WHERE (IsDeleted IS NULL OR IsDeleted NOT IN ('true', 'TRUE'))
+#   GROUP BY LicenseeId, InventoryType
+# ")
+# 
+# # Join to other wholesalers
+# other_type_summary <- other_wholesalers %>%
+#   select(LicenseeId, DBA = DBA.x) %>%  # rename explicitly
+#   distinct() %>%
+#   left_join(type_counts, by = "LicenseeId")
+# 
+# # Table: top product types among 'Other' licenses
+# top_types <- other_type_summary %>%
+#   group_by(InventoryType) %>%
+#   summarise(
+#     TotalSKUs = sum(TypeSKUCount, na.rm = TRUE),
+#     LicenseeCount = n_distinct(LicenseeId),
+#     .groups = "drop"
+#   ) %>%
+#   arrange(desc(TotalSKUs))
+
+# Show top 10 InventoryTypes
+#print(knitr::kable(head(top_types, 10), caption = "Top Inventory Types in 'Other' Wholesalers"))
+
+# Optional: view specific licensees in "Other"
+# head(other_wholesalers %>%
+#        select(LicenseeId, DBA.x, ProductName, Description, self_branded), 10)
+```
+
+```{r, include=FALSE}
+
+# Product type mix among 'Other'
+# ggplot(other_type_summary, aes(x = reorder(InventoryType, -TypeSKUCount), y = TypeSKUCount)) +
+#   geom_col(fill = "#0072B2") +
+#   coord_flip() +
+#   labs(
+#     title = "Top Product Types Among 'Other' Wholesalers",
+#     x = "Inventory Type",
+#     y = "SKU Count"
+#   ) +
+#   theme_minimal(base_size = 13)
+
+```
+**The “Other” Category: Niche Wholesalers**
+The “Other” branding category, though small, is where Washington’s wholesale diversity shines.
+By joining licensees with product inventories and type counts, we identified 11 “Other” wholesalers spanning multiple niche categories.
+
+| Inventory Type             | Total SKUs | Licensee Count |
+| :------------------------- | ---------: | -------------: |
+| Concentrate for Inhalation |        141 |              2 |
+| Plant                      |         48 |             11 |
+| Seed                       |         31 |              2 |
+| Clones                     |         28 |              6 |
+| Other Material Unlotted    |         26 |              6 |
+| Liquid Edible              |         24 |              1 |
+| Solid Edible               |         19 |              1 |
+| Other Material Lot         |          9 |              1 |
+| Flower Unlotted            |          7 |              1 |
+| Cannabis Mix Packaged      |          3 |              1 |
+
+<br>
+Even within this small cohort, there’s remarkable variety.
+Some — like CHIEF N CANNABIS LLC — produce wet flower and concentrates, while others (e.g., WASHINGTON CANNABIS CORPORATION, COUNTRY LANE) specialize in plants, clones, and seed material.
+
+These “Other” wholesalers serve critical ecosystem functions: supplying genetics, starter material, and specialty extracts — the inputs that keep both retail and manufacturing tiers viable.
+
+<br>
+**Branding Insights**  
+A few patterns stand out among all branding categories:
+
+**Self-Branding Remains Rare**:  
+Fewer than 3% of wholesalers actively sell under their own label (PercentSelfBranded > 10).
+The dominant strategy is contract manufacturing and third-party distribution.
+
+**Vertical Integration Is Selective**:  
+A handful of licensees — like KEEP IT GREEN PRODUCTIONS and SALISH COAST COMPANY — show internal production and distribution, but still manage external brands to fill catalog gaps.
+
+**Product Breadth ≠ Brand Identity**:  
+Having more SKUs doesn’t imply stronger branding.
+Some of the largest distributors (25k–40k SKUs) remain brand-agnostic, highlighting a wholesale-as-infrastructure business model.
+
+As Washington’s cannabis market matures, the spotlight has shifted from retail storefronts to the wholesale backbone supplying them.
+
+**Between 2024 and mid-2025, CCRS data show the emergence of two distinct wholesaler profiles**:
+
+1. Broad SKU Wholesalers — large distributors with hundreds to thousands of SKUs across multiple product types and brand relationships.
+
+2. “Other” Wholesalers — smaller, often single-category operations specializing in plants, clones, edibles, or unbranded flower.
+
+The analysis provide a rare look into how these entities shape the supply-side brand economy of Washington cannabis.
