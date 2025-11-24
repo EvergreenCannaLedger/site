@@ -1,12 +1,48 @@
----
-title: "About TECL"
----
-
 # About The Evergreen Canna Ledger
 
 The ECL opens the door for cannabis businesses by providing the state's cannabis traceability information on all license holders back to them in an educational and meaningful way. The ECL has become the trusted source cannabis data journalism focusing on the Washington State Cannabis Central Cannabis Reporting System. 
 
 You can reach us via email at [franklin@evergreencannaledger.org](mailto:franklin@evergreencannaledger.org).
 
+## Access & Participation
+
++ **No membership fees**.
+
++ All [core insights and published blogs](posts/) are openly accessible.
+
++ A **$25 minimum donation** supports:
+
+    + Custom scripts to build the requested analytical report
+
+    + Targeted data reviews (Laboratory testing, Medical)
+
+    + Specialized trend summaries (Product Lifecycle in Spokane Co.)
+
+    + Research-based consultation requests (e.g DBA vs. rest of the industry/category)
+
+These contributions help fund infrastructure, data processing, publication costs, and future nonprofit transition efforts.
+
+At its core, TECL believes that data democracy is essential to the long-term health of the cannabis ecosystem. When reliable information is accessible, interpretable, and responsibly communicated, decision-makers are empowered to move beyond speculation, intuition, and uneven information advantage — toward a shared, evidence-based understanding of market dynamics, compliance patterns, economic performance, and community impact.
+
+## Why This Matters to TECL
+
+The cannabis industry is still developing its institutional knowledge base. Many businesses operate with limited or fragmented visibility into broader market conditions, often relying on anecdotal insights or short-term heuristics. TECL seeks to rebalance that dynamic by fostering a culture where:
+
++ Decisions are grounded in verifiable market data
+
++ Smaller operators gain access to insights typically reserved for large firms
+
++ Policymakers and advocates can better understand systemic impacts
+
++ Researchers and analysts have a transparent foundation for inquiry
+
++ This approach shifts the industry toward a more stable, equitable, and sustainable future where clarity replaces conjecture.
+
+## The Philosophy Behind TECL
+
+The power of cannabis data lies not only in access — but in thoughtful interpretation. TECL bridges quantitative rigor with industry knowledge, regulatory understanding, and contextual insight to inform near-future strategic decisions with clarity and accountability.
+
+Data is not just numbers — it is narrative, opportunity, and responsibility.
+
 **Skills:** Cannabis Data Journalism, Big Data Analytics  
-**Mission:** Empower all cannabis industry stakeholders with open data dashboards and blogs.
+**Mission:** Empower all cannabis industry stakeholders with open data dashboards and custom reporting.
