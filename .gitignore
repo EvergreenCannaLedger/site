@@ -1,9 +1,9 @@
 # ================================
 # QUARTO BUILD OUTPUT
 # ================================
-_site/
-_site/**
-/posts/_site/
+#_site/
+#_site/**
+#/posts/_site/
 /posts/**/*.html
 /posts/**/*_files/
 _site_libs/
