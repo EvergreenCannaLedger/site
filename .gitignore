@@ -28,6 +28,7 @@ duckdb_combined.duckdb
 *.duckdb
 arrow/
 arrow/**
+R_scripts/
 
 # ================================
 # R ARTIFACTS
@@ -36,6 +37,7 @@ arrow/**
 .RData
 .Rproj.user/
 .Rproj
+
 
 # ================================
 # OS NOISE
