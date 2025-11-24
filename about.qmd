@@ -1,18 +1,10 @@
 ---
-title: "About FJ | About TECL"
+title: "About TECL"
 ---
-
-# About Me
-
-I’m Franklin Johnson — state cannabis data democratization advocate.  
-This project aims to make Washington’s cannabis data transparent, analyzable, and accessible to all.
-
-**Skills:** Cannabis data analysis, modeling, and reporting; cannabis horticulture, chemistry, ethnobotany.     
-**Mission:** Empower cannabis industry stakeholders with open data tools.
 
 # About The Evergreen Canna Ledger
 
-The ECL opens the door for cannabis businesses by providing the state's cannabis traceability information on all license holders back to them in an educational and meaningful way. The ECL has become the trusted source cannabis data journalism focusing on the Washington State Cannabis Central Cannabis Reporting System.  
+The ECL opens the door for cannabis businesses by providing the state's cannabis traceability information on all license holders back to them in an educational and meaningful way. The ECL has become the trusted source cannabis data journalism focusing on the Washington State Cannabis Central Cannabis Reporting System. 
 
-**Skills:** RMarkdown, CannaLedger Blogs, Cannabis Data Journalism  
-**Mission:** Empower cannabis industry stakeholders like FJ said.
+**Skills:** Cannabis Data Journalism, Big Data Analytics 
+**Mission:** Empower all cannabis industry stakeholders with open data dashboards and blogs.

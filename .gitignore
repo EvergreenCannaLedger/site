@@ -1,14 +1,60 @@
-# Ignore Quarto build output
+# ================================
+# QUARTO BUILD OUTPUT
+# ================================
 _site/
+_site/**
+/posts/_site/
+/posts/**/*.html
+/posts/**/*_files/
+_site_libs/
+.quarto/
+.quarto-cache/
+.quarto-build/
+.quarto-crossref/
 
-# Ignore RStudio files
+# Local Quarto metadata
+/.quarto/
+
+# ================================
+# NETLIFY BUILD OUTPUT
+# ================================
+.netlify/
+site_build/
+
+# ================================
+# DUCKDB / LARGE DATA FILES
+# ================================
+duckdb_combined.duckdb
+*.duckdb
+arrow/
+arrow/**
+
+# ================================
+# R ARTIFACTS
+# ================================
 .Rhistory
 .RData
 .Rproj.user/
+.Rproj
 
-# Ignore temporary/OS files
+# ================================
+# OS NOISE
+# ================================
 .DS_Store
 Thumbs.db
 
-/.quarto/
+# ================================
+# GENERATED DOCUMENTS
+# ================================
+*.html
+*.pdf
+*.docx
+
+# ================================
+# TEMP / CACHE
+# ================================
+cache/
+figures/
+*_files/
 **/*.quarto_ipynb
+
