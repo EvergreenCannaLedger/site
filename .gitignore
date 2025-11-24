@@ -1,12 +1,7 @@
 # ================================
 # QUARTO BUILD OUTPUT
 # ================================
-#_site/
-#_site/**
-#/posts/_site/
-/posts/**/*.html
-/posts/**/*_files/
-_site_libs/
+
 .quarto/
 .quarto-cache/
 .quarto-build/
@@ -19,7 +14,6 @@ _site_libs/
 # NETLIFY BUILD OUTPUT
 # ================================
 .netlify/
-site_build/
 
 # ================================
 # DUCKDB / LARGE DATA FILES
@@ -38,7 +32,6 @@ R_scripts/
 .Rproj.user/
 .Rproj
 
-
 # ================================
 # OS NOISE
 # ================================
@@ -48,7 +41,6 @@ Thumbs.db
 # ================================
 # GENERATED DOCUMENTS
 # ================================
-*.html
 *.pdf
 *.docx
 
