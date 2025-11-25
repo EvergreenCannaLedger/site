@@ -1,5 +1,3 @@
 [build]
-  command = "quarto render"
+  command = "echo 'Using pre-rendered site'"
   publish = "_site"
-[build.environment]
-QUARTO_VERSION = "1.5.57"
