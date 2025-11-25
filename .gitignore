@@ -23,6 +23,7 @@ duckdb_combined.duckdb
 arrow/
 arrow/**
 R_scripts/
+.parquet
 
 # ================================
 # R ARTIFACTS

@@ -19,10 +19,12 @@ website:
         href: about.qmd
 
   page-footer:
-    left: "© 2025 Evergreen Canna Ledger"
+    left: "© 2023 Evergreen Canna Ledger"
     right: "Open Data for Washington's Cannabis Industry"
 
 format:
   html:
     theme: flatly
     css: assets/css/custom.css
+    self-contained: false
+    embed-resources: false
