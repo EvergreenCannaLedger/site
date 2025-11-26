@@ -48,8 +48,7 @@ Thumbs.db
 # ================================
 # TEMP / CACHE
 # ================================
+!_site/**/_files/
 cache/
-figures/
-*_files/
 **/*.quarto_ipynb
 
