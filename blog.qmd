@@ -1,5 +1,5 @@
 ---
-title: "Blog"
+title: "Date"
 listing:
   contents: posts
   type: default
