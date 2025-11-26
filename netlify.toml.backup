@@ -1,0 +1,9 @@
+[build]
+  command = "./install_quarto.sh && quarto render"
+  publish = "_site"
+
+[build.environment]
+  QUARTO_VERSION = "1.4.550"
+  
+[functions]
+  node_bundler = "esbuild"
