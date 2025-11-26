@@ -1,7 +1,5 @@
 [build]
-command = "bash ./install-quarto.sh"
+command = ""
 publish = "_site"
 
-[build.environment]
-QUARTO_VERSION = "1.4.550"
 
