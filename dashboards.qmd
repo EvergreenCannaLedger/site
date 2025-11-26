@@ -14,21 +14,8 @@ execute:
 editor: visual
 ---
 
-Below are interactive dashboards exploring CCRS data addressing (or fails to address) concerns raised by the Washington State Auditor in an October 2024 agency press release, in real time.  The data covers Dec 2021 to today.  
-
-The concerns were: 
-
-+ Lack of seed-to-sale traceability
-
-+ Inflated or inconsistent reported sales
-
-+ Lack of real-time tracking
-
-+ Data integrity and accessibility for licensees
-
-We track quality, outliers, non-conformers, and more to address total traceability.  Everyone has concerns about regulated weed crossing the border, and tracking the above KPIs can point regulators to license holders to validate entries.   
-```{r setup}
-#knitr::opts_chunk$set(echo = FALSE, include=FALSE, message=FALSE, error=FALSE)
+## Number of Licensees (2021-present)
+```{r, echo=FALSE, include=FALSE}
 
 library(tidyverse)
 library(DBI)
@@ -186,11 +173,23 @@ views_to_create <- c(
 
 walk(views_to_create, ~ create_combined_view(con, .x))
 
+# Materialize the table for downstream visualization
+dbExecute(con, "
+  CREATE OR REPLACE TEMP TABLE sale_header_temp AS
+  SELECT * FROM sale_header_all
+")
+
+dbExecute(con, "
+  CREATE OR REPLACE TEMP TABLE sales_detail_temp AS
+  SELECT * FROM sales_detail_all
+")
+
+
 ```
 
-## Number of Licensees (2021-present)
-```{r, echo=TRUE}
+```{r}
 
+# Monthly Sales
 monthly_sales <- dbGetQuery(con, "
 WITH base AS (
 SELECT
@@ -200,7 +199,7 @@ CAST(sd.Quantity AS DOUBLE) * CAST(sd.UnitPrice AS DOUBLE) +
 CAST(sd.SalesTax AS DOUBLE) + CAST(sd.OtherTax AS DOUBLE) AS Revenue
 FROM sales_detail_all sd
 JOIN sale_header_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
-WHERE DATE(CAST(sh.SaleDate AS DATE)) BETWEEN '2021-12-01' AND '2025-05-31'
+WHERE DATE(CAST(sh.SaleDate AS DATE)) BETWEEN '2021-12-01' AND '2025-08-31'
 AND CAST(sd.UnitPrice AS DOUBLE) < 200
 ),
 grouped AS (
@@ -221,8 +220,9 @@ ORDER BY Month
 )
 SELECT * FROM licensee_counts
 ")
-```
 
+```
+**Monthly Licensee Participation**
 ```{r}
 # Convert Month to date type
 
@@ -230,7 +230,7 @@ monthly_sales <- monthly_sales %>%
 mutate(Month = as.Date(Month))
 
 # Plotly bar chart
-fig <- plot_ly(
+plot_ly(
 data = monthly_sales,
 x = ~Month,
 y = ~LicenseeCount,
@@ -238,339 +238,122 @@ type = "bar",
 marker = list(color = "#2C7BB6")
 ) %>%
 layout(
-title = "Number of Licensees Reporting Monthly (Dec 2021 - May 2025)",
+title = "Number of Licensees Reporting Monthly (Dec 2021 - Aug 2025)",
 xaxis = list(title = "Month"),
 yaxis = list(title = "Licensee Count"),
 hovermode = "x unified"
 )
 
-fig
+```
+
+## Product Category Growth Over Time
+```{r}
+
+product_growth <- dbGetQuery(con, "
+SELECT
+DATE_TRUNC('month', CAST(sh.SaleDate AS DATE)) AS Month,
+p.InventoryType,
+SUM(CAST(sd.Quantity AS DOUBLE)) AS UnitsSold
+FROM sales_detail_all sd
+JOIN sale_header_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+JOIN inventory_all i ON sd.InventoryId = i.InventoryId
+JOIN product_all p ON i.ProductId = p.ProductId
+WHERE sh.SaleDate IS NOT NULL
+GROUP BY Month, p.InventoryType
+ORDER BY Month
+")
+```
+```{r}
+
+product_growth <- product_growth %>% mutate(Month = as.Date(Month))
+
+plot_ly(
+data = product_growth,
+x = ~Month,
+y = ~UnitsSold,
+color = ~InventoryType,
+type = 'scatter',
+mode = 'lines+markers'
+) %>%
+layout(
+title = "Product Category Growth Over Time",
+xaxis = list(title = "Month"),
+yaxis = list(title = "Units Sold"),
+legend = list(orientation = 'h', x = 0.1, y = -0.2)
+)
 
 ```
 
-```{r, echo=TRUE}
+## Total Revenue 
+```{r}
 
-ccrs_sales <- dbGetQuery(con, "
-  SELECT
-    strftime(TRY_CAST(h.CreatedDate AS TIMESTAMP), '%Y') AS Year,
-
-    ROUND(
-      SUM(
-        TRY_CAST(d.UnitPrice AS DOUBLE) * 
-        TRY_CAST(d.Quantity AS DOUBLE)
-      ), 2
-    ) AS CCRS_Sales,
-
-    ROUND(
-      SUM(
-        (TRY_CAST(d.UnitPrice AS DOUBLE) * TRY_CAST(d.Quantity AS DOUBLE)) +
-        COALESCE(TRY_CAST(d.SalesTax AS DOUBLE), 0)
-      ), 2
-    ) AS CCRS_Sales_With_Tax
-
-  FROM sales_detail_all d
-  JOIN sale_header_all h 
-    ON d.SaleHeaderId = h.SaleHeaderId
-
-  WHERE 
-    TRY_CAST(h.CreatedDate AS TIMESTAMP) IS NOT NULL AND
-    TRY_CAST(d.UnitPrice AS DOUBLE) IS NOT NULL AND
-    TRY_CAST(d.Quantity AS DOUBLE) IS NOT NULL
-
-  GROUP BY Year
-  ORDER BY Year DESC
+retail_wholesale <- dbGetQuery(con, "
+  SELECT 
+    DATE_TRUNC('month', CAST(sh.SaleDate AS DATE)) AS Month,
+    sh.SaleType,
+    SUM(CAST(sd.Quantity AS DOUBLE) * CAST(sd.UnitPrice AS DOUBLE)) AS Revenue
+  FROM sales_detail_temp sd
+  JOIN sale_header_temp sh ON sd.SaleHeaderId = sh.SaleHeaderId
+  WHERE sh.SaleType IN ('Retail', 'Wholesale')
+  GROUP BY Month, sh.SaleType
+  ORDER BY Month
 ")
 
+
 ```
 
 ```{r}
 
-ccrs_enriched <- ccrs_sales %>%
-  mutate(
-    `DOR Estimate` = case_when(
-      Year == "2022" ~ 1300000000,
-      Year == "2023" ~ 900000000,
-      Year == "2024" ~ 1100000000,
-      Year == "2025" ~ 1200000000,
-      TRUE ~ NA_real_
-    ),
-    Difference = CCRS_Sales - `DOR Estimate`,
-    is_2022 = Year == "2022"
-  )
+retail_wholesale <- retail_wholesale %>% mutate(Month = as.Date(Month))
 
-# Format and clean for display
-ccrs_display <- ccrs_enriched %>%
-  mutate(
-    `CCRS Sales (No Tax)` = ifelse(
-      is_2022,
-      cell_spec(scales::dollar(CCRS_Sales), color = "black"),
-      cell_spec(scales::dollar(CCRS_Sales), color = "black")
-    ),
-    `CCRS Sales (With Tax)` = ifelse(
-      is_2022,
-      cell_spec(scales::dollar(CCRS_Sales_With_Tax), color = "black"),
-      cell_spec(scales::dollar(CCRS_Sales_With_Tax), color = "black")
-    ),
-    `DOR Estimate` = ifelse(
-      is.na(`DOR Estimate`),
-      "",
-      cell_spec(scales::dollar(`DOR Estimate`, accuracy = 1), color = "black")
-    ),
-    Difference = case_when(
-      is.na(Difference) ~ "",
-      Difference < 0 ~ cell_spec(
-        paste0("(", scales::dollar(abs(Difference), accuracy = 1), ")"),
-        color = "red"
-      ),
-      TRUE ~ cell_spec(scales::dollar(Difference, accuracy = 1), color = "black")
-    )
-  ) %>%
-  select(
-    Year,
-    `CCRS Sales (No Tax)`,
-    `CCRS Sales (With Tax)`,
-    `DOR Estimate`,
-    Difference
-  )
-
-
-```
-## Sales Integrity
-**CCRS vs WA DOR Sales Comparison**
-```{r}
-
-# Create table
-ccrs_display %>%
-  kbl(
-    escape = FALSE,
-    caption = "Comparison of CCRS-reported cannabis sales to Department of Revenue estimates. 
-2022 is the only year with a published estimate from the Washington State Auditor ($1.3B). 
-We include illustrative estimates for 2023–2025 based on market maturity and CCRS data. 
-Even in 2025, with improved data quality, reported sales remain below 50% of the 2022 benchmark.",
-    col.names = c("Year", "CCRS Sales (No Tax)", "With Tax", "DOR Estimate", "Difference"),
-    align = "lrrrr"
-  ) %>%
-  kable_styling(
-    full_width = FALSE,
-    bootstrap_options = c("striped", "hover", "condensed", "responsive")
+plot_ly(retail_wholesale, x = ~Month, y = ~Revenue, color = ~SaleType, type = "bar") %>%
+  layout(
+    barmode = "group",
+    title = "Total Reported Revenue",
+    xaxis = list(title = "Month"),
+    yaxis = list(title = "Revenue ($)", tickformat = "$,.0f"),
+    legend = list(title = list(text = "Sale Type")),
+    hovermode = "x unified"
   )
 
 ```
 
-<br>
-**Outlier Sales Transactions**
-```{r, echo=TRUE}
-
-outliers <- dbGetQuery(con, "
-  SELECT
-    d.SaleDetailId,
-    h.LicenseeId,
-    strftime(TRY_CAST(h.CreatedDate AS TIMESTAMP), '%Y') AS Year,
-    p.InventoryType,
-    TRY_CAST(d.UnitPrice AS DOUBLE) AS UnitPrice,
-    TRY_CAST(d.Quantity AS DOUBLE) AS Quantity,
-    TRY_CAST(d.UnitPrice AS DOUBLE) * TRY_CAST(d.Quantity AS DOUBLE) AS TotalPrice
-  FROM sales_detail_all d
-  JOIN sale_header_all h 
-    ON d.SaleHeaderId = h.SaleHeaderId
-  LEFT JOIN inventory_all i 
-    ON d.InventoryId = i.InventoryId
-  LEFT JOIN product_all p 
-    ON i.ProductId = p.ProductId
-  WHERE 
-    TRY_CAST(d.UnitPrice AS DOUBLE) * TRY_CAST(d.Quantity AS DOUBLE) > 10000 
-    OR TRY_CAST(d.UnitPrice AS DOUBLE) > 1000
-  ORDER BY TotalPrice DESC
-  LIMIT 500
-")
-```
-
+## Regional or Business-Level Insights (City Location)
 ```{r}
 
-
-outliers %>%
-kbl(digits = 2, format.args = list(big.mark = ",")) %>%
-kable_styling(full_width = FALSE)
-
-
-```
-
-##  Seed-to-Sale Visibility
-**Partial Traceability – Example Joins from Plant → Inventory → Sale**
-```{r, echo=TRUE}
-
-plant_to_sale <- dbGetQuery(con, "
-  SELECT
-    p.ExternalIdentifier AS PlantID,
-    i.InventoryId,
-    s.SaleDetailId,
-    p.HarvestDate,
-    i.CreatedDate AS InventoryDate,
-    s.CreatedDate AS SaleDate
-  FROM plant_all p
-  LEFT JOIN inventory_all i 
-    ON p.ExternalIdentifier = i.ExternalIdentifier
-  LEFT JOIN sales_detail_all s 
-    ON i.InventoryId = s.InventoryId
-  WHERE s.CreatedDate IS NOT NULL
-  LIMIT 50
-")
-```
-
-```{r}
-
-plant_to_sale %>%
-kbl() %>%
-kable_styling(full_width = FALSE)
-
-
-```
-##  Real-Time Limitations
-**Inventory Creation to Sale Lag**
-```{r, echo=TRUE}
-
-inventory_lag <- dbGetQuery(con, "
-  SELECT
-    i.InventoryId,
-    i.CreatedDate AS InventoryDate,
-    MIN(h.SaleDate) AS FirstSaleDate,
-    DATEDIFF(
-      'day',
-      TRY_CAST(i.CreatedDate AS TIMESTAMP),
-      MIN(TRY_CAST(h.SaleDate AS TIMESTAMP))
-    ) AS LagDays
-  FROM inventory_all i
-  JOIN sales_detail_all s ON i.InventoryId = s.InventoryId
-  JOIN sale_header_all h ON s.SaleHeaderId = h.SaleHeaderId
-  WHERE 
-    TRY_CAST(i.CreatedDate AS TIMESTAMP) IS NOT NULL AND
-    TRY_CAST(h.SaleDate AS TIMESTAMP) IS NOT NULL
-  GROUP BY i.InventoryId, i.CreatedDate
- ")
-```
-
-```{r, echo=TRUE}
-
-summary(inventory_lag$LagDays)
-
-```
-##  Distribution of Lag Day 
-```{r}
-
-inventory_lag_filtered <- inventory_lag %>% filter(LagDays >= 0)
-
-ggplot(inventory_lag_filtered, aes(x = LagDays)) +
-  geom_histogram(binwidth = 5, fill = "steelblue") +
-  labs(title = "Distribution of Inventory Lag (positive values view)",
-       x = "Days from Inventory Creation to First Sale",
-       y = "Count") +
-  theme_minimal()
-
-```
-
-<br>
-
-## Lab Testing Compliance  
-**Summary of Lab Result Coverage by Product Type**  
-
-Let’s consider:  
-
-+ **Fail** and **Required** as **problematic/non-compliant**  
-+ **Pass** as **compliant**
-```{r, echo=TRUE}
-
-lab_summary <- dbGetQuery(con, "
-  SELECT 
-    p.InventoryType,
-    COUNT(l.LabResultId) AS TotalTests,
-    SUM(CASE 
-          WHEN LOWER(TRIM(l.LabTestStatus)) IN ('fail', 'required') 
-          THEN 1 ELSE 0 
-        END) AS ProblemTests,
-    ROUND(
-      100.0 * SUM(CASE 
-                   WHEN LOWER(TRIM(l.LabTestStatus)) IN ('fail', 'required') 
-                   THEN 1 ELSE 0 
-                 END) / COUNT(l.LabResultId), 1
-    ) AS PctProblem
-  FROM lab_result_all l
-  LEFT JOIN inventory_all i ON l.InventoryId = i.InventoryId
-  LEFT JOIN product_all p ON i.ProductId = p.ProductId
-  GROUP BY p.InventoryType
-  ORDER BY PctProblem DESC
+regional_sales <- dbGetQuery(con, "
+SELECT
+l.City,
+SUM(CAST(sd.Quantity AS DOUBLE) * CAST(sd.UnitPrice AS DOUBLE)) AS Revenue
+FROM sales_detail_all sd
+JOIN sale_header_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+JOIN licensee_all l ON sh.LicenseeId = l.LicenseeId
+WHERE sh.SaleDate IS NOT NULL AND l.City IS NOT NULL
+GROUP BY l.City
+ORDER BY Revenue DESC
+LIMIT 10
 ")
 
 ```
 
 ```{r}
-
-lab_summary %>%
-  kbl(caption = "Lab Test Summary by Inventory Type") %>%
-  kable_styling(full_width = FALSE)
-
-```
-<br>
-Let's breakdown by license to see who frequently updates their records: 
-```{r, echo=TRUE}
-
-product_update_by_licensee <- dbGetQuery(con, "
-  SELECT 
-    LicenseeId,
-    COUNT(*) AS TotalRecords,
-    SUM(CASE 
-          WHEN TRY_CAST(UpdatedDate AS TIMESTAMP) > TRY_CAST(CreatedDate AS TIMESTAMP)
-          THEN 1 ELSE 0 
-        END) AS UpdatedRecords,
-    ROUND(100.0 * SUM(CASE 
-          WHEN TRY_CAST(UpdatedDate AS TIMESTAMP) > TRY_CAST(CreatedDate AS TIMESTAMP)
-          THEN 1 ELSE 0 
-        END) / COUNT(*), 1) AS PctUpdated
-  FROM product_all
-  GROUP BY LicenseeId
-  ORDER BY PctUpdated DESC
-  LIMIT 100
-")
-```
-
-```{r}
-
-product_update_by_licensee %>%
-kbl() %>%
-kable_styling(full_width = FALSE)
-
-```
-
-<br>
-Let's see **how long after** records are updated by licensees:
-```{r, echo=TRUE}
-
-update_lag <- dbGetQuery(con, "
-  SELECT 
-    LicenseeId,
-    AVG(DATEDIFF('day', TRY_CAST(CreatedDate AS TIMESTAMP), TRY_CAST(UpdatedDate AS TIMESTAMP))) AS AvgLagDays,
-    COUNT(*) AS TotalRecords
-  FROM product_all
-  WHERE 
-    TRY_CAST(UpdatedDate AS TIMESTAMP) > TRY_CAST(CreatedDate AS TIMESTAMP)
-  GROUP BY LicenseeId
-  ORDER BY AvgLagDays DESC
-  LIMIT 100
-")
-
-```
-
-```{r}
-
-update_lag %>%
-kbl() %>%
-kable_styling(full_width = FALSE)
+plot_ly(
+data = regional_sales,
+x = ~reorder(City, Revenue),
+y = ~Revenue,
+type = 'bar',
+orientation = 'v',
+marker = list(color = "darkgreen")
+) %>%
+layout(
+title = "Top Business Licensee Cities by Revenue",
+xaxis = list(title = "City"),
+yaxis = list(title = "Revenue"),
+margin = list(b = 100)
+)
 
 ```
 
 <br>
 
-## Coming Soon:  
-**Future dashboards will visualize:**  
-1. Product category growth over time  
-2. Retail vs wholesale revenue comparisons  
-3. Regional and facility-level insights
+[Let TECL know if you have a dashboard request you want posted here](mailto:franklin@evergreencannaledger.org)
