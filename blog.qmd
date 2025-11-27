@@ -1,5 +1,5 @@
 ---
-title: "Date"
+title: "Blogs are written for an informed audience while remaining accessible to policymakers, licensees, and analysts."
 listing:
   contents: posts
   type: default
