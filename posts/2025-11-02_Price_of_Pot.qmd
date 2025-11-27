@@ -1,0 +1,79 @@
+---
+title: "The Price of Pot: Trends in Unit Prices by Product Type"
+subtitle: "An analysis of cannabis product inventory levels across Washington state"
+date: "2025-11-02"
+categories: [CCRS, Cannabis, Price]
+format: 
+  html: 
+    fig-height: 4.5
+    fig-width: 6
+    toc: true
+    code-fold: false
+    theme: cosmo
+editor:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+
+library(tidyverse)
+library(DBI)
+library(dplyr)
+library(lubridate)
+library(plotly)
+library(arrow)
+library(duckdb)
+library(fs)
+library(glue)
+library(kableExtra)
+library(scales)
+
+# Connect to DuckDB
+source("../R_scripts/connect_duckdb_readonly.R")
+
+```
+## The Bottom Line Up Fron
+
+**Insights**
+
++ Which categories are trending up or down in price?
+
++ Are price drops tied to overproduction or seasonal changes?
+
++ Do some categories show stability compared to others?
+```{r}
+# Query average unit price by month and product category
+
+pricing_trends <- dbGetQuery(con, "
+SELECT
+DATE_TRUNC('month', sd.CreatedDate) AS SaleMonth,
+p.InventoryType,
+AVG(CAST(sd.UnitPrice AS DOUBLE)) AS AvgUnitPrice
+FROM SalesDetail_clean sd
+JOIN Product_clean p ON sd.ProductId = p.ProductId
+WHERE
+sd.UnitPrice IS NOT NULL AND
+sd.CreatedDate IS NOT NULL AND
+p.InventoryType IS NOT NULL
+GROUP BY SaleMonth, p.InventoryType
+ORDER BY SaleMonth
+")
+
+```
+Plot Pricing Trends Over Time
+```{r}
+ggplot(pricing_trends, aes(x = as.Date(SaleMonth), y = AvgUnitPrice, color = InventoryType)) +
+geom_line(size = 1) +
+labs(
+title = "💰 Average Unit Price Over Time by Product Type",
+x = "Month",
+y = "Average Unit Price ($)",
+color = "Product Type"
+) +
+theme_minimal(base_size = 14) +
+scale_y_continuous(labels = scales::dollar_format()) +
+theme(legend.position = "bottom")
+
+```
+

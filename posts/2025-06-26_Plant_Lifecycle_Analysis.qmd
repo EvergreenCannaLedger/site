@@ -1,0 +1,298 @@
+---
+title: "From Seed to Sale: Plant Growth and Destruction Events"
+subtitle: "From Flower to Formulation in Washington’s Cannabis Categories Evolved from Craft to Commerce"
+date: "2025-06-26"
+categories: [CCRS, Product, Lifecycle]
+format: html
+fig-height: 4.5
+fig-width: 6
+toc: true
+editor:
+  markdown:
+    wrap: 72
+---
+
+**The Bottom Line Up Front**  
+What does this means for market stability??  
+Plants do not fail randomly. They fail within systems.
+
+The growers who succeed tomorrow will be those who understand why their plants die today.
+
+When plant creation consistently exceeds plant destruction, the system accumulates risk:
+
++ Excess inventory ties up capital
+
++ Storage and compliance costs rise
+
++ Product quality degrades over time
+
++ Price compression accelerates
+
++ Retail discounting intensifies
+
+Overproduction is not merely an operational inefficiency — it is a market destabilizer.
+
+This analysis synthesizes lifecycle plant data through August 2025 and combines it with current inventory distribution patterns to reveal systemic risks, inefficiencies, and opportunities for smarter operational planning.
+
+### Strategic Implications for Licensees
+
+Operational leaders should be using plant lifecycle data to:
+
++ Adjust canopy projections based on real survival rates
+
++ Implement destruction thresholds before economic loss escalation
+
++ Improve environmental monitoring protocols
+
++ Standardize destruction reporting categories
+
++ Prioritize genetically stable strains for volume production
+
+This is evidence-based cultivation — and it is rapidly becoming the competitive frontier.
+
+### Key Findings
+
+- Plant destruction is rising, but not proportionally to creation
+
+- Many destructions are preventable with better environmental control
+
+- Reporting categories lack clarity and diagnostic rigor
+
+- Certain strains consistently outperform others in survivability
+
+- Efficiency failure compounds downstream inventory overstock
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, error = FALSE)
+
+library(DBI)
+library(duckdb)
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(kableExtra)
+library(plotly)
+
+source("../R_scripts/connect_duckdb_readonly.R")
+
+plants <- dbGetQuery(con, "
+SELECT
+PlantId,
+LicenseeId,
+StrainId,
+PlantState,
+GrowthStage,
+HarvestDate,
+CreatedDate
+FROM Plant_clean
+WHERE IsDeleted = FALSE
+")
+
+destructions <- dbGetQuery(con, "
+SELECT
+PlantId,
+DestructionReason,
+DestructionMethod,
+DestructionDate
+FROM PlantDestructions_all
+WHERE IsDeleted = FALSE
+")
+
+strains <- dbGetQuery(con, "
+SELECT StrainId, Name AS StrainName
+FROM Strains_clean
+WHERE IsDeleted = FALSE
+")
+
+plants <- plants %>%
+mutate(
+CreatedDate = as.Date(CreatedDate),
+YearMonth = floor_date(CreatedDate, "month")
+)
+
+destructions <- destructions %>%
+mutate(DestructionDate = as.Date(DestructionDate),
+YearMonth = floor_date(DestructionDate, "month"))
+
+plant_volume <- plants %>%
+count(YearMonth, name = "PlantsCreated")
+
+plant_destruction_volume <- destructions %>%
+count(YearMonth, name = "PlantsDestroyed")
+
+lifecycle_volume <- full_join(plant_volume, plant_destruction_volume, by = "YearMonth") %>%
+replace_na(list(PlantsCreated = 0, PlantsDestroyed = 0))
+
+top_destruction_reasons <- destructions %>%
+count(DestructionReason, sort = TRUE) %>%
+slice_max(n, n = 10)
+
+plant_strain_stats <- plants %>%
+left_join(strains, by = "StrainId") %>%
+count(StrainName, name = "PlantsGrown")
+
+destruction_strain_stats <- destructions %>%
+left_join(plants, by = "PlantId") %>%
+left_join(strains, by = "StrainId") %>%
+count(StrainName, name = "PlantsDestroyed")
+
+strain_performance <- full_join(
+plant_strain_stats,
+destruction_strain_stats,
+by = "StrainName"
+) %>%
+replace_na(list(PlantsGrown = 0, PlantsDestroyed = 0)) %>%
+mutate(DestructionRate = PlantsDestroyed / PlantsGrown) %>%
+arrange(desc(PlantsGrown))
+
+```
+## Plant Lifecycle Efficiency in Washington Cannabis:  
+### What Destruction Patterns Reveal About Cultivation Risk, Operational Precision, and Strain Performance
+
+The Evergreen Canna Ledger (TECL) continues to examine Washington State’s Cannabis Central Reporting System (CCRS) to reveal how plant lifecycle behavior reflects broader operational efficiency across the supply chain. While plant creation often receives attention as a growth indicator, **plant destruction is one of the most powerful — and underutilized — signals of cultivation precision, risk management, and production discipline**.
+
+By analyzing plant creation and destruction trends through 2025, along with detailed destruction reasons and strain-level performance, we uncover a clear narrative: 
+
+### as production scaled, so did inefficiency — and the cost of poor lifecycle management has become increasingly visible.
+
+## Plant Lifecycle Volume 
+### Strain/Plant Performance (Grown vs Destroyed)
+```{r}
+
+plot_ly() %>%
+add_lines(data = lifecycle_volume, x = ~YearMonth, y = ~PlantsCreated,
+name = "Plants Created", line = list(color = "forestgreen")) %>%
+add_lines(data = lifecycle_volume, x = ~YearMonth, y = ~PlantsDestroyed,
+name = "Plants Destroyed", line = list(color = "firebrick")) %>%
+layout(
+title = "Plants Created vs Destroyed Over Time",
+xaxis = list(title = "Month"),
+yaxis = list(title = "Plant Count", tickformat = ","),
+hovermode = "x unified"
+)
+
+```
+
+## The Evolution of Plant Lifecycle Imbalance
+
+From 2017 through 2021, Washington’s licensed cannabis system exhibited near-zero documented plant destruction. While production climbed steadily, there was almost no formal recognition of failed or terminated plants within the traceability system.
+
+This changed dramatically beginning in 2022.
+
+By late 2024 and early 2025, plant creation exceeded 1.3 million plants per month, while destruction volumes surged into the tens of thousands. October 2024 alone recorded:
+
++ **1,313,824 plants created**
+
++ **101,190 plants destroyed**
+
+This shift reflects not only heightened reporting accuracy but also increasing operational stress as production began outpacing viable market demand.
+
+### Plant Destruction Reasons
+```{r}
+
+plot_ly(
+data = top_destruction_reasons,
+x = ~reorder(DestructionReason, n),
+y = ~n,
+type = "bar",
+marker = list(color = "darkred")
+) %>%
+layout(
+title = "Top Reasons for Plant Destruction",
+xaxis = list(title = "Destruction Reason"),
+yaxis = list(title = "Count", tickformat = ","),
+margin = list(b = 120)
+)
+
+```
+
+Over 80% of all destruction falls into two categories: Plant Died and Other. This lack of specificity indicates either insufficient operational diagnostics or inconsistent reporting practices.
+
+More revealing, however, is the presence of avoidable horticultural failures:
+
+Water mismanagement (both over and under)
+
+Pest infestation
+
+Environmental contamination
+
+These are not market failures — they are process failures.
+
+
+## Cultivation Risk and the Cost of Inefficiency
+
+Plant destruction carries cascading consequences:
+
++ Lost input cost (labor, nutrients, energy)
+
++ Reduced operational predictability
+
++ Increased production volatility
+
++ Compliance workload spikes
+
++ Reduced margin per square foot
+
+The data suggests that modern cultivation inefficiency is no longer random — it is procedural.
+
+### Top 10 Strains by Plant Volume
+```{r}
+top_strains <- strain_performance %>% slice_max(PlantsGrown, n = 10)
+
+plot_ly(
+data = top_strains,
+x = ~StrainName,
+y = ~PlantsGrown,
+type = "bar",
+marker = list(color = "seagreen")
+) %>%
+layout(
+title = "Top Strains by Plants Grown",
+xaxis = list(title = "Strain"),
+yaxis = list(title = "Plants Grown", tickformat = ",")
+)
+
+```
+
+<br>
+
+## Lifecycle Efficiency as a Market Health Indicator
+
+The plant lifecycle curve in Washington shows three distinct phases:
+
+**Expansion Era (2017–2020)**  
+Minimal destruction, rapid creation, unchecked growth
+
+**Correction Era (2021–2023)**  
+Introduction of destruction tracking and post-harvest loss visibility
+
+**Efficiency Reckoning (2024–2025)**  
+Massive production volumes colliding with reality of market saturation
+
+## Strain Performance: Efficiency Is Not Equal  
+TECL evaluated more than 10,000 strains and their lifecycle performance. Destruction rates reveal stark contrasts:  
+This transition signals maturation — but also signals that operational intelligence has not scaled alongside output.
+
+| Strain    | Plants Grown | Plants Destroyed | Destruction Rate |
+| --------- | ------------ | ---------------- | ---------------- |
+| GT 47     | 98,490       | 34,782           | 35.3%            |
+| Gelato 47 | 40,219       | 2,684            | 6.7%             |
+| Oreoz     | 138,506      | 506              | 0.36%            |
+| Candy Gas | 212,991      | 7,428            | 3.5%             |
+
+These differences reflect genetic stability, grower familiarity, environmental tolerance, and cultivation methodology. High-destruction strains represent financial risk when scaled irresponsibly.
+
+Strain selection, therefore, is not merely a branding decision — it is a risk strategy.
+
+<br>
+
+## The Lifecycle Problem: Rapid Growth, Slow Elimination  
+From 2017 through early 2021, the system shows consistently low plant destruction relative to creation. For years, plant counts rose with almost no corrective response, allowing volume to accumulate unchecked. It was not until late 2021 that destruction activity began to register meaningfully — and even then, it lagged far behind production volume.
+
+By 2024–2025, this imbalance reached unprecedented levels. In October 2024 alone, more than 1.3 million plants were created, while only 101,190 were destroyed — a destruction rate under 8%. Similar patterns persisted through early 2025, despite visible declines in retail demand and pricing.
+
+This indicates a structural issue: production capacity has dramatically outpaced market absorption.
+
+Cannabis Data Democracy in Practice
+
+TECL’s mission is to move Washington cannabis away from intuition-based production toward accountable, measurable, and transparent decision frameworks. Plant lifecycle efficiency is not a backend compliance metric — it is a predictive indicator of operational intelligence. The ability to reduce waste, anticipate production risk, and select high-performance strains is what will define the next generation of sustainable cannabis operators.

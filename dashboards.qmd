@@ -15,6 +15,7 @@ editor: visual
 ---
 
 ## Number of Licensees (2021-present)
+
 ```{r, echo=FALSE, include=FALSE}
 
 library(tidyverse)
@@ -222,7 +223,9 @@ SELECT * FROM licensee_counts
 ")
 
 ```
+
 **Monthly Licensee Participation**
+
 ```{r}
 # Convert Month to date type
 
@@ -247,6 +250,7 @@ hovermode = "x unified"
 ```
 
 ## Product Category Growth Over Time
+
 ```{r}
 
 product_growth <- dbGetQuery(con, "
@@ -263,6 +267,7 @@ GROUP BY Month, p.InventoryType
 ORDER BY Month
 ")
 ```
+
 ```{r}
 
 product_growth <- product_growth %>% mutate(Month = as.Date(Month))
@@ -284,7 +289,8 @@ legend = list(orientation = 'h', x = 0.1, y = -0.2)
 
 ```
 
-## Total Revenue 
+## Total Revenue
+
 ```{r}
 
 retail_wholesale <- dbGetQuery(con, "
@@ -319,6 +325,7 @@ plot_ly(retail_wholesale, x = ~Month, y = ~Revenue, color = ~SaleType, type = "b
 ```
 
 ## Regional or Business-Level Insights (City Location)
+
 ```{r}
 
 regional_sales <- dbGetQuery(con, "
@@ -338,18 +345,21 @@ LIMIT 10
 
 ```{r}
 plot_ly(
-data = regional_sales,
-x = ~reorder(City, Revenue),
-y = ~Revenue,
-type = 'bar',
-orientation = 'v',
-marker = list(color = "darkgreen")
+  data = regional_sales,
+  x = ~reorder(City, Revenue),  # Fixed the reorder logic
+  y = ~Revenue,
+  type = 'bar',
+  orientation = 'v',
+  marker = list(color = "darkgreen")
 ) %>%
 layout(
-title = "Top Business Licensee Cities by Revenue",
-xaxis = list(title = "City"),
-yaxis = list(title = "Revenue"),
-margin = list(b = 100)
+  title = "Top Business Licensee Cities by Revenue",
+  xaxis = list(title = "City"),
+  yaxis = list(
+    title = "Revenue",
+    tickformat = "$,.2f"  # Dollar formatting
+  ),
+  margin = list(b = 100)
 )
 
 ```

@@ -11,7 +11,7 @@ website:
     right:
       - text: "Home"
         href: index.qmd
-      - text: "Date"
+      - text: "Blog"
         href: blog.qmd       # ✅ points to a blog listing page
       - text: "Dashboards"
         href: dashboards.qmd
