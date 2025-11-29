@@ -1,0 +1,293 @@
+---
+title: "The Expiring Market: Who’s at Risk of Losing a License in Washington?"
+subtitle: ""
+date: "2025-11-28"
+categories: [CCRS, Expiration, Licenses]
+project:
+  type: website
+format: 
+  html: 
+    toc: true
+    code-fold: false
+    theme: flatly
+editor:
+  markdown:
+    wrap: 72
+---
+
+## The Bottom Line Up Front 
+License expiration is a quiet but powerful structural force. When thousands of licenses cluster within a narrow time window, the entire cannabis ecosystem feels the weight—from growers to retailers, labs, and regulators.
+
+By mapping expiration risk statewide, TECL provides clarity where the market previously lacked visibility.
+This empowers businesses, strengthens the supply chain, and supports a more resilient Washington cannabis economy.
+
+**Overview**  
+License expiration is an under-analyzed but critical signal in Washington’s cannabis ecosystem. Every license—producer, processor, or retailer—must renew on a predictable annual cycle, and failure to renew leads to immediate inactivity, product immobility, and permanent loss of market position.
+
+Using CCRS-aligned licensee data, TECL analyzed more than 21,000 active cannabis license records and identified 10,042 licensees whose licenses expire within the next six months. The findings highlight emerging regional vulnerabilities, volume surges, and market-level risks that operators and policymakers cannot ignore.
+
+## Takeaways for Operators, Regulators & Stakeholders
+
+::: {.callout-tip title="For Operators"}
+- Confirm renewal dates well ahead of deadlines  
+- Align renewal timing with product cycles  
+- Prepare compliance packages early  
+- Anticipate potential LCB delays in Nov–Dec  
+:::
+
+::: {.callout-note title="For Regulators"}
+- Prepare for high renewal load during Q4 2025  
+- Consider auto-renew or streamlined renewal guidance  
+- Provide early warning communications to at-risk licensees  
+:::
+
+::: {.callout-important title="For Retailers"}
+- Identify whether suppliers appear in the “0–3 month” category  
+- Strategize procurement ahead of expiration windows  
+- Hold buffer inventory where applicable  
+:::
+
+::: {.callout-warning title="For Policy Analysts"}
+- Track whether expirations correlate with business exits  
+- Monitor rural cluster expiration risk  
+- Evaluate local tax revenue and employment impacts  
+- Inform legislative discussions on renewal reform  
+:::
+
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+
+library(ggplot2)
+library(DBI)
+library(dplyr)
+library(magrittr)
+library(lubridate)
+library(plotly)
+library(arrow)
+library(duckdb)
+library(fs)
+library(glue)
+library(kableExtra)
+library(scales)
+library(stringr)
+library(DT)
+
+if (exists("con")) 
+    try(DBI::dbDisconnect(con), silent = TRUE)
+
+# Connect to DuckDB (read-only mode)
+source(here::here("R_scripts", "connect_duckdb_readonly.R"))
+
+```
+
+```{r, echo=FALSE}
+
+# 1. Load data
+licensees <- dbGetQuery(con, "SELECT LicenseeId, Name, City, LicenseExpirationDate, LicenseStatus FROM Licensee_all")
+
+# 2. Parse expiration dates
+licensees <- licensees %>%
+  mutate(
+    LicenseExpirationDate = as.Date(LicenseExpirationDate),
+    today = Sys.Date(),
+    months_to_expire = interval(today, LicenseExpirationDate) %/% months(1),
+    status = case_when(
+      LicenseExpirationDate < today ~ "Expired",
+      months_to_expire <= 3 ~ "Expiring (0–3 months)",
+      months_to_expire <= 6 ~ "Expiring (3–6 months)",
+      TRUE ~ "Active (6+ months)"
+    )
+  )
+
+# 3. Filter to licenses expiring in the next 6 months
+at_risk <- licensees %>%
+  filter(status %in% c("Expiring (0–3 months)", "Expiring (3–6 months)"))
+
+```
+
+
+```{r, echo=FALSE, include=FALSE}
+
+# 4. Count by month and city (or LicenseStatus/type if available)
+monthly_expiry <- at_risk %>%
+  mutate(expiry_month = floor_date(LicenseExpirationDate, unit = "month")) %>%
+  count(expiry_month, City)
+
+```
+## 1. Why License Expiration Analysis Matters
+
+License expiration is not simply an administrative milestone — it drives several critical dynamics across Washington’s cannabis ecosystem.
+
+### **Regulatory continuity**
+- Lapses create compliance gaps  
+- Untaggable product disrupts seed-to-sale traceability  
+- Operators risk falling out of reporting compliance
+
+### **Supply chain stability**
+- Retailers with expiring licenses may interrupt high-volume customer pipelines  
+- Producers facing renewal deadlines often scale back activity  
+- Distributors may experience routing or manifest delays
+
+### **Market churn**
+Expiration spikes are often followed by:
+
+- Mergers & acquisitions  
+- Location closures  
+- Ownership changes  
+- Reduced operating hours  
+- Inventory liquidations  
+
+The closer an entire sector gets to mass renewal events, the greater the strain on licensing authorities and business operations.
+
+---
+
+## 2. What the Data Shows: A Six-Month Expiration Wave
+
+Your stacked bar visualization highlights a significant renewal surge across Washington’s cannabis market.
+
+### **End-of-year concentration**
+- **~3,050 licenses** expiring in **November 2025**  
+- **~3,350 licenses** expiring in **December 2025**
+
+That means **over 6,000 licenses will require renewal within a 61-day window**.
+
+No regulatory system — LCB, WSDA, local governments, or labs — functions without stress when thousands of entities require action simultaneously.
+
+### **Early 2026 continuation**
+The months that follow show smaller but meaningful renewal waves:
+
+| Month       | Approx. Expiring Licenses |
+|-------------|----------------------------|
+| Jan 2026    | ~850                       |
+| Feb 2026    | ~900                       |
+| Mar 2026    | ~750                       |
+| Apr 2026    | ~575                       |
+| May 2026    | ~650                       |
+| Jun 2026    | Near zero                  |
+
+Renewals spike sharply at year-end before flattening in the spring.
+
+---
+
+## 3. Where Are At-Risk Licensees Located?
+
+The dataset contains **531 city–month combinations** of expiring licenses — from major metros to small rural agricultural communities.
+
+Examples include:
+
+- **Airway Heights – 36**  
+- **Anacortes – 12**  
+- **Auburn – 11**  
+- **Bellevue – 23**  
+- **Bellingham – 71**  
+- **Olympia – 55**  
+- **Spokane – 47**  
+- **Yakima region – multiple clusters**
+
+Several small towns show **high concentrations relative to population**, signaling that communities anchored by cultivation and processing may experience simultaneous operational risk.
+
+---
+
+## 4. The At-Risk Category: Who’s Most Vulnerable?
+
+We dentified **10,042 licensees** in the “0–3 months” or “3–6 months” expiration groups.
+
+These include:
+
+- Individual sole proprietors  
+- Small rural farms  
+- Brands with only one licensed location  
+- Older labs and processors  
+- Retailers in dense metro corridors  
+
+**It also includes entities with past-due renewals (negative months), reflecting administrative lag between expiration and market exit.**
+
+### **Why this matters**
+Licensees in the at-risk category face the highest operational vulnerability:  
+
+- Missed renewal deadlines  
+- Product in transit risking quarantine  
+- Retail shelves experiencing regional shortages  
+- Operators using expiration as a natural exit point  
+
+---
+
+## 5. Market Implications
+
+### **1. End-of-Year Congestion**
+Over **6,000 licenses** expiring in Nov–Dec 2025 will saturate LCB’s renewal queue.  
+Slow processing times may delay approvals into Q1 2026.
+
+### **2. Retail Disruption**
+Many of the state’s **highest-volume retailers**  
+
+— identified in transportation bottleneck analysis  
+— operate in cities with large expiration clusters.  
+This aligns **expiry risk with distribution risk**.
+
+### **3. Increased M&A Activity**
+Expiration waves historically precede:  
+
+- License transfers  
+- Corporate restructuring  
+- Strategic acquisitions  
+- Capital repositioning  
+
+### **4. Equity & Rural Impact**
+Cannabis-dependent rural communities such as **Okanogan, Oroville, Royal City, and Centralia** experience disproportionate effects.  
+License expiration in these areas directly impacts:
+
+- Local employment  
+- Agricultural supply chains  
+- Municipal tax revenue  
+
+---
+
+```{r, echo=FALSE, include=TRUE, fig.width=30, fig.height=60}
+
+# 5. Plot expirations over time by city
+ggplot(monthly_expiry, aes(x = expiry_month, y = n, fill = City)) +
+  geom_col(position = "stack") +
+  scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  labs(
+    title = "The Expiring Market: Who’s at Risk of Losing a License?",
+    subtitle = "Licenses expiring in the next 6 months, grouped by city",
+    x = "Expiration Month",
+    y = "Number of Licenses",
+    fill = "City"
+  ) +
+  theme_minimal(base_size = 40) +
+  theme(
+    legend.text = element_text(size = 40),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom"
+  )
+
+```
+
+```{r, echo=FALSE, include=TRUE}
+
+monthly_expiry <- at_risk %>%
+  mutate(expiry_month = floor_date(LicenseExpirationDate, unit = "month")) %>%
+  count(expiry_month, City)
+
+DT::datatable(
+  monthly_expiry,
+  options = list(
+    pageLength = 50,     # Show 50 rows per page
+    lengthMenu = c(25, 50, 100, 200),  # Options to change page size
+    scrollX = TRUE        # Enables horizontal scrolling for wide tables
+  ),
+  rownames = FALSE,
+  filter = "top",         # Optional: adds column filters
+  class = 'stripe hover'  # Optional: improves appearance
+)
+
+```
+
+<br>
+
+License expiration is an under-analyzed but critical signal in Washington’s cannabis ecosystem. Every license—producer, processor, or retailer—must renew on a predictable annual cycle, and failure to renew leads to immediate inactivity, product immobility, and permanent loss of market position.
+
+Using CCRS-aligned licensee data, TECL analyzed more than 21,000 active cannabis license records and identified 10,042 licensees whose licenses expire within the next six months. The findings highlight emerging regional vulnerabilities, volume surges, and market-level risks that operators and policymakers cannot ignore.

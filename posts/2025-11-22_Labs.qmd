@@ -1,0 +1,370 @@
+---
+title: "Understanding THC Potency in Washington’s Cannabis Market: What CCRS Data Reveals (Jan 2024-Oct 2025)"
+subtitle: ""
+date: "2025-11-22"
+categories: [CCRS, Cannabis, THC, Lab Results ]
+params:
+  comments: true
+  project:
+  type: website
+format: 
+  html: 
+    toc: true
+    code-fold: false
+    theme: flatly
+editor:
+  markdown:
+    wrap: 72
+---
+
+## The Bottom Line Up Front  
+
+THC potency data in Washington’s CCRS system reveals:
+
++ a bimodal THC distribution,
+
++ concentrate-driven right tail values,
+
++ evidence of lab inconsistencies,
+
++ frequent reporting unit errors,
+
++ and clear market pressure toward high THC labeling.
+
+As The Evergreen Canna Ledger expands, our goal is to make potency data transparent, interpretable, and actionable — supporting:
+
++ evidence-based policymaking,
+
++ more equitable wholesale markets,
+
++ and honest communication with consumers.
+
+## Overview  
+
+**Market Implications: What THC Trends Tell Us**
+
+A. Potency Drives Pricing  
+Wholesale buyers pay more for products above 25–28% THC, even if research shows no correlation between THC percentage and consumer experience.
+
+B. Brands Leveraging High Lab Results Win Shelf Space  
+Retailers face consumer demand for high potency labels; thus, brands with “inflated” results often outsell honest ones.
+
+C. Distortion Harms Cultivators and Consumers  
+Cultivators with legitimate, accurately tested 17–22% flower may be artificially disadvantaged.  
+
+Consumers are misled about strength and risk tolerance.
+
+D. The Industry Would Benefit From Standardized Reporting  
+Washington could consider:
+
++ method-specific reporting,
+
++ standardized units,
+
++ mandatory lab round-robin audits,
+
++ automated CCRS data validation rules.
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+
+library(tidyverse)
+library(DBI)
+library(dplyr)
+library(lubridate)
+library(plotly)
+library(arrow)
+library(duckdb)
+library(fs)
+library(glue)
+library(kableExtra)
+library(scales)
+library(stringr)
+
+if (exists("con")) 
+    try(DBI::dbDisconnect(con), silent = TRUE)
+
+# Connect to DuckDB (read-only mode)
+source(here::here("R_scripts", "connect_duckdb_readonly.R"))
+
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+
+# Load tables
+inventory <- dbGetQuery(con, "
+  SELECT InventoryId, ProductId, LicenseeId
+  FROM Inventory_all
+  WHERE IsDeleted IS NULL OR UPPER(IsDeleted) != 'TRUE'
+")
+
+products <- dbGetQuery(con, "
+  SELECT ProductId, InventoryType
+  FROM Product_all
+  WHERE IsDeleted IS NULL OR UPPER(IsDeleted) != 'TRUE'
+")
+
+licensees <- dbGetQuery(con, "
+  SELECT LicenseeId, Name AS LicenseeName
+  FROM Licensee_all
+")
+
+lab_results <- dbGetQuery(con, "
+  SELECT
+    lr.LabResultId,
+    lr.TestDate,
+    LOWER(TRIM(lr.TestName)) AS TestName,
+    CAST(lr.TestValue AS FLOAT) AS TestValue,
+    lr.LabTestStatus,
+    lr.LicenseeId,
+    lr.InventoryId
+  FROM LabResult_all lr
+  WHERE 
+    (lr.IsDeleted IS NULL OR UPPER(lr.IsDeleted) != 'TRUE')
+    AND lr.TestValue ~ '^\\d+(\\.\\d+)?$'
+    AND lr.TestDate >= '2024-01-01'
+")
+```
+## THC Tests Summary
+```{r, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
+
+thc_distribution <- lab_results %>%
+  filter(str_detect(TestName, "thc")) %>%
+  #mutate(is_outlier = TestValue > 50) %>%
+  summarise(
+    thc_test_count = n(),
+    avg = round(mean(TestValue/10, na.rm = TRUE), digits = 2),
+    max = round(max(TestValue/10, na.rm = TRUE), digits = 2), 
+    min = round(min(TestValue/10, na.rm = TRUE), digits = 2)
+    #outlier_count = sum(is_outlier)
+  )
+
+thc_distribution
+
+```
+## Why Are Some THC Values So High?
+
+TECL identifies five major contributors to extreme THC values:
+
+1. Concentrate Potency
+
+Certain extraction methods easily reach:
+
++ 70–85% THC (CO₂)
+
++ 75–90% THC (Hydrocarbon)
+
++ 60–80% THC (Rosin)
+
+These account for much of the right-tail.
+
+2. Lab Variability
+
+Washington has no unified statewide testing standard, and CCRS receives only the submitted values — not the method or certificate. Inter-lab variation is widely known in the industry.
+
+3. Units Misreported as Percent
+
+CCRS accepts raw numeric fields. If a lab reports mg/g, CCRS interprets it as “percent.”
+Examples:
+
++ 800 mg/g → 800% THC
+
++ 200 mg/g → 200% THC
+
+These contribute to the extreme right-tail.
+
+4. Potency Inflation Behavior
+
+Competitive pressures incentivize labs and processors to “keep up” with the market. Numerous academic reports and media investigations have documented potency inflation nationwide.
+
+Washington is not immune.
+
+5. Intermediate Material
+
+Concentrates in mid-processing (distillate still in refinement) can reach extremely high values before blending.
+
+
+## Distribution of THC Test Values
+```{r, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE}
+
+thc_histogram <- lab_results %>%
+  filter(str_detect(TestName, "thc")) %>%
+  #filter(TestValue < 500) %>%
+  ggplot(aes(TestValue)) +
+  geom_histogram(binwidth = 1, fill = "darkgreen") +
+  labs(title = "", x = "Percent THC", y = "Count") +
+  theme_minimal() +  # base size sets default
+  theme(
+    axis.title.x = element_text(size = 14),    # x-axis title
+    axis.title.y = element_text(size = 14),    # y-axis title
+    axis.text.x = element_text(size = 12),     # x-axis tick labels
+    axis.text.y = element_text(size = 12),     # y-axis tick labels  
+    ) +
+   scale_x_continuous(labels = scales::label_percent(scale = 1), limits = c(0, 500)) +
+   scale_y_continuous(labels = scales::comma_format(), limits = c(0, 6000))
+
+thc_histogram
+
+```
+## Licensees With the Most High-THC Results  
+
+A TECL-generated ranking of the top 50 high-THC performers shows:
+
++ Many licensees repeatedly produce avg THC = 50% across hundreds or thousands of tests.
+
++ Several show max THC values in the 74–79% range.
+
++ Hydrocarbon processors appear most frequently, indicating:
+
+  + consistent extraction methods,
+  
+  + BHO consistently produces the highest test results, with many processors showing avg THC = 50% and max THC ≥ 75–80%,
+  
+  + CO₂ oils tend to cluster around 50–74% THC, 
+
+  + strong lab partnerships,
+
+  + or market positioning around high-potency products.
+
+Noteworthy THC Contributors:
+
+- LIFTED HOLDINGS, LTD. appears in 10+ line items in the top 50.
+
+- HANNAH INDUSTRIES LLC regularly ranks at the top of non-solvent concentrates.
+
+- AGRO MECHANIX LLC ranks in both hydrocarbon and inhalable concentrates.
+
+A. Large Cluster at 0–1% THC
+
+Thousands of samples report near-zero THC — almost always:
+
++ immature plants,
+
++ post-harvest waste streams,
+
++ intermediate materials not meant for retail,
+
++ or categories where THC is not the primary analyte.
+
+**These are expected and legitimate low-THC values.**
+
+B. A Mid-Market Cluster (~15–30% THC Flower)
+
+This is the region most consumers associate with “normal” cannabis potency. The bulk of usable cannabis and flower lots fall here, forming a wide bell-shaped distribution.
+
+C. A Long Tail Stretching From 35% to 500%
+
+This portion of the distribution reveals:
+
++ high-potency concentrates (hydrocarbon, CO₂, rosin),
+
++ potency-inflated results,
+
++ lab inconsistencies or reporting errors,
+
++ mislabeled units (e.g., mg/g reported as percent),
+
++ and possible THC inflation behavior tied to competitive pressures.
+
+Values above 100% THC are only possible for concentrates, where THC can exceed 800 mg/g (80%). However, CCRS records include results up to 500%, indicating misreporting or pre-standardization unit confusion.
+
+This consistency suggests reliable output — or potentially **systematic potency inflation**, something that only comparative inter-lab analysis can confirm.
+```{r, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+
+high_thc <- lab_results %>%
+  filter(str_detect(tolower(TestName), "thc")) %>%
+  filter(TestValue > 0) %>%
+  select(InventoryId, TestValue)
+
+# Join and summarize
+high_thc_summary <- high_thc %>%
+  inner_join(inventory, by = c("InventoryId"), relationship = "many-to-many") %>%
+  inner_join(products, by = "ProductId", relationship = "many-to-many") %>%
+  inner_join(licensees, by = "LicenseeId", relationship = "many-to-many") %>%
+  group_by(LicenseeName, InventoryId, InventoryType) %>%
+  summarise(
+    n_tests = n(),
+    avg_thc = round(mean(TestValue / 10, na.rm = TRUE), 1),  # % conversion
+    max_thc = round(max(TestValue / 10, na.rm = TRUE), 1),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(avg_thc))
+
+top_thc <- high_thc_summary %>%
+  ungroup() %>%
+  filter(avg_thc <= 50) %>% # limit to plausible %
+  arrange(desc(avg_thc)) %>%
+  slice_head(n = 50)
+
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE,  fig.height=25, fig.width=15}
+# 
+
+ggplot(top_thc, aes(x = reorder(LicenseeName, avg_thc), y = avg_thc, fill = InventoryType)) +
+  geom_col() +
+  coord_flip() +
+  scale_y_continuous(labels = scales::label_percent(scale = 1), limits = c(0, 500)) +
+  labs(
+    title = "Top 21 Licensees by Average THC (%)",
+    x = "Licensee",
+    y = "Average THC (%)",
+    fill = "Inventory Type"
+  ) +
+ theme_minimal() +  # base size sets default
+  theme(
+    plot.title = element_text(size = 22), 
+    axis.title.x = element_text(size = 18),    # x-axis title
+    axis.title.y = element_text(size = 18),    # y-axis title
+    axis.text.x = element_text(size = 16),     # x-axis tick labels
+    axis.text.y = element_text(size = 16),     # y-axis tick labels
+    legend.text = element_text(size = 18),
+    legend.title = element_text(size = 16),
+    legend.position = "right"
+    )
+
+```
+
+## Inventory Type View  
+
+**To compare by product type:**
+```{r, echo=FALSE, warning=FALSE, message=FALSE, include=TRUE, fig.height=45, fig.width=98}
+
+# Reorder licensee names *within* each InventoryType
+top_thc <- top_thc %>%
+  mutate(FacetLicensee = fct_reorder(
+    interaction(InventoryType, LicenseeName, sep = " - "),
+    avg_thc
+  ))
+
+# Step 2: Plot using the new reordered variable
+ggplot(top_thc, aes(x = FacetLicensee, y = avg_thc)) +
+  geom_col(fill = "forestgreen") +
+  coord_flip() +
+  facet_wrap(~InventoryType, scales = "free_y") +
+  scale_y_continuous(labels = scales::label_percent(scale = 1), limits = c(0, 500)) +
+  labs(
+    title = "Top THC Levels by Product Type",
+    x = "Licensee",
+    y = "Average THC (%)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 75),
+    axis.title.x = element_text(size = 75),    # x-axis title
+    axis.title.y = element_text(size = 75),    # y-axis title
+    axis.text.x = element_text(size = 70),     # x-axis tick labels
+    axis.text.y = element_text(size = 70),     # y-axis tick labels
+    strip.text = element_text(size = 70, face = "bold")       # for facet labels if using facet_wrap
+  )
+
+```
+
+<br>
+
+THC potency is one of the most influential and controversial — and misunderstood — metrics in Washington’s cannabis marketplace. Although potency has become a dominant driver of consumer choice, wholesale pricing, retail margins, and brand strategy, few stakeholders have access to the underlying data needed to understand what potency really looks like across product categories, labs, and licensees.
+
+Using millions of CCRS laboratory test results, The Evergreen Canna Ledger analyzed THC distribution patterns, outliers, potency inflation signals, and the operators producing the highest-reported THC values in 2023–2025.
+
+What was provided was a data-driven look at how potency behaves in Washington’s regulated market — and what those patterns mean for cultivators, processors, retailers, and policymakers.
+
+TECL will continue producing policy-ready data summaries such as these.

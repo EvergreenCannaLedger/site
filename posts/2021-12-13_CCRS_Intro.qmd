@@ -68,9 +68,3 @@ Why so few licensees in December 2021?
 Sources used for this article: Cannabis Observer, WSLCB Board Meetings, Public concerns about
 CCRS rollout and data quality, Leaf Data Systems Retirement Announcement
 (https://lcb.wa.gov/traceability/leaf-data-sunset).
-
-# add ad block using raw html
-
-<ins class="adsbygoogle" style="display:block" data-ad-format="auto">
-
-</ins>

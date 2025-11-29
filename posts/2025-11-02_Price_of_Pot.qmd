@@ -3,13 +3,13 @@ title: "The Price of Pot: Trends in Unit Prices by Product Type"
 subtitle: "An analysis of cannabis product inventory levels across Washington state"
 date: "2025-11-02"
 categories: [CCRS, Cannabis, Price]
+project:
+  type: website
 format: 
   html: 
-    fig-height: 4.5
-    fig-width: 6
     toc: true
     code-fold: false
-    theme: cosmo
+    theme: flatly
 editor:
   markdown:
     wrap: 72
@@ -29,11 +29,24 @@ library(glue)
 library(kableExtra)
 library(scales)
 
-# Connect to DuckDB
-source("../R_scripts/connect_duckdb_readonly.R")
+if (exists("con")) 
+    try(DBI::dbDisconnect(con), 
+silent = TRUE)
+
+source("C:/Users/theob/OneDrive/Documents/evergreen-canna-ledger/R_scripts/connect_duckdb_readonly.R")
+
+
 
 ```
-## The Bottom Line Up Fron
+## The Bottom Line Up Front  
+This four-year pricing dataset reveals a cannabis market that is highly stratified, increasingly efficient, and maturing toward CPG dynamics.
+For operators and analysts, the trends highlight where margin pressure is likely to persist—and where premium tiers still justify investment.
+
+**Overview**  
+Washington’s cannabis marketplace continues to evolve, shaped by tightening margins, shifting consumer behavior, and seasonal dynamics.
+Using nearly four years of transaction-level data (Dec 2021–Nov 2025), we can track how average unit prices have moved across product categories—including flower, edibles, concentrates, tinctures, capsules, and emerging specialty products.
+
+The trends below give operators, analysts, and regulators a clearer view of where price compression is occurring—and where premiums are holding strong.
 
 **Insights**
 
@@ -42,38 +55,215 @@ source("../R_scripts/connect_duckdb_readonly.R")
 + Are price drops tied to overproduction or seasonal changes?
 
 + Do some categories show stability compared to others?
-```{r}
+```{r, echo=FALSE}
 # Query average unit price by month and product category
 
 pricing_trends <- dbGetQuery(con, "
-SELECT
-DATE_TRUNC('month', sd.CreatedDate) AS SaleMonth,
-p.InventoryType,
-AVG(CAST(sd.UnitPrice AS DOUBLE)) AS AvgUnitPrice
-FROM SalesDetail_clean sd
-JOIN Product_clean p ON sd.ProductId = p.ProductId
-WHERE
-sd.UnitPrice IS NOT NULL AND
-sd.CreatedDate IS NOT NULL AND
-p.InventoryType IS NOT NULL
-GROUP BY SaleMonth, p.InventoryType
-ORDER BY SaleMonth
+  SELECT
+    DATE_TRUNC('month', CAST(sd.CreatedDate AS TIMESTAMP)) AS SaleMonth,
+    p.InventoryType,
+    AVG(CAST(sd.UnitPrice AS DOUBLE)) AS AvgUnitPrice
+  FROM SalesDetail_clean sd
+  JOIN Inventory_clean i ON sd.InventoryId = i.InventoryId
+  JOIN Product_clean p ON i.ProductId = p.ProductId
+  WHERE
+    sd.UnitPrice IS NOT NULL AND
+    sd.CreatedDate IS NOT NULL AND
+    p.InventoryType IS NOT NULL AND
+    DATE_TRUNC('month', CAST(sd.CreatedDate AS TIMESTAMP)) 
+      BETWEEN DATE '2021-12-01' AND CURRENT_DATE
+  GROUP BY SaleMonth, p.InventoryType
+  ORDER BY SaleMonth
 ")
 
+pricing_trends <- pricing_trends %>%
+  filter(SaleMonth >= as.Date("2021-12-01") & SaleMonth <= Sys.Date())
+
 ```
-Plot Pricing Trends Over Time
-```{r}
-ggplot(pricing_trends, aes(x = as.Date(SaleMonth), y = AvgUnitPrice, color = InventoryType)) +
-geom_line(size = 1) +
-labs(
-title = "💰 Average Unit Price Over Time by Product Type",
-x = "Month",
-y = "Average Unit Price ($)",
-color = "Product Type"
-) +
-theme_minimal(base_size = 14) +
-scale_y_continuous(labels = scales::dollar_format()) +
-theme(legend.position = "bottom")
+## Plot Pricing Trends Over Time
+```{r, warning=FALSE, echo=FALSE, include=TRUE, fig.width=15, fig.height=25}
+
+plot_ly(
+  data = pricing_trends,
+  x = ~as.Date(SaleMonth),
+  y = ~AvgUnitPrice,
+  color = ~InventoryType,
+  type = 'scatter',
+  mode = 'lines',
+  line = list(width = 2)
+) %>%
+  layout(
+    title = "Average Unit Price Over Time by Product Type",
+    xaxis = list(title = "Month"),
+    yaxis = list(
+      title = "Average Unit Price ($)",
+      tickformat = "$,.2f"
+    ),
+    legend = list(orientation = "h", x = 0.1, y = -0.2),
+    margin = list(b = 100),
+    hovermode = "x unified"
+  )
 
 ```
 
+## 1. Flower Pricing: Volatile but Stabilizing
+
+**Usable Cannabis (Flower)** — historically the core of Washington’s retail market — shows seasonal fluctuations but a clear long-term downward trend.
+
+- **Late 2021–2022:** Prices ranged **$17–$25**, with early 2022 peaking (e.g., **$25.33 in Jan 2022**).
+- **2023:** Stabilized around **$16–$24**, including a spring tightening tied to inventory cycles.
+- **2024–2025:** Prices gradually compressed toward **$17–$20**, consistent with increasing competition and fall harvest cycles.
+
+**Flower lots** (bulk/wholesale flower) often show **near-zero values** due to:  
+
+- partial lots  
+- returns  
+- destruction entries  
+- compliance-only adjustments  
+
+These do *not* reflect retail pricing.
+
+**Interpretation:**  
+The flower market is mature. Oversupply, aggressive price competition, and consumer trade-down behavior have kept prices flat despite inflationary pressures elsewhere.
+
+---
+
+## 2. Edibles: Remarkably Stable Across the Market
+
+Both solid and liquid edibles show one of the strongest stability profiles in the entire dataset.
+
+### **Solid Edibles**
+- Typically range **$16.0–$19.2** over four years.
+- Minor monthly fluctuations with no long-term inflation or deflation.
+
+### **Liquid Edibles**
+- Generally fall between **$10.5–$15.5**.
+- Slight price compression in 2024, with several months dipping **below $11.00**.
+
+**Interpretation:**  
+Edibles behave like a classic **consumer packaged goods (CPG)** category — less exposed to grower cycles and more dependent on branding, formulation, dosing, and manufacturing consistency.
+
+---
+
+## 3. Concentrates: Diverging Price Tiers
+
+Washington’s concentrate market clearly splits into distinct segments:
+
+### **1. Premium, Non-Solvent Extracts**
+- Often priced **$30–$70** per unit.
+- Repeated peaks (e.g., **$69.68 in Mar 2023**, sustained **$53–$57** through 2024–25).
+- Driven by strong demand for rosin and solventless SKUs.
+
+### **2. Hydrocarbon & Ethanol Extracts**
+- Much more affordable, typically **$6–$20**.
+- Occasional deep dips (**$3–$4**) during processor inventory resets.
+
+### **3. CO₂ Extracts**
+- Mid-tier pricing, usually **$18–$27**.
+
+### **4. Concentrate for Inhalation (catch-all category)**
+- Averages **$14–$28**.
+- Moderate inflation in 2023, easing back down in 2024–25.
+
+**Interpretation:**  
+Concentrates follow a **dual-market structure**: 
+
+- A **craft premium tier** (solventless, high labor, low yield)  
+- A **value tier** (hydrocarbon & CO₂ extracts)  
+
+Demand elasticity is very different between the two segments.
+
+---
+
+## 4. Tinctures and Capsules: High Margin, High Volatility
+
+### **Tinctures**
+- Increase steadily over time.
+- Late 2022 prices **$14–$23**, rising to **$27–$31** by 2024.
+- One of the highest-margin categories.
+
+### **Capsules**
+- Typically **$11–$28**.
+- Frequent spikes tied to batch availability and production gaps.
+
+**Interpretation:**  
+These medical-adjacent categories serve niche but loyal consumers, making them more prone to supply-driven volatility.
+
+---
+
+## 5. Topicals and Transdermals: A Quiet but Consistent Premium Category
+
+### **Topical Ointments**
+- Commonly priced **$16–$26**.
+- Stable even during broader market price compression.
+
+### **Transdermals**
+- Range **$8–$30**, with visible upward drift during 2023–24.
+
+**Interpretation:**  
+These categories cater to wellness-oriented consumers and show more resilient price floors than inhalable products.
+
+---
+
+## 6. Emerging, Niche, and Anomalous Product Categories
+
+### **Suppositories**
+- Extremely high prices (**$120–$150**).
+- Reflect tiny batch sizes and limited competition.
+
+### **Flower Lots & Wet Flower**
+Very low averages due to operational entries such as:  
+
+- internal transfers  
+- waste  
+- partial units  
+- destruction manifests  
+
+These are **not** indicators of retail price levels.
+
+### **Plants, Clones, Seeds**
+- Near-zero averages are expected; these are typically compliance units, not retail items.
+
+---
+
+## 7. The Big Picture: What Operators Should Take Away
+
+Across **2021–2025**, several consistent themes emerge.
+
+### **1. Price Compression Is Persistent but Uneven**
+- Flower and hydrocarbon concentrates face ongoing downward pressure.
+- Edibles and topicals remain stable.
+- Solventless extracts and tinctures continue to hold premium value.
+
+### **2. Consumers Are Migrating Toward Value**
+Recurring dips in 2023–2024 reflect:  
+
+- heavier discounting  
+- larger pack sizes  
+- consumer trade-down strategies  
+
+### **3. Premiumization Still Exists**
+Mostly in:  
+
+- solventless concentrates  
+- capsules  
+- select tinctures  
+
+### **4. Inventory & Seasonal Cycles Matter**
+Annual **Q4 outdoor harvests** correlate with:  
+
+- lower flower prices  
+- more concentrate production  
+- increased volatility in wholesale categories  
+
+### **5. A Mature, Competitive Market**
+Washington resembles:  
+
+- a **commodity market** for flower and inhalables  
+- a **CPG market** for edibles and topicals  
+
+This dual identity defines current pricing dynamics.
+
+---
+
+What was provided was a data-driven look at how the price of pot behaves in Washington’s regulated market — and what those patterns mean for cultivators, processors, retailers, and policymakers.

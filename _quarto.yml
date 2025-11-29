@@ -12,15 +12,15 @@ website:
       - text: "Home"
         href: index.qmd
       - text: "Blog"
-        href: blog.qmd       # ✅ points to a blog listing page
+        href: blog.qmd       
       - text: "Dashboards"
         href: dashboards.qmd
       - text: "About"
         href: about.qmd
 
   page-footer:
-    left: "© 2023 Evergreen Canna Ledger"
-    right: "Open Data for Washington's Cannabis Industry"
+    left: "The Evergreen Canna Ledger"
+    right: "Open CCRS Data for Washington's Cannabis Industry"
 
 format:
   html:
@@ -28,3 +28,4 @@ format:
     css: assets/css/custom.css
     self-contained: false
     embed-resources: false
+    include-after-body: commento.html.in

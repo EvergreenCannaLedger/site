@@ -9,3 +9,23 @@ table {
 .table-striped > tbody > tr:nth-child(odd) {
   background-color: #f9f9f9;
 }
+
+/* Make Commento match the Flatly theme */
+#commento * {
+  font-family: "Lato", "Helvetica Neue", Arial, sans-serif !important;
+}
+
+#commento .commento-card {
+  border-radius: 6px;
+  border: 1px solid #e5e5e5;
+}
+
+#commento .commento-submit-button {
+  background: #18bc9c !important;
+  border-color: #18bc9c !important;
+}
+
+#commento .commento-submit-button:hover {
+  background: #128f76 !important;
+  border-color: #128f76 !important;
+}
