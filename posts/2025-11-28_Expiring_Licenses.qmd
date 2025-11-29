@@ -143,7 +143,7 @@ The closer an entire sector gets to mass renewal events, the greater the strain 
 
 ## 2. What the Data Shows: A Six-Month Expiration Wave
 
-Your stacked bar visualization highlights a significant renewal surge across Washington’s cannabis market.
+The stacked bar chart below highlights a significant renewal surge across Washington’s cannabis market.
 
 ### **End-of-year concentration**
 - **~3,050 licenses** expiring in **November 2025**  
