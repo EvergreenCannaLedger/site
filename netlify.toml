@@ -1,9 +1,13 @@
-[build]
-publish = "_site"
-command = "bash install-quarto.sh && quarto render"
-
 [build.environment]
 QUARTO_VERSION = "1.4.550"  # Or latest: https://quarto.org/docs/download/
+
+[build]
+publish = "_site"
+command = """
+  bash install-quarto.sh &&
+  export PATH=$PWD/quarto-${QUARTO_VERSION}/bin:$PATH &&
+  quarto render
+"""
 
 [functions]
 directory = "netlify/functions"
