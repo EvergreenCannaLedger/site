@@ -1,5 +1,5 @@
 [build]
-command = ""
+command = "quarto render"
 publish = "_site"
 
 
