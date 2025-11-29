@@ -1,4 +1,5 @@
 [build.environment]
+NETLIFY_IMAGE = "ubuntu-20.04"
 QUARTO_VERSION = "1.4.550"  # Or latest: https://quarto.org/docs/download/
 
 [build]

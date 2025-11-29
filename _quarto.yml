@@ -6,6 +6,7 @@ website:
   title: "The Evergreen Canna Ledger"
   site-url: https://www.evergreencannaledger.org
   description: "Washington's Cannabis Open Data Ledger"
+  output-dir: _site
 
   navbar:
     right:
