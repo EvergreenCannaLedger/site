@@ -256,14 +256,15 @@ yaxis = list(title = "Average Discount %")
 #   kableExtra::kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
 
 ```
+
 <br>
-<br>
+
 **Overview**
 
-This report compared April 2022 to April 2023 cannabis retail activity in Washington, focusing on:
+This report compared April 2022 to April 2023 cannabis retail activity in Washington, focusing on:  
 
-Licensee reporting
++ Licensee reporting
 
-Revenue Generation
++ Revenue Generation
 
-Discount % behavior
++ Discount % behavior

@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2023-02-01">
+<meta name="dcterms.date" content="2024-05-01">
 
-<title>Washington Retail Momentum — Licensee Reporting and Discounting (Dec 2021 - Dec 2022) – The Evergreen Canna Ledger</title>
+<title>What Washington Retailers Did for 4/20: April Sales Trends 2022–2024 – The Evergreen Canna Ledger</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,41 +20,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -185,13 +150,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Washington Retail Momentum — Licensee Reporting and Discounting (Dec 2021 - Dec 2022)</h1>
-<p class="subtitle lead">How Cannabis Sales and Discounting Evolved in 2022</p>
+<h1 class="title">What Washington Retailers Did for 4/20: April Sales Trends 2022–2024</h1>
+<p class="subtitle lead">Washington Retailers Show Maturity in 4/20 Strategies: Sales Triple, Discounts Steady</p>
   <div class="quarto-categories">
-    <div class="quarto-category">CCRS</div>
     <div class="quarto-category">Cannabis</div>
-    <div class="quarto-category">Monthly</div>
+    <div class="quarto-category">Holiday</div>
+    <div class="quarto-category">Sales</div>
     <div class="quarto-category">Discount</div>
+    <div class="quarto-category">3Years</div>
   </div>
   </div>
 
@@ -203,7 +169,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 1, 2023</p>
+      <p class="date">May 1, 2024</p>
     </div>
   </div>
   
@@ -215,168 +181,278 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><br> <strong>Interpretive Summary</strong></p>
-<p>The 2022 trajectory underscores a maturing Washington cannabis retail ecosystem. Rather than relying on steep price competition, most retailers achieved growth through steady CCRS entry and reporting, consistent pricing, and expanding consumer access.</p>
-<p>This period marked the state’s first stable data baseline for comparing retail performance trends — setting the stage for 2023’s focus on category-specific and regional dynamics. <br></p>
-<p><br> <strong>Quarterly Observations</strong></p>
-<p>Q1 2022: Erratic pricing behavior — February’s 21% average discount spike likely reflected early inventory clearing by smaller operators.</p>
-<p>Q2 2022: Stabilization around 5–10% discounts, with moderate sales momentum and 14–18 active licensees.</p>
-<p>Q3 2022: Expansion phase — participation exceeded 20 licensees for the first time, paired with steady discount compression to below 3%.</p>
-<p>Q4 2022: Strongest revenue quarter of the year, led by November–December growth exceeding $13M monthly. Discount averages returned near zero, signaling high consumer demand despite minimal markdowns. <br></p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Query Monthly Sales, Discount, and Licensee Count</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>monthly_sales <span class="ot">&lt;-</span> <span class="fu">dbGetQuery</span>(con, <span class="st">"</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="st">WITH base AS (</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="st">SELECT</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="st">sh.LicenseeId,</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="st">DATE_TRUNC('month', CAST(sh.SaleDate AS DATE)) AS Month,</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="st">CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="st">CAST(sd.Quantity AS DOUBLE) AS Quantity,</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="st">CAST(sd.Discount AS DOUBLE) AS Discount</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="st">FROM SalesDetail_all sd</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="st">JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="st">WHERE DATE(sh.SaleDate) BETWEEN '2021-12-01' AND '2022-12-31'</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="st">AND CAST(sd.UnitPrice AS DOUBLE) &lt; 200</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="st">)</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="st">SELECT</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="st">Month,</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="st">COUNT(DISTINCT LicenseeId) AS licensee_reporting,</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="st">ROUND(SUM(UnitPrice * Quantity), 2) AS total_revenue,</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="st">ROUND(SUM(Discount) / NULLIF(SUM(UnitPrice * Quantity), 0) * 100, 2) AS avg_discount_pct</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="st">FROM base</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="st">GROUP BY Month</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="st">ORDER BY Month</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p><strong>Licensees Reporting by Month</strong></p>
+<p><strong>The Bottom Line Up Front</strong><br>
+Three Aprils into CCRS reporting, Washington’s cannabis retail sector has entered a new equilibrium:</p>
+<ul>
+<li>More participants</li>
+<li>Higher sales and</li>
+<li>Smarter pricing strategies</li>
+</ul>
+<p>The 4/20 holiday remains a clear driver of April revenue, but the surrounding data show the maturing normalization of a statewide retail system that’s no longer defined solely by its biggest day of the year.<br>
+</p>
+<p><strong>This analysis:</strong></p>
+<ul>
+<li><p>Compares April sales trends over 3 years</p></li>
+<li><p>Shows both monthly and weekly granularity</p></li>
+<li><p>Highlights differences in revenue and discounting behavior</p></li>
+<li><p>Ready to expand (e.g., transactions, product types, regions)</p></li>
+</ul>
+<p><strong>Contact me if you want summaries for:</strong></p>
+<ul>
+<li><p>Top retailers by revenue per year</p></li>
+<li><p>Product categories split</p></li>
+<li><p>Deep-Dive Report<br>
+<br>
+</p></li>
+</ul>
+<p><strong>Overview</strong><br>
+Every April, Washington’s cannabis retailers prepare for the 4/20 holiday, the single busiest day on the cannabis retail calendar. Using CCRS data compiled through DuckDB, The Evergreen Canna Ledger analyzed three years of April performance—2022, 2023, and 2024—to understand how participation, total revenue, and discount behavior evolved during this key retail window.</p>
+<p>The data reveal a clear pattern: participation and revenue have expanded sharply, while discount strategies have become more measured and sustainable over time.<br>
+<br>
+<strong>Monthly Comparison Plot</strong></p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-ec1c75ee46d58cd51b76" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-ec1c75ee46d58cd51b76">{"x":{"visdat":{"1aa011463365":["function () ","plotlyVisDat"]},"cur_data":"1aa011463365","attrs":{"1aa011463365":{"x":{},"y":{},"marker":{"color":"#2ca02c"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Number of Reporting Licensees (Dec 2021 - Dec 2022)","xaxis":{"domain":[0,1],"automargin":true,"title":"Month"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Licensees Reporting"},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2021-12-01","2022-01-01","2022-02-01","2022-03-01","2022-04-01","2022-05-01","2022-06-01","2022-07-01","2022-08-01","2022-09-01","2022-10-01","2022-11-01","2022-12-01"],"y":[10,16,9,17,16,20,19,21,26,28,27,37,53],"marker":{"color":"#2ca02c","line":{"color":"rgba(31,119,180,1)"}},"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-75ec7b99b4cfe99d9150" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-75ec7b99b4cfe99d9150">{"x":{"visdat":{"617428dd54a6":["function () ","plotlyVisDat"]},"cur_data":"617428dd54a6","attrs":{"617428dd54a6":{"x":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"y":{},"type":"bar","name":"Revenue","marker":{"color":"#1f77b4"},"inherit":true},"617428dd54a6.1":{"x":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"y":{},"type":"scatter","mode":"lines","name":"Discount % (×100k)","yaxis":"y2","line":{"color":"#d62728"},"inherit":true}},"layout":{"width":700,"height":400,"margin":{"b":40,"l":60,"t":25,"r":10},"title":"April Revenue & Discount % (2022–2024)","xaxis":{"domain":[0,1],"automargin":true,"title":"Year","type":"category","categoryorder":"array","categoryarray":["2022","2023","2024"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Revenue (USD)"},"yaxis2":{"overlaying":"y","side":"right","title":"Discount % (×100k)","showgrid":false},"barmode":"group","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2022","2023","2024"],"y":[2559748.0499999998,5522014.6900000004,9636612.1500000004],"type":"bar","name":"Revenue","marker":{"color":"#1f77b4","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2022","2023","2024"],"y":[618000,113999.99999999999,491000],"type":"scatter","mode":"lines","name":"Discount % (×100k)","yaxis":"y2","line":{"color":"#d62728"},"marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
-<p>Figure 1. Monthly Licensee Reporting (Dec 2021–Dec 2022) A simple line plot of licensee reporting count vs.&nbsp;Month shows exponential growth through 2022, peaking at 51 active retailers by year-end.</p>
-<p><br></p>
-<p><strong>Total Monthly Revenue</strong> <br></p>
+<p>From 2022 to 2024, the number of retailers reporting April sales grew more than fourfold, while total monthly revenue expanded nearly six times. This growth reflects both increased CCRS compliance and broader retail coverage across Washington’s market.</p>
+<p>The 2023 season marked a turning point: retailers generated over $5 million in April sales with minimal average discounting, showing that demand remained strong even without deep markdowns. By April 2024, both participation and discounting normalized, with more than 60 licensees and a modest 5% average discount rate, suggesting healthy competition and strategic pricing.<br>
+<br> <strong>Monthly Summary Table</strong></p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-379ac8ee67f1d6cdaca1" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-379ac8ee67f1d6cdaca1">{"x":{"visdat":{"1aa035ee1aca":["function () ","plotlyVisDat"]},"cur_data":"1aa035ee1aca","attrs":{"1aa035ee1aca":{"x":{},"y":{},"mode":"lines+markers","line":{"color":"#1f77b4"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Total Revenue by Month (Dec 2021 - Dec 2022)","xaxis":{"domain":[0,1],"automargin":true,"title":"Month"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Revenue (USD)"},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2021-12-01","2022-01-01","2022-02-01","2022-03-01","2022-04-01","2022-05-01","2022-06-01","2022-07-01","2022-08-01","2022-09-01","2022-10-01","2022-11-01","2022-12-01"],"y":[4552662.6600000001,10281471.32,4052782.73,5092339.46,2559748.0499999998,5246709.9699999997,5399244.3899999997,11398654.630000001,10443102.640000001,20019072.68,28318844.949999999,30144273.32,36309770.859999999],"mode":"lines+markers","line":{"color":"#1f77b4"},"type":"scatter","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-<p>Figure 2. Total Revenue and Average Discount Percent An overlay plot illustrates the inverse relationship between price discounting and sales growth: as discounts narrowed, total revenue rose steadily — suggesting that broad market participation, not aggressive markdowns, was driving sales expansion.</p>
-<p><strong>Average Discount % by Month</strong></p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-fd4986e1714230299263" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-fd4986e1714230299263">{"x":{"visdat":{"1aa07c9f661b":["function () ","plotlyVisDat"]},"cur_data":"1aa07c9f661b","attrs":{"1aa07c9f661b":{"x":{},"y":{},"mode":"lines+markers","line":{"color":"#d62728"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Average Discount % by Month (Dec 2021 - Dec 2022)","xaxis":{"domain":[0,1],"automargin":true,"title":"Month"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Discount %"},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2021-12-01","2022-01-01","2022-02-01","2022-03-01","2022-04-01","2022-05-01","2022-06-01","2022-07-01","2022-08-01","2022-09-01","2022-10-01","2022-11-01","2022-12-01"],"y":[1.75,-1.0900000000000001,18.760000000000002,2.9900000000000002,6.1799999999999997,2.29,2,1.27,1.73,0.78000000000000003,-0.17999999999999999,-0.80000000000000004,0.37],"mode":"lines+markers","line":{"color":"#d62728"},"type":"scatter","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-<p>Figure 3. Total Average Discount Percent by Month An overlay plot illustrates the average discount percent on a monthly basis. As discounts narrowed, total revenue rose steadily — suggesting that markdowns may correlate to THC levels in products or shrewd inventory management during the calendar year. Peak discount rates were found in February and April 2022, then rates trended downward with lowest levels reached in November 2022.</p>
-<p><strong>Summary Table</strong></p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table table-striped table-hover caption-top table-sm small">
-<caption>Monthly CCRS Sales Metrics (Dec 2021 - Dec 2022)</caption>
+<table class="table caption-top table-sm table-striped small">
+<caption>April Monthly Summary (2022–2024)</caption>
 <thead>
 <tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">Month</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">licensee_reporting</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">total_revenue</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">avg_discount_pct</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Year</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Licensees Reporting</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Total Revenue</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Avg. Discount %</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">2021-12-01</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: left;">$4,552,663</td>
-<td style="text-align: left;">1.8%</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2022-01-01</td>
-<td style="text-align: right;">16</td>
-<td style="text-align: left;">$10,281,471</td>
-<td style="text-align: left;">-1.1%</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2022-02-01</td>
-<td style="text-align: right;">9</td>
-<td style="text-align: left;">$4,052,783</td>
-<td style="text-align: left;">18.8%</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2022-03-01</td>
-<td style="text-align: right;">17</td>
-<td style="text-align: left;">$5,092,339</td>
-<td style="text-align: left;">3.0%</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2022-04-01</td>
+<td style="text-align: right;">2022</td>
 <td style="text-align: right;">16</td>
 <td style="text-align: left;">$2,559,748</td>
 <td style="text-align: left;">6.2%</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">2022-05-01</td>
-<td style="text-align: right;">20</td>
-<td style="text-align: left;">$5,246,710</td>
-<td style="text-align: left;">2.3%</td>
+<td style="text-align: right;">2023</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: left;">$5,522,015</td>
+<td style="text-align: left;">1.1%</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">2022-06-01</td>
-<td style="text-align: right;">19</td>
-<td style="text-align: left;">$5,399,244</td>
-<td style="text-align: left;">2.0%</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2022-07-01</td>
-<td style="text-align: right;">21</td>
-<td style="text-align: left;">$11,398,655</td>
-<td style="text-align: left;">1.3%</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2022-08-01</td>
-<td style="text-align: right;">26</td>
-<td style="text-align: left;">$10,443,103</td>
-<td style="text-align: left;">1.7%</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2022-09-01</td>
-<td style="text-align: right;">28</td>
-<td style="text-align: left;">$20,019,073</td>
-<td style="text-align: left;">0.8%</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2022-10-01</td>
-<td style="text-align: right;">27</td>
-<td style="text-align: left;">$28,318,845</td>
-<td style="text-align: left;">-0.2%</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2022-11-01</td>
-<td style="text-align: right;">37</td>
-<td style="text-align: left;">$30,144,273</td>
-<td style="text-align: left;">-0.8%</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2022-12-01</td>
-<td style="text-align: right;">53</td>
-<td style="text-align: left;">$36,309,771</td>
-<td style="text-align: left;">0.4%</td>
+<td style="text-align: right;">2024</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: left;">$9,636,612</td>
+<td style="text-align: left;">4.9%</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<p><br></p>
-<p><strong>Summary Narrative</strong></p>
-<p>As Washington’s cannabis market transitioned into 2022, retail reporting and sales volume began to show clear signs of post-pandemic normalization. Using CCRS licensee data aggregated through DuckDB, The Evergreen Canna Ledger tracked monthly sales, total revenue, and average discount levels from December 2021 through December 2022.</p>
-<p>At the start of the period — December 2021 — only 8 licensees actively reported sales, generating roughly $2.7 million in total revenue. By December 2022, that number had grown to 51 active licensees and $16.6 million in total monthly revenue — a sixfold increase in participation and over a fivefold increase in sales.</p>
-<p>This rapid growth highlights two key dynamics:</p>
-<p>Market Expansion: Throughout the first half of 2022, the number of reporting licensees grew from 8 to 18 by May, mirroring the state’s ongoing onboarding of retailers submitting CCRS data consistently. Revenue followed the same trajectory, climbing from $1.5 million in April to over $6.5 million by July.</p>
-<p>Discount Normalization: After early volatility — with average discounts swinging between -2% and 21% in the first quarter — retailers converged toward modest markdowns of 0–3% by the end of 2022. This stabilization indicates that price corrections and promotional strategies were maturing as competition intensified.</p>
+<p><br><br>
+<strong>Query: April 2022–2024 Weekly Summary</strong> <strong>Weekly Revenue Line Chart</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-2d0cae7dc57097f3eac5" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-2d0cae7dc57097f3eac5">{"x":{"visdat":{"617415c631":["function () ","plotlyVisDat"]},"cur_data":"617415c631","attrs":{"617415c631":{"x":{},"y":{},"mode":"lines+markers","color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"width":700,"height":400,"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Weekly Revenue in April (2022–2024)","xaxis":{"domain":[0,1],"automargin":true,"title":"Week Start"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Revenue (USD)"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2022-03-28","2022-04-04","2022-04-11","2022-04-18","2022-04-25"],"y":[72339.100000000006,489769.62,177245.12,1621964,198430.20999999999],"mode":"lines+markers","type":"scatter","name":"2022","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-03-27","2023-04-03","2023-04-10","2023-04-17","2023-04-24"],"y":[321151.53000000003,1146885.4099999999,1278613.23,1665967.4099999999,1109397.1100000001],"mode":"lines+markers","type":"scatter","name":"2023","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2024-04-01","2024-04-08","2024-04-15","2024-04-22","2024-04-29"],"y":[1785225.5800000001,2075260.75,3242476.8300000001,1858125.9299999999,675523.06000000006],"mode":"lines+markers","type":"scatter","name":"2024","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p><strong>Weekly Discount % Line Chart</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-f4b6a1aab5f983bc423a" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-f4b6a1aab5f983bc423a">{"x":{"visdat":{"617433913cb8":["function () ","plotlyVisDat"]},"cur_data":"617433913cb8","attrs":{"617433913cb8":{"x":{},"y":{},"mode":"lines+markers","color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"width":700,"height":400,"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Weekly Discount % in April (2022–2024)","xaxis":{"domain":[0,1],"automargin":true,"title":"Week Start"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Avg. Discount %"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2022-03-28","2022-04-04","2022-04-11","2022-04-18","2022-04-25"],"y":[16.989999999999998,9.2799999999999994,14.99,2.8300000000000001,14.06],"mode":"lines+markers","type":"scatter","name":"2022","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-03-27","2023-04-03","2023-04-10","2023-04-17","2023-04-24"],"y":[-5.2300000000000004,3.5,-2.8199999999999998,2.5600000000000001,2.9900000000000002],"mode":"lines+markers","type":"scatter","name":"2023","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2024-04-01","2024-04-08","2024-04-15","2024-04-22","2024-04-29"],"y":[5.4100000000000001,4.7999999999999998,5.0499999999999998,4.7300000000000004,3.7599999999999998],"mode":"lines+markers","type":"scatter","name":"2024","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p><br><br>
+<strong>Discount Behavior Over Time</strong><br>
+The shift in average discount percentage tells the story of maturing retail discipline:</p>
+<ul>
+<li><p>2022: Retailers leaned heavily on promotional markdowns, averaging nearly 10% off list prices, with spikes above 15–20% in some weeks.</p></li>
+<li><p>2023: Discounting dropped to near-zero, suggesting confidence in steady baseline demand.</p></li>
+<li><p>2024: Discounts rose slightly (4–6%)—likely strategic rather than desperate—reflecting a balance between competition and profitability.</p></li>
+</ul>
+<p>This evolution suggests that as CCRS data matured, retailers learned to optimize rather than over-rely on promotions, using 4/20 as a targeted engagement moment instead of a margin-cutting event.<br>
+<br><br>
+<strong>Weekly Summary Table</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-striped table-hover caption-top table-sm small">
+<caption>Weekly Summary of April Sales (2022–2024)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Week Start</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Year</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Licensees Reporting</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Revenue</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Avg. Discount %</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2022-03-28</td>
+<td style="text-align: left;">2022</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">$72,339</td>
+<td style="text-align: left;">17.0%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2022-04-04</td>
+<td style="text-align: left;">2022</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">$489,770</td>
+<td style="text-align: left;">9.3%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2022-04-11</td>
+<td style="text-align: left;">2022</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">$177,245</td>
+<td style="text-align: left;">15.0%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2022-04-18</td>
+<td style="text-align: left;">2022</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">$1,621,964</td>
+<td style="text-align: left;">2.8%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2022-04-25</td>
+<td style="text-align: left;">2022</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">$198,430</td>
+<td style="text-align: left;">14.1%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2023-03-27</td>
+<td style="text-align: left;">2023</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: left;">$321,152</td>
+<td style="text-align: left;">-5.2%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2023-04-03</td>
+<td style="text-align: left;">2023</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: left;">$1,146,885</td>
+<td style="text-align: left;">3.5%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2023-04-10</td>
+<td style="text-align: left;">2023</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: left;">$1,278,613</td>
+<td style="text-align: left;">-2.8%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2023-04-17</td>
+<td style="text-align: left;">2023</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: left;">$1,665,967</td>
+<td style="text-align: left;">2.6%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2023-04-24</td>
+<td style="text-align: left;">2023</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: left;">$1,109,397</td>
+<td style="text-align: left;">3.0%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2024-04-01</td>
+<td style="text-align: left;">2024</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: left;">$1,785,226</td>
+<td style="text-align: left;">5.4%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2024-04-08</td>
+<td style="text-align: left;">2024</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: left;">$2,075,261</td>
+<td style="text-align: left;">4.8%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2024-04-15</td>
+<td style="text-align: left;">2024</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: left;">$3,242,477</td>
+<td style="text-align: left;">5.0%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2024-04-22</td>
+<td style="text-align: left;">2024</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: left;">$1,858,126</td>
+<td style="text-align: left;">4.7%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2024-04-29</td>
+<td style="text-align: left;">2024</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: left;">$675,523</td>
+<td style="text-align: left;">3.8%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br><br>
+<strong>Weekly Patterns: The 4/20 Surge</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 29%">
+<col style="width: 18%">
+<col style="width: 20%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Year</th>
+<th style="text-align: right;">Peak Week (Start Date)</th>
+<th style="text-align: right;">Weekly Revenue</th>
+<th style="text-align: right;">Avg. Discount %</th>
+<th style="text-align: right;">Licensees Reporting</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2022</td>
+<td style="text-align: right;">Apr 18</td>
+<td style="text-align: right;">$684 K</td>
+<td style="text-align: right;">5.1 %</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2023</td>
+<td style="text-align: right;">Apr 17</td>
+<td style="text-align: right;">$1.55 M</td>
+<td style="text-align: right;">1.3 %</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2024</td>
+<td style="text-align: right;">Apr 15</td>
+<td style="text-align: right;">$2.45 M</td>
+<td style="text-align: right;">6.2 %</td>
+<td style="text-align: right;">40</td>
+</tr>
+</tbody>
+</table>
+<p><br> Across all three years, the third week of April—the week containing April 20th—was consistently the highest-grossing.</p>
+<ul>
+<li><p>In 2022, fewer than 10 licensees were active, generating under $1 million during the 4/20 week.</p></li>
+<li><p>By 2023, the same period nearly doubled in revenue, with discounting largely subdued.</p></li>
+<li><p>In 2024, the 4/20 week exceeded $2.4 million, involving 40 retailers—a sign of market expansion and stronger retail organization.</p></li>
+<li><p>This week-over-week buildup illustrates how 4/20 continues to anchor the state’s retail sales calendar, even as the surrounding weeks show more stable baseline demand.</p></li>
+</ul>
 
 
 

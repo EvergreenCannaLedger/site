@@ -224,3 +224,4 @@ col.names = c("Month", "Week", "Licensees", "Total Revenue", "Avg. Discount %")
 kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
 
 ```
+

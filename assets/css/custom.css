@@ -10,22 +10,24 @@ table {
   background-color: #f9f9f9;
 }
 
-/* Make Commento match the Flatly theme */
-#commento * {
-  font-family: "Lato", "Helvetica Neue", Arial, sans-serif !important;
+/* Evergreen Canna Ledger theme - Comment box styling */
+
+.ec-comment-box {
+  background-color: #f4fff4; /* light green tint */
+  border-left: 4px solid #228B22; /* forest green */
+  padding: 2em 2em 1em;
+  margin-top: 3em;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
 }
 
-#commento .commento-card {
-  border-radius: 6px;
-  border: 1px solid #e5e5e5;
+.ec-comment-box h3 {
+  margin-top: 0;
+  color: #228B22;
+  font-weight: 700;
 }
 
-#commento .commento-submit-button {
-  background: #18bc9c !important;
-  border-color: #18bc9c !important;
-}
-
-#commento .commento-submit-button:hover {
-  background: #128f76 !important;
-  border-color: #128f76 !important;
+.ec-comment-box em,
+.ec-comment-box p {
+  color: #555;
 }

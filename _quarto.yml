@@ -28,4 +28,6 @@ format:
     css: assets/css/custom.css
     self-contained: false
     embed-resources: false
-    include-after-body: commento.html.in
+    filters:
+      - conditional-comments.lua
+    include-after-body: _includes/commento.html

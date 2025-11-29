@@ -224,3 +224,4 @@ width = 800, height = 400
 | 2024 vs 2023 |            +983.8 % |              +1,500 % | Explosive growth, full market integration |  
 \
 2024 represents the first full year where Washington’s cannabis market achieved comprehensive CCRS visibility—integrating retail, wholesale, and processing data streams at scale.
+
