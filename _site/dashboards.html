@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="To assess how CCRS data can address (or fails to address) concerns raised by the Washington State Auditor in October 2024">
+
+<title>Washington Cannabis Dashboards – The Evergreen Canna Ledger</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ffa9a6279353761231ec249df0a7fdd3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+<script src="site_libs/plotly-binding-4.10.4/plotly.js"></script>
+
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+
+<script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
+
+<link href="site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+
+<script src="site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+
+<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+
+<link rel="stylesheet" href="assets/css/custom.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">The Evergreen Canna Ledger</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./blog.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./dashboards.html" aria-current="page"> 
+<span class="menu-text">Dashboards</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#number-of-licensees-2021-present" id="toc-number-of-licensees-2021-present" class="nav-link active" data-scroll-target="#number-of-licensees-2021-present">Number of Licensees (2021-present)</a></li>
+  <li><a href="#product-category-growth-over-time" id="toc-product-category-growth-over-time" class="nav-link" data-scroll-target="#product-category-growth-over-time">Product Category Growth Over Time</a></li>
+  <li><a href="#total-revenue" id="toc-total-revenue" class="nav-link" data-scroll-target="#total-revenue">Total Revenue</a></li>
+  <li><a href="#regional-or-business-level-insights-city-location" id="toc-regional-or-business-level-insights-city-location" class="nav-link" data-scroll-target="#regional-or-business-level-insights-city-location">Regional or Business-Level Insights (City Location)</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Washington Cannabis Dashboards</h1>
+<p class="subtitle lead">The Appreciation of Licensees Adopting CCRS</p>
+</div>
+
+<div>
+  <div class="description">
+    To assess how CCRS data can address (or fails to address) concerns raised by the Washington State Auditor in October 2024
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="number-of-licensees-2021-present" class="level2">
+<h2 class="anchored" data-anchor-id="number-of-licensees-2021-present">Number of Licensees (2021-present)</h2>
+<p><strong>Monthly Licensee Participation</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-469cc29c3b56fd98b99a" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-469cc29c3b56fd98b99a">{"x":{"visdat":{"62dc523879ae":["function () ","plotlyVisDat"]},"cur_data":"62dc523879ae","attrs":{"62dc523879ae":{"x":{},"y":{},"marker":{"color":"#2C7BB6"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Number of Licensees Reporting Monthly (Dec 2021 - Aug 2025)","xaxis":{"domain":[0,1],"automargin":true,"title":"Month"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Licensee Count"},"hovermode":"x unified","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2021-12-01","2022-01-01","2022-02-01","2022-03-01","2022-04-01","2022-05-01","2022-06-01","2022-07-01","2022-08-01","2022-09-01","2022-10-01","2022-11-01","2022-12-01","2023-01-01","2023-02-01","2023-03-01","2023-04-01","2023-05-01","2023-06-01","2023-07-01","2023-08-01","2023-09-01","2023-10-01","2023-11-01","2023-12-01","2024-01-01","2024-02-01","2024-03-01","2024-04-01","2024-05-01","2024-06-01","2024-07-01","2024-08-01","2024-09-01","2024-10-01","2024-11-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01"],"y":[6,11,3,7,9,8,11,12,13,14,13,19,27,20,8,7,8,7,7,7,8,6,6,10,11,10,9,10,13,17,20,19,21,31,42,54,65,109,173,885,1050,1025,992,895,882],"marker":{"color":"#2C7BB6","line":{"color":"rgba(31,119,180,1)"}},"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="product-category-growth-over-time" class="level2">
+<h2 class="anchored" data-anchor-id="product-category-growth-over-time">Product Category Growth Over Time</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-50f523395f09eccf28de" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-50f523395f09eccf28de">{"x":{"visdat":{"62dc3c0f2485":["function () ","plotlyVisDat"]},"cur_data":"62dc3c0f2485","attrs":{"62dc3c0f2485":{"x":{},"y":{},"mode":"lines+markers","color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Product Category Growth Over Time","xaxis":{"domain":[0,1],"automargin":true,"title":"Month"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Units Sold"},"legend":{"orientation":"h","x":0.10000000000000001,"y":-0.20000000000000001},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2025-05-01","2025-07-01"],"y":[2,2],"mode":"lines+markers","type":"scatter","name":"CBD","marker":{"color":"rgba(249,142,102,1)","line":{"color":"rgba(249,142,102,1)"}},"textfont":{"color":"rgba(249,142,102,1)"},"error_y":{"color":"rgba(249,142,102,1)"},"error_x":{"color":"rgba(249,142,102,1)"},"line":{"color":"rgba(249,142,102,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[4689,16708,35418,132589,620413,380610,273708,214482,259318,316465,92879],"mode":"lines+markers","type":"scatter","name":"CO2 Concentrate","marker":{"color":"rgba(201,152,157,1)","line":{"color":"rgba(201,152,157,1)"}},"textfont":{"color":"rgba(201,152,157,1)"},"error_y":{"color":"rgba(201,152,157,1)"},"error_x":{"color":"rgba(201,152,157,1)"},"line":{"color":"rgba(201,152,157,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[3,18,9,301381,2362827.9000000004,398446.28999999998,1608349.1899999999,478779.92999999999,224695.28,1820181.2800000003],"mode":"lines+markers","type":"scatter","name":"Cannabis Mix","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2022-11-01","2022-12-01","2023-01-01","2024-02-01","2024-05-01","2024-07-01","2024-09-01","2024-10-01","2024-11-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[9050,59100,42336,50,80,90,46960,2105,67144,415476,1704815,2152844,2737691,8619586.25,7072434,6579669,7116482.7999999998,5323096.9800000004,4635482,3317557],"mode":"lines+markers","type":"scatter","name":"Cannabis Mix Infused","marker":{"color":"rgba(157,183,147,1)","line":{"color":"rgba(157,183,147,1)"}},"textfont":{"color":"rgba(157,183,147,1)"},"error_y":{"color":"rgba(157,183,147,1)"},"error_x":{"color":"rgba(157,183,147,1)"},"line":{"color":"rgba(157,183,147,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2024-09-01","2024-11-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[240,3456,1564,13901,71609,121394,594375,424827,333990,272925,240600,191648,83251],"mode":"lines+markers","type":"scatter","name":"Cannabis Mix Packaged","marker":{"color":"rgba(196,171,130,1)","line":{"color":"rgba(196,171,130,1)"}},"textfont":{"color":"rgba(196,171,130,1)"},"error_y":{"color":"rgba(196,171,130,1)"},"error_x":{"color":"rgba(196,171,130,1)"},"line":{"color":"rgba(196,171,130,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[30,50,3198,3850,40452,39687,52184,53557,74744,44033,26382],"mode":"lines+markers","type":"scatter","name":"Capsule","marker":{"color":"rgba(228,156,113,1)","line":{"color":"rgba(228,156,113,1)"}},"textfont":{"color":"rgba(228,156,113,1)"},"error_y":{"color":"rgba(228,156,113,1)"},"error_x":{"color":"rgba(228,156,113,1)"},"line":{"color":"rgba(228,156,113,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[6990,109734,130552,138112,63863,61779,44341,42556.979999999996],"mode":"lines+markers","type":"scatter","name":"Clones","marker":{"color":"rgba(227,147,130,1)","line":{"color":"rgba(227,147,130,1)"}},"textfont":{"color":"rgba(227,147,130,1)"},"error_y":{"color":"rgba(227,147,130,1)"},"error_x":{"color":"rgba(227,147,130,1)"},"line":{"color":"rgba(227,147,130,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2022-09-01","2022-10-01","2022-11-01","2022-12-01","2023-01-01","2023-02-01","2023-03-01","2023-08-01","2023-09-01","2023-10-01","2023-11-01","2023-12-01","2024-01-01","2024-02-01","2024-03-01","2024-04-01","2024-05-01","2024-06-01","2024-07-01","2024-08-01","2024-09-01","2024-10-01","2024-11-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[6,25920,13500,16520219,206508,2,3,12,3,19,15,3,106,200,317,11444,4278,21286,38284,370836,65956,78207,501924,862265,10659390,15686994,4815275,26491149.25,21601615,17614459,15227122,12280996.5,9605898,7200465.5],"mode":"lines+markers","type":"scatter","name":"Concentrate For Inhalation","marker":{"color":"rgba(170,157,184,1)","line":{"color":"rgba(170,157,184,1)"}},"textfont":{"color":"rgba(170,157,184,1)"},"error_y":{"color":"rgba(170,157,184,1)"},"error_x":{"color":"rgba(170,157,184,1)"},"line":{"color":"rgba(170,157,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2022-06-01","2022-09-01","2024-06-01","2024-11-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[135,10800,600000,144,16534,74656,270735,406001,2685879,1992213.3999999999,1186325.8,1004352.7,1183591,861456.29999999993,590581.30000000005],"mode":"lines+markers","type":"scatter","name":"Ethanol Concentrate","marker":{"color":"rgba(149,159,202,1)","line":{"color":"rgba(149,159,202,1)"}},"textfont":{"color":"rgba(149,159,202,1)"},"error_y":{"color":"rgba(149,159,202,1)"},"error_x":{"color":"rgba(149,159,202,1)"},"line":{"color":"rgba(149,159,202,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2024-10-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[190508.72000000003,3719297.3600000008,173816627.5,5534701.5499999998,9817245.7599999849,91910982.540000036,53817792.039999999,66503256.649999999,31050460.360000052,113535115.71000019,37073946.809999958,84053567.319999978],"mode":"lines+markers","type":"scatter","name":"Flower Lot","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"line":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[18596,11604,368295,15082541.609999999,12278113.600000003,13863678.199999997,6712265.8500000006,68758696.310000092,92273988.72000052,142831801.48000029,76839516.549999982],"mode":"lines+markers","type":"scatter","name":"Flower Unlotted","marker":{"color":"rgba(198,149,198,1)","line":{"color":"rgba(198,149,198,1)"}},"textfont":{"color":"rgba(198,149,198,1)"},"error_y":{"color":"rgba(198,149,198,1)"},"error_x":{"color":"rgba(198,149,198,1)"},"line":{"color":"rgba(198,149,198,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2024-11-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[4678722.0000000158,720769,13263746,11597520.800000001,13410077,11492339.6,7566947.4000000004,4386529.5999999996,5991398.5999999996],"mode":"lines+markers","type":"scatter","name":"Food Grade Solvent Concentrate","marker":{"color":"rgba(219,142,196,1)","line":{"color":"rgba(219,142,196,1)"}},"textfont":{"color":"rgba(219,142,196,1)"},"error_y":{"color":"rgba(219,142,196,1)"},"error_x":{"color":"rgba(219,142,196,1)"},"line":{"color":"rgba(219,142,196,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2022-02-01","2022-08-01","2022-09-01","2022-12-01","2023-11-01","2023-12-01","2024-01-01","2024-02-01","2024-03-01","2024-04-01","2024-05-01","2024-06-01","2024-07-01","2024-08-01","2024-09-01","2024-10-01","2024-11-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[450,351,360,240,24084,15000,67500,65538,33000,35448,20763,81765,174150,156510,149268,141834,156156,83589,755336,1209910,837657.90000000002,4816691.7700000005,4225619.3699999992,4548461.3300000001,2665649.6400000001,3523558.7599999998,2441601.6200000001,1908933.1499999999],"mode":"lines+markers","type":"scatter","name":"Hydrocarbon Concentrate","marker":{"color":"rgba(226,148,184,1)","line":{"color":"rgba(226,148,184,1)"}},"textfont":{"color":"rgba(226,148,184,1)"},"error_y":{"color":"rgba(226,148,184,1)"},"error_x":{"color":"rgba(226,148,184,1)"},"line":{"color":"rgba(226,148,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2025-10-01"],"y":[150],"mode":"lines+markers","type":"scatter","name":"Infused Cooking Medium","marker":{"color":"rgba(213,170,158,1)","line":{"color":"rgba(213,170,158,1)"}},"textfont":{"color":"rgba(213,170,158,1)"},"error_y":{"color":"rgba(213,170,158,1)"},"error_x":{"color":"rgba(213,170,158,1)"},"line":{"color":"rgba(213,170,158,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2022-03-01","2022-04-01","2022-05-01","2022-06-01","2022-09-01","2022-10-01","2022-11-01","2022-12-01","2023-01-01","2023-02-01","2023-03-01","2023-04-01","2023-05-01","2023-06-01","2023-07-01","2023-08-01","2023-09-01","2023-10-01","2023-12-01","2024-02-01","2024-03-01","2024-04-01","2024-05-01","2024-06-01","2024-07-01","2024-08-01","2024-09-01","2024-10-01","2024-11-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[182,88,46,146,22,22,907,16028,2,6,2,2,4,6,4,8,2,4,2,10,9,629,203,143,80,738,164,6388,155452,456175,665024,541492,1045867,5885976,4384780,3659243,2948298,2503509,1547928,923970],"mode":"lines+markers","type":"scatter","name":"Liquid Edible","marker":{"color":"rgba(197,190,130,1)","line":{"color":"rgba(197,190,130,1)"}},"textfont":{"color":"rgba(197,190,130,1)"},"error_y":{"color":"rgba(197,190,130,1)"},"error_x":{"color":"rgba(197,190,130,1)"},"line":{"color":"rgba(197,190,130,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2024-11-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[1260,2700,340,109088,7307,204044.94000000003,187964,170918,129279.39999999999,123509.5,293243.88,303882.94],"mode":"lines+markers","type":"scatter","name":"Non-Solvent based Concentrate","marker":{"color":"rgba(176,208,99,1)","line":{"color":"rgba(176,208,99,1)"}},"textfont":{"color":"rgba(176,208,99,1)"},"error_y":{"color":"rgba(176,208,99,1)"},"error_x":{"color":"rgba(176,208,99,1)"},"line":{"color":"rgba(176,208,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[24111000,445426,9244640,38655759.259999998,29278553.229999997,18138544.539999999,10646197.41,26760336.300000004,20501440.719999999,23856695.090000004],"mode":"lines+markers","type":"scatter","name":"Other Material Lot","marker":{"color":"rgba(181,216,79,1)","line":{"color":"rgba(181,216,79,1)"}},"textfont":{"color":"rgba(181,216,79,1)"},"error_y":{"color":"rgba(181,216,79,1)"},"error_x":{"color":"rgba(181,216,79,1)"},"line":{"color":"rgba(181,216,79,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[25675798,5205935,256733,1431006.8600000001,4270424.8100000005,4403161.2100000009,5939184.9100000011,4615336.3599999994,8281129.3499999996,3415888.02],"mode":"lines+markers","type":"scatter","name":"Other Material Unlotted","marker":{"color":"rgba(205,217,71,1)","line":{"color":"rgba(205,217,71,1)"}},"textfont":{"color":"rgba(205,217,71,1)"},"error_y":{"color":"rgba(205,217,71,1)"},"error_x":{"color":"rgba(205,217,71,1)"},"line":{"color":"rgba(205,217,71,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[703,7827,40447,34149,126348,32240,47259,68311],"mode":"lines+markers","type":"scatter","name":"Plant","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"line":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2022-03-01","2022-04-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[2,5,12,352,603,8466,28891,12737,5715,2059,4791,2899,1416],"mode":"lines+markers","type":"scatter","name":"Sample Jar","marker":{"color":"rgba(249,217,51,1)","line":{"color":"rgba(249,217,51,1)"}},"textfont":{"color":"rgba(249,217,51,1)"},"error_y":{"color":"rgba(249,217,51,1)"},"error_x":{"color":"rgba(249,217,51,1)"},"line":{"color":"rgba(249,217,51,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-09-01","2025-10-01"],"y":[15000,16750,16872,24929,2884,646,24],"mode":"lines+markers","type":"scatter","name":"Seed","marker":{"color":"rgba(251,213,73,1)","line":{"color":"rgba(251,213,73,1)"}},"textfont":{"color":"rgba(251,213,73,1)"},"error_y":{"color":"rgba(251,213,73,1)"},"error_x":{"color":"rgba(251,213,73,1)"},"line":{"color":"rgba(251,213,73,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2022-06-01","2022-07-01","2022-08-01","2022-09-01","2022-10-01","2022-11-01","2022-12-01","2023-01-01","2023-02-01","2023-03-01","2023-04-01","2023-05-01","2023-06-01","2023-07-01","2023-08-01","2023-09-01","2023-10-01","2023-11-01","2023-12-01","2024-01-01","2024-02-01","2024-03-01","2024-04-01","2024-05-01","2024-06-01","2024-07-01","2024-08-01","2024-09-01","2024-10-01","2024-11-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[28,32,108,76,28,42,62,52,36,36,50,24,74,64,20,24,48,77,86,121,93,174,345,366,479,623,23284,95989,125233,218944,560973,1345790,11994605,1286713.3999999999,8588913,7461878,7422100,5840600,5795056,4464684,3216262],"mode":"lines+markers","type":"scatter","name":"Solid Edible","marker":{"color":"rgba(245,207,100,1)","line":{"color":"rgba(245,207,100,1)"}},"textfont":{"color":"rgba(245,207,100,1)"},"error_y":{"color":"rgba(245,207,100,1)"},"error_x":{"color":"rgba(245,207,100,1)"},"line":{"color":"rgba(245,207,100,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2025-04-01","2025-05-01","2025-06-01","2025-08-01","2025-09-01","2025-10-01"],"y":[20,3,10,10,6,8],"mode":"lines+markers","type":"scatter","name":"Suppository","marker":{"color":"rgba(238,202,123,1)","line":{"color":"rgba(238,202,123,1)"}},"textfont":{"color":"rgba(238,202,123,1)"},"error_y":{"color":"rgba(238,202,123,1)"},"error_x":{"color":"rgba(238,202,123,1)"},"line":{"color":"rgba(238,202,123,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2024-10-01","2024-11-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[90,4740,5034,34500,9018,12518,74456,64978,133293,130158,77589,98540,72195],"mode":"lines+markers","type":"scatter","name":"Tincture","marker":{"color":"rgba(230,197,145,1)","line":{"color":"rgba(230,197,145,1)"}},"textfont":{"color":"rgba(230,197,145,1)"},"error_y":{"color":"rgba(230,197,145,1)"},"error_x":{"color":"rgba(230,197,145,1)"},"line":{"color":"rgba(230,197,145,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-06-01","2023-08-01","2023-09-01","2023-10-01","2023-12-01","2024-01-01","2024-02-01","2024-03-01","2024-04-01","2024-05-01","2024-06-01","2024-07-01","2024-08-01","2024-09-01","2024-10-01","2024-11-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[10,29,18,37,19,24,2,10,12,22,9,12,13,47,28,714,26850,15600,106651,25174,364359,341246,298340.59999999998,239772,238159,203048,130807],"mode":"lines+markers","type":"scatter","name":"Topical Ointment","marker":{"color":"rgba(219,192,155,1)","line":{"color":"rgba(219,192,155,1)"}},"textfont":{"color":"rgba(219,192,155,1)"},"error_y":{"color":"rgba(219,192,155,1)"},"error_x":{"color":"rgba(219,192,155,1)"},"line":{"color":"rgba(219,192,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[2,65,125,57,22,12,23,17],"mode":"lines+markers","type":"scatter","name":"Transdermal","marker":{"color":"rgba(206,188,163,1)","line":{"color":"rgba(206,188,163,1)"}},"textfont":{"color":"rgba(206,188,163,1)"},"error_y":{"color":"rgba(206,188,163,1)"},"error_x":{"color":"rgba(206,188,163,1)"},"line":{"color":"rgba(206,188,163,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2022-02-01","2022-11-01","2022-12-01","2023-01-01","2023-10-01","2023-11-01","2023-12-01","2024-01-01","2024-02-01","2024-03-01","2024-04-01","2024-05-01","2024-06-01","2024-07-01","2024-08-01","2024-09-01","2024-10-01","2024-11-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[126,17850,150140,22200,13,558,1572,1181,357,789,729,1422,950,3210,1758,5944,4137,36289,821592,7789685,11968654,5089023,26000081,21398740,16441300,15449307,11650996.9,8598042.8000000007,5756277],"mode":"lines+markers","type":"scatter","name":"Usable Cannabis","marker":{"color":"rgba(193,183,171,1)","line":{"color":"rgba(193,183,171,1)"}},"textfont":{"color":"rgba(193,183,171,1)"},"error_y":{"color":"rgba(193,183,171,1)"},"error_x":{"color":"rgba(193,183,171,1)"},"line":{"color":"rgba(193,183,171,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[184221.28000000003,685283.32000000007,961641.89000000001,2737367.8899999997,2003379.3799999999,2599130.1099999999,15886449.129999999,28446599.590000205],"mode":"lines+markers","type":"scatter","name":"Wet Flower","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"line":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="total-revenue" class="level2">
+<h2 class="anchored" data-anchor-id="total-revenue">Total Revenue</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-353d946121e92e62f83a" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-353d946121e92e62f83a">{"x":{"visdat":{"62dc6de15b41":["function () ","plotlyVisDat"]},"cur_data":"62dc6de15b41","attrs":{"62dc6de15b41":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"group","title":"Total Reported Revenue","xaxis":{"domain":[0,1],"automargin":true,"title":"Month"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Revenue ($)","tickformat":"$,.0f"},"legend":{"title":{"text":"Sale Type"}},"hovermode":"x unified","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2021-12-01","2022-01-01","2022-02-01","2022-03-01","2022-04-01","2022-05-01","2022-06-01","2022-07-01","2022-08-01","2022-09-01","2022-10-01","2022-11-01","2022-12-01","2023-01-01","2023-02-01","2023-05-01","2023-06-01","2023-07-01","2023-08-01","2023-09-01","2023-11-01","2023-12-01","2024-01-01","2024-02-01","2024-03-01","2024-04-01","2024-05-01","2024-06-01","2024-07-01","2024-08-01","2024-09-01","2024-10-01","2024-11-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[582627.02999999956,2583996.4700000002,315354.74000000063,1421228.3700000031,556901.40000000002,1397487.5600000003,1013200.3500000001,3075825.4499999764,2913017.0400000024,7321239.1399999419,10003656.479999986,10309587.25000013,11921092.197499985,2247918.4535999889,21000,15960,20944.5,768,52709.25,4272,2194721.2000000086,151753.67999999999,503927.38,85093.919999999998,451915.57999999996,1803446.0300000035,3066977.0488000191,2181534.7040000139,2632794.2271000212,2325109.1500000223,1995004.1550000168,6305191.4391000122,26388870.73759871,49696898.401395284,98503218.424807847,102449048.04450464,27468216.771699902,78015629.344000116,66236214.491499931,65972536.396899879,75168486.256400064,65258885.897499397,69227719.462200388,59514305.958199859],"type":"bar","name":"Wholesale","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="regional-or-business-level-insights-city-location" class="level2">
+<h2 class="anchored" data-anchor-id="regional-or-business-level-insights-city-location">Regional or Business-Level Insights (City Location)</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-ef0c68dd389ca670a459" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-ef0c68dd389ca670a459">{"x":{"visdat":{"62dc369b368a":["function () ","plotlyVisDat"]},"cur_data":"62dc369b368a","attrs":{"62dc369b368a":{"x":{},"y":{},"orientation":"v","marker":{"color":"darkgreen"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":100,"l":60,"t":25,"r":10},"title":"Top Business Licensee Cities by Revenue","xaxis":{"domain":[0,1],"automargin":true,"title":"City","type":"category","categoryorder":"array","categoryarray":["BELLINGHAM","ROCHESTER","VANCOUVER","EAST WENATCHEE","TUMWATER","ARLINGTON","SPOKANE","POULSBO","SEATTLE","TACOMA"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Revenue","tickformat":"$,.2f"},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["TACOMA","SEATTLE","POULSBO","SPOKANE","ARLINGTON","TUMWATER","EAST WENATCHEE","VANCOUVER","ROCHESTER","BELLINGHAM"],"y":[1260011941.9567044,1224453055.5043967,760591691.99892545,465941187.55615073,440824952.16007793,423898773.5221197,348276486.12671852,308760219.6734215,290036682.66297156,231029309.09912768],"orientation":"v","marker":{"color":"darkgreen","line":{"color":"rgba(31,119,180,1)"}},"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p><br></p>
+<p><a href="mailto:franklin@evergreencannaledger.org">Let TECL know if you have a dashboard request you want posted here</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<!-- commento -->
+
+<div class="comments ec-comment-box">
+
+  <h3>Join the discussion</h3>
+
+  <p><em>You can sign in with Google, GitHub, or email to comment.</em></p>
+
+  <script defer="" src="https://cdn.commento.io/js/commento.js"></script>
+
+  <div id="commento"></div>
+
+</div>
+
+
+
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/www\.evergreencannaledger\.org");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>The Evergreen Canna Ledger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Open CCRS Data for Washington’s Cannabis Industry</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

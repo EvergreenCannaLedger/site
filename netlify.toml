@@ -1,14 +1,3 @@
-[build.environment]
-NETLIFY_IMAGE = "ubuntu-20.04"
-QUARTO_VERSION = "1.4.550"  # Or latest: https://quarto.org/docs/download/
-
 [build]
 publish = "_site"
-command = """
-  bash install-quarto.sh &&
-  export PATH=$PWD/quarto-${QUARTO_VERSION}/bin:$PATH &&
-  quarto render
-"""
-
-[functions]
-directory = "netlify/functions"
+command = "echo 'Static site: no build step needed'""

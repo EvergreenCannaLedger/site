@@ -58,5 +58,3 @@ Thumbs.db
 !_site/**/_files/
 cache/
 **/*.quarto_ipynb
-
-_site/
