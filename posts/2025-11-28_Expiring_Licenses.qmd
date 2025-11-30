@@ -188,7 +188,7 @@ Licensees in the at-risk category face the highest operational vulnerability:
 Slow processing times may delay approvals into Q1 2026.
 
 ### **2. Retail Disruption**  
-Many of the state’s **highest-volume retailers** identified in the [transportation bottleneck analysis](evergreencannaledger.org/posts/2025-09-03_transportation_visibility) operate in cities with large expiration clusters.  
+Many of the state’s **highest-volume retailers** identified in the [transportation bottleneck analysis](www.evergreencannaledger.org/posts/2025-09-03_transportation_visibility) operate in cities with large expiration clusters.  
 As such, this aligns **expiry risk with distribution risk**.
 
 ### **3. Increased M&A Activity**
