@@ -24,8 +24,6 @@ This empowers businesses, strengthens the supply chain, and supports a more resi
 **Overview**  
 License expiration is an under-analyzed but critical signal in Washington’s cannabis ecosystem. Every license—producer, processor, or retailer—must renew on a predictable annual cycle, and failure to renew leads to immediate inactivity, product immobility, and permanent loss of market position.
 
-Using CCRS-aligned licensee data, TECL analyzed 1,840 active cannabis license records and identified 792 licensees whose licenses expire within the next six months. The findings highlight emerging regional vulnerabilities, volume surges, and market-level risks that operators and policymakers cannot ignore.
-
 ```{r setup, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
 
 library(ggplot2)
@@ -144,7 +142,7 @@ Renewals spike sharply at year-end before flattening in the spring.
 
 ## Where Are At-Risk Licensees Located?
 
-The dataset contains **181 County–month combinations** of expiring licenses — from major metros to small rural agricultural communities.
+The dataset contains **171 County–month combinations** of expiring licenses — from major metros to small rural agricultural communities.
 
 Examples include:
 
@@ -166,6 +164,7 @@ When viewed at the city level, several small towns show **high concentrations re
 We identified **792 "at risk" licensees** in the “0–3 months” or “3–6 months” expiration groups.
 
 These include:  
+
 - Individual sole proprietors  
 - Small rural farms  
 - Brands with only one licensed location  
@@ -174,6 +173,7 @@ These include:
 
 ### **Why this matters**
 Licensees in the at-risk category face the highest operational vulnerability:  
+
 - Missed renewal deadlines  
 - Product in transit risking quarantine  
 - Retail shelves experiencing regional shortages  
@@ -187,12 +187,9 @@ Licensees in the at-risk category face the highest operational vulnerability:
 **439 licenses** expiring in Nov–Dec 2025 will saturate LCB’s renewal queue.  
 Slow processing times may delay approvals into Q1 2026.
 
-### **2. Retail Disruption**
-
-Many of the state’s **highest-volume retailers**  
-- identified in transportation bottleneck analysis  
-- operate in cities with large expiration clusters.  
-This aligns **expiry risk with distribution risk**.
+### **2. Retail Disruption**  
+Many of the state’s **highest-volume retailers** identified in the [transportation bottleneck analysis](evergreencannaledger.org/posts/2025-09-03_transportation_visibility) operate in cities with large expiration clusters.  
+As such, this aligns **expiry risk with distribution risk**.
 
 ### **3. Increased M&A Activity**
 Expiration waves historically precede:  
@@ -212,7 +209,7 @@ License expiration in these areas directly impacts:
 
 ---
 
-```{r, echo=FALSE, include=TRUE, fig.width=30, fig.height=60}
+```{r, echo=FALSE, include=TRUE, fig.width=30, fig.height=45}
 
 # 5. Plot expirations over time by County
 ggplot(monthly_expiry, aes(x = expiry_month, y = n, fill = County)) +
@@ -234,7 +231,7 @@ ggplot(monthly_expiry, aes(x = expiry_month, y = n, fill = County)) +
   )
 
 ```
-
+**NA refers to other license holders such as state-authorized analytical labs that must renew in March 2026**
 ```{r, echo=FALSE, include=TRUE}
 
 monthly_expiry <- at_risk %>%
@@ -259,7 +256,7 @@ DT::datatable(
 
 License expiration is an under-analyzed but critical signal in Washington’s cannabis ecosystem. Every license—producer, processor, or retailer—must renew on a predictable annual cycle, and failure to renew leads to immediate inactivity, product immobility, and permanent loss of market position.
 
-Using CCRS-aligned licensee data, TECL analyzed more than 21,000 active cannabis license records and identified 10,042 licensees whose licenses expire within the next six months. The findings highlight emerging regional vulnerabilities, volume surges, and market-level risks that operators and policymakers cannot ignore.
+Using CCRS-aligned licensee data, TECL analyzed more than 1,842 active cannabis license records and identified 792 licensees whose licenses expire within the next six months. The findings highlight emerging regional vulnerabilities, volume surges, and market-level risks that operators and policymakers cannot ignore.
 
 ## Takeaways for Operators, Regulators & Stakeholders
 
