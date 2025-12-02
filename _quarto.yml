@@ -5,8 +5,9 @@ project:
 website:
   title: "The Evergreen Canna Ledger"
   site-url: https://www.evergreencannaledger.org
-  description: "Washington's Cannabis Open Data Ledger"
-
+  description: "Washington's independent open-data cannabis ledger — reporting, analysis, dashboards, and insight built from traceability data."
+  search: true
+ 
   navbar:
     right:
       - text: "Home"
@@ -26,6 +27,27 @@ format:
   html:
     theme: flatly
     css: assets/css/custom.css
+    toc: true
+    toc-depth: 3
+    smooth-scroll: true
+    html-math-method: katex
+    link-external-newwindow: true
+    link-external-icon: true
+    code-copy: true
+    grid:
+      sidebar-width: 220px
+      body-width: 900px
+      margin-width: 350px
+      gutter-width: 2.0rem
+    meta:
+      keywords: "Washington cannabis data, CCRS data, Evergreen Canna Ledger, cannabis analytics, cannabis dashboards, WA marijuana statistics, cannabis license expirations, cannabis supply chain Washington"
+      author: "Evergreen Canna Ledger"
+      og:title: "The Evergreen Canna Ledger — Cannabis Data for Washington"
+      og:site_name: "Evergreen Canna Ledger"
+      og:description: "Independent cannabis analytics, dashboards, compliance insights, and open data reporting for Washington State."
+      og:type: "website"
+      og:url: "https://www.evergreencannaledger.org"
+    sitemap: true
     self-contained: false
     embed-resources: false
     filters:
