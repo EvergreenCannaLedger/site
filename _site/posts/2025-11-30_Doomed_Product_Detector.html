@@ -7,6 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="dcterms.date" content="2025-11-30">
+<meta name="description" content="Detects underperforming cannabis products based on sales and inventory trends.">
 
 <title>The Doomed Product Detector: Which Cannabis SKUs Are About to Disappear? – The Evergreen Canna Ledger</title>
 <style>
@@ -157,6 +158,11 @@ ul.task-list li input[type="checkbox"] {
   </div>
   </div>
 
+<div>
+  <div class="description">
+    Detects underperforming cannabis products based on sales and inventory trends.
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -189,7 +195,7 @@ A more data-driven future for Washington’s competitive, saturated, and constan
 <p><strong>Overview</strong><br>
 Every January, WA retailers refresh their shelves — and thousands of slow‑moving SKUs quietly disappear.</p>
 <p>This annual “reset cycle” removes products that no longer sell, have aged out of rotation, or have accumulated too much on-hand inventory.</p>
-<p>Using 12+ million CCRS product-store movement records and real retail sales velocity between August 04 - November 03, 2025, we modeled which active products show patterns consistent with impending extintion.</p>
+<p>Using 22+ million CCRS product-store movement records and real retail sales velocity between August 04 - November 03, 2025, we modeled which active products show patterns consistent with impending extintion.</p>
 <p>We identify “doomed” products by comparing:</p>
 <ul>
 <li><p>Sales over the last 4 weeks vs.&nbsp;13 weeks</p></li>
@@ -199,7 +205,7 @@ Every January, WA retailers refresh their shelves — and thousands of slow‑mo
 </ul>
 <p>Products with low velocity, shrinking demand, low penetration, and high inventory form a clear cluster of high‑risk items.</p>
 <p>The analysis covers a 91-day window dating backward 4- and 13- weeks from 11-03-2025.</p>
-<p>Table of dates used in this report:</p>
+<p><strong>Table of dates used in this report:</strong></p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -230,7 +236,6 @@ Every January, WA retailers refresh their shelves — and thousands of slow‑mo
 </tr>
 </tbody>
 </table>
-<p><br></p>
 <section id="building-the-doom-score" class="level2">
 <h2 class="anchored" data-anchor-id="building-the-doom-score">Building the “Doom Score”</h2>
 <p><strong>A simple, intuitive rule‑of‑thumb score:</strong></p>
@@ -245,38 +250,154 @@ Every January, WA retailers refresh their shelves — and thousands of slow‑mo
 </section>
 <section id="doomed-product-table" class="level2">
 <h2 class="anchored" data-anchor-id="doomed-product-table">Doomed Product Table</h2>
-<p>Only showing 25 of 11,130 products as example:</p>
+<p>Only showing 25 of 26,089 products as example:</p>
 <div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>   ProductId                                               Name
-1    9063725                           Honu Milk Chocolate 10pk
-2   15570763             Toad Distillate Vape 1g Coven Cannabis
-3   16929499                  Green Crack 1g Vape Regulator 2.0
-4   17031204     420 Mini - Gold Leaf Milk Chocolate SMore 10pk
-5   16707226  Maris Mints: Pillow Peppermint 1:1:1 CBDCBN - 20p
-6   17991929                Cormorant:: Sorbet: Blueberry 100mg
-7   13848824           FREDDYs Tigers Blood Liquid Gold Cart 1g
-8   18749957              SPP Sangria Sunset Live Resin Cart 1g
-9   15469582  Wyld; Grapefruit; THC 100 mg CBG 100mg CBC 100mg;
-10  15696579                    Koko Gemz - Dark Chocolate Mint
-11  17863159        Cormorant - Grapefruit Soda 100 mg - 6.76Oz
-12  18071829 HON Chocolate Caramel Indica - 10pk - 100mg 4.58oz
-13  18259199        Hot Sugar - Blue Raspberry - LR Gummiez - S
-14  17329729                   Trop Santo 1g Hash Rosin (Knots)
-15  17858311 Journeyman Jellies Sour Watermelon 10-pk 100mg 3oz
-16  16704533              FOEMINA - PREROLL - PALOMA - 1G [2PK]
-17  14352909     Oil Tanker PreRoll (2pk) 1g by Viking Cannabis
-18  19167603                Grand Cru - Gas Basket - 1g - Joint
-19  13372176           Crystal Clear: Jack Herer S 1g - Syringe
-20  17287930              Wizrd - Infused - Reclining Buddha 1g
-21  14038330 Mfused Disposable Cartridge Sour Space Candy 5:1 1
-22  11032026                Skagit Organics RSO Cake Crasher 1g
-23   9000478 Ceres Topical Dragon Balm Extra Roll On 1:1 2300mg
-24   8545931                  Major: Blueberry - Shot 100mg 2oz
-25  19219914                 Walden-1g Lemon Peel H Cured Resin</code></pre>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Top 25 Doomed Products by Inventory Ratio</caption>
+<colgroup>
+<col style="width: 32%">
+<col style="width: 48%">
+<col style="width: 19%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Inventory_Type</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: right;">Inventory_Ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cannabis Mix Infused</td>
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cannabis Mix Infused</td>
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cannabis Mix Infused</td>
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cannabis Mix Infused</td>
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cannabis Mix Infused</td>
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cannabis Mix Infused</td>
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cannabis Mix Infused</td>
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cannabis Mix Infused</td>
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">White Label - Concentrate - Gods Gift 1g</td>
+<td style="text-align: right;">104.2000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">White Label - Concentrate - Gods Gift 1g</td>
+<td style="text-align: right;">104.2000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">White Label - Concentrate - Gods Gift 1g</td>
+<td style="text-align: right;">104.2000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">White Label - Concentrate - Gods Gift 1g</td>
+<td style="text-align: right;">104.2000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">White Label - Concentrate - Gods Gift 1g</td>
+<td style="text-align: right;">104.2000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">White Label - Concentrate - Gods Gift 1g</td>
+<td style="text-align: right;">104.2000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">White Label - Concentrate - Gods Gift 1g</td>
+<td style="text-align: right;">104.2000</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<p><strong>11,130 products</strong> were found to be likely doomed.</p>
+<p><strong>26,089 products</strong> were found to be likely doomed.</p>
 <section id="contact-us-for-the-complete-list." class="level3">
 <h3 class="anchored" data-anchor-id="contact-us-for-the-complete-list.">Contact us for the complete list.</h3>
 </section>
@@ -284,22 +405,88 @@ Every January, WA retailers refresh their shelves — and thousands of slow‑mo
 <section id="table-of-doom-by-inventory-type" class="level2">
 <h2 class="anchored" data-anchor-id="table-of-doom-by-inventory-type">Table of Doom by Inventory Type</h2>
 <div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>                  Inventory_Type          Flag Count
-1                Usable Cannabis Likely Doomed  2814
-2     Concentrate For Inhalation Likely Doomed  2553
-3                   Solid Edible Likely Doomed  2272
-4                  Liquid Edible Likely Doomed  1284
-5        Hydrocarbon Concentrate Likely Doomed   600
-6           Cannabis Mix Infused Likely Doomed   572
-7            Ethanol Concentrate Likely Doomed   426
-8               Topical Ointment Likely Doomed   320
-9          Cannabis Mix Packaged Likely Doomed   106
-10               CO2 Concentrate Likely Doomed    96
-11                      Tincture Likely Doomed    37
-12                       Capsule Likely Doomed    33
-13 Non-Solvent based Concentrate Likely Doomed    24
-14                    Sample Jar Likely Doomed     6</code></pre>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Inventory_Type</th>
+<th style="text-align: left;">Doom_Flag</th>
+<th style="text-align: right;">Count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Usable Cannabis</td>
+<td style="text-align: left;">Likely Doomed</td>
+<td style="text-align: right;">6140</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Solid Edible</td>
+<td style="text-align: left;">Likely Doomed</td>
+<td style="text-align: right;">5607</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Concentrate For Inhalation</td>
+<td style="text-align: left;">Likely Doomed</td>
+<td style="text-align: right;">5447</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Liquid Edible</td>
+<td style="text-align: left;">Likely Doomed</td>
+<td style="text-align: right;">3826</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cannabis Mix Infused</td>
+<td style="text-align: left;">Likely Doomed</td>
+<td style="text-align: right;">1300</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hydrocarbon Concentrate</td>
+<td style="text-align: left;">Likely Doomed</td>
+<td style="text-align: right;">1300</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ethanol Concentrate</td>
+<td style="text-align: left;">Likely Doomed</td>
+<td style="text-align: right;">1094</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Topical Ointment</td>
+<td style="text-align: left;">Likely Doomed</td>
+<td style="text-align: right;">792</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cannabis Mix Packaged</td>
+<td style="text-align: left;">Likely Doomed</td>
+<td style="text-align: right;">219</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CO2 Concentrate</td>
+<td style="text-align: left;">Likely Doomed</td>
+<td style="text-align: right;">192</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Capsule</td>
+<td style="text-align: left;">Likely Doomed</td>
+<td style="text-align: right;">71</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Non-Solvent based Concentrate</td>
+<td style="text-align: left;">Likely Doomed</td>
+<td style="text-align: right;">52</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Tincture</td>
+<td style="text-align: left;">Likely Doomed</td>
+<td style="text-align: right;">43</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sample Jar</td>
+<td style="text-align: left;">Likely Doomed</td>
+<td style="text-align: right;">6</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </section>
@@ -307,32 +494,336 @@ Every January, WA retailers refresh their shelves — and thousands of slow‑mo
 <h2 class="anchored" data-anchor-id="shelfstaleness-indicator">Shelf‑Staleness Indicator</h2>
 <p>Measure time since last sale:</p>
 <div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 675,918 × 4
-# Groups:   ProductId [675,811]
-   ProductId Name                                     last_sale  days_since_sale
-   &lt;chr&gt;     &lt;chr&gt;                                    &lt;date&gt;               &lt;dbl&gt;
- 1 10001943  NWC-CA-19230Mimosa 1g Cart               2025-08-04              91
- 2 10009653  SD IPR Redtailed .75g                    2025-08-04              91
- 3 10022409  Watermelon Punch - 1g - Flavored Cartri… 2025-08-04              91
- 4 10023570  Indica - 1g - RSO - From The Soil        2025-08-04              91
- 5 10030585  Flower Mini - Gelato 33 - 28g            2025-08-04              91
- 6 10030588  Flower Mini - Gelato X Dosido - 14g      2025-08-04              91
- 7 10033211  Sticky Frog BHO Triangle Kush 1g         2025-08-04              91
- 8 10064786  7g MAC 10 Flower Greenrush               2025-08-04              91
- 9 10113823  Cinnamon Mints 100mg - Double Delights   2025-08-04              91
-10 10129323  Mind Bender Pre-Roll  (1g) - Blue Dream… 2025-08-04              91
-# ℹ 675,908 more rows</code></pre>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 61%">
+<col style="width: 10%">
+<col style="width: 19%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">ProductId</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Last_Sale</th>
+<th style="text-align: right;">Days_Since_Last_Sale</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">10001943</td>
+<td style="text-align: left;">NWC-CA-19230Mimosa 1g Cart</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10009653</td>
+<td style="text-align: left;">SD IPR Redtailed .75g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10022409</td>
+<td style="text-align: left;">Watermelon Punch - 1g - Flavored Cartridge - The F</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10023570</td>
+<td style="text-align: left;">Indica - 1g - RSO - From The Soil</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10030585</td>
+<td style="text-align: left;">Paris Minis - Gelato 33 - 28g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10030588</td>
+<td style="text-align: left;">Flower Mini - Gelato X Dosido - 14g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10033211</td>
+<td style="text-align: left;">Sticky Frog BHO Triangle Kush 1g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10064786</td>
+<td style="text-align: left;">7g MAC 10 Flower Greenrush</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10113823</td>
+<td style="text-align: left;">Cinnamon Mints 100mg - Double Delights</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10129323</td>
+<td style="text-align: left;">Mind Bender Pre-Roll (1g) - Blue Dream - 1g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10132211</td>
+<td style="text-align: left;">Emerald Mountain Dark Chocolate 10pk</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10143591</td>
+<td style="text-align: left;">Super Lemon Haze Honey Crystal 1.0g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10164491</td>
+<td style="text-align: left;">Hellavated: Double Mint 1pk.75g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10165640</td>
+<td style="text-align: left;">Phat Panda Platinum Line: Strange Lemons - PR 1g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10167203</td>
+<td style="text-align: left;">CERES Bath Salt Soothe 4 oz Topical</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10447854</td>
+<td style="text-align: left;">Gushers - 2x1g - Prerolls - Seattles Private Reser</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10474789</td>
+<td style="text-align: left;">ED 10pk CBD 1:1 Berry Swell</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10491991</td>
+<td style="text-align: left;">KOKOGEMZ - Peanut Butter Milk Chocolate 10pk Choco</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10533942</td>
+<td style="text-align: left;">Trap Trufflez - 3.5g - No Mids</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10540195</td>
+<td style="text-align: left;">Flower - MIX - (g)</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10559867</td>
+<td style="text-align: left;">NWCS - MARIS - STRAWBERRY - Retire Indica 100mg 14</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10559892</td>
+<td style="text-align: left;">GABRIEL - Tina 3.5g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10574524</td>
+<td style="text-align: left;">OMG - 3.5g - Cookie Jar</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10580777</td>
+<td style="text-align: left;">PhatPanda PREROLL Dank Draaank 1g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10597136</td>
+<td style="text-align: left;">CNST - Gravity Gummies Watermelon - 1.13oz - 10p</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10603958</td>
+<td style="text-align: left;">AGC Super Lemon Haze Live Resin Cartridge 1g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10620099</td>
+<td style="text-align: left;">SubX Pre-roll Lemon Cherry Gelato 1pk 1g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10620823</td>
+<td style="text-align: left;">MAC1 28g H Falcanna</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10667942</td>
+<td style="text-align: left;">Heavyweight Farms Fox Power Flower 7g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10682513</td>
+<td style="text-align: left;">CRYSTAL CLEAR: DISTILLATE - GARY PEYTON - 1 GRAM</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10684055</td>
+<td style="text-align: left;">Bomber - White Truffle 2g Joint Gabriel</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10712986</td>
+<td style="text-align: left;">FTS Blueberry Preroll 2pk - 1.5g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10745720</td>
+<td style="text-align: left;">1937 - 1937 1g Trade Sample - Peanut Butter Pie - 1g - Trade Sample</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10767265</td>
+<td style="text-align: left;">Smokiez Blue Raspberry 250mg CBD</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10768666</td>
+<td style="text-align: left;">Gary Payton by Pagoda - 1g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10778348</td>
+<td style="text-align: left;">2:1 Indica PM Tincture 15ml [Ceres]</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10785546</td>
+<td style="text-align: left;">Raven Stargazer Myrtle CBDH Joint 3pk 1.8g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10791697</td>
+<td style="text-align: left;">Bulk Flower Lot - Mint Chocolate Chipz</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10802288</td>
+<td style="text-align: left;">SWF Huckleberry Pie 7g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1080834</td>
+<td style="text-align: left;">OG Chem 28g - Phat Panda</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10821206</td>
+<td style="text-align: left;">QFS Original Fuzzywazhitz Infused Blunt 1g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10822170</td>
+<td style="text-align: left;">EZ-Vape Cured Resin Cartridge Skywalker OG</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10822700</td>
+<td style="text-align: left;">10pk Supernova Strawberry Sativa Cosmic Candy - Sa</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10832657</td>
+<td style="text-align: left;">RED - Papaya Cake Micro Buds - 14g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10833909</td>
+<td style="text-align: left;">SWFT Truffle Single Cookies Cream</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10834592</td>
+<td style="text-align: left;">SM Gummy Bears Pre-Roll 1g 7pk</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10838266</td>
+<td style="text-align: left;">SLAB MECHANIX - BHO - LEMON SLUSHIE - 1G</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10838861</td>
+<td style="text-align: left;">TERPSTIX - Pineapple Flavor SATIVA Infused PR 1g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">10852526</td>
+<td style="text-align: left;">Paris Prerolls (2x.5g) - Guava NÂ°5 - 1g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">10861288</td>
+<td style="text-align: left;">Fleek Leaf Mini Buds - Gorilla Glue #4 - 14g</td>
+<td style="text-align: left;">2025-08-04</td>
+<td style="text-align: right;">91</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<p><strong>675,974 products</strong> stalling out of market in the last 91 days.</p>
+<p>Short list of products stalling out of market in the last 91 days.</p>
 <p><strong>Some stores have:</strong></p>
 <ul>
 <li><p>50–70% of initial units still sitting in inventory.</p></li>
 <li><p>Others have sold through most stock, indicating the product is dying market-wide, not store-specific.</p></li>
 <li><p>A few retailers carry only 1–3 doomed SKUs, indicating tight inventory control.</p></li>
 </ul>
-<p>The core insight is most “Doomed” products are not bad products — They Are Orphans -</p>
+<p>The core insight is most “Doomed” products are not bad products —</p>
+<p>They are orphans.</p>
 <p><strong>They don’t have:</strong></p>
 <ul>
 <li><p>enough stores</p></li>
@@ -346,69 +837,144 @@ Every January, WA retailers refresh their shelves — and thousands of slow‑mo
 <section id="top-20-overstocked-products" class="level2">
 <h2 class="anchored" data-anchor-id="top-20-overstocked-products">Top 20 Overstocked Products</h2>
 <div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>   ProductId                                               Name inv_ratio
-1   15300100              Walden - Concentrate - Guava Punch 1g 141.60000
-2   15300100              Walden - Concentrate - Guava Punch 1g 141.60000
-3   18697032 Frosty Mint Skittlez 1g Full Spectrum Oil 510 Cera 112.72727
-4   18697032 Frosty Mint Skittlez 1g Full Spectrum Oil 510 Cera 112.72727
-5   11042328                      Cinex - Live Foggers - 2x0.5g 104.71429
-6   11336451           White Label - Concentrate - Gods Gift 1g  95.20000
-7   11336451         Silver Series - Concentrate - Gods Gift 1g  95.20000
-8   16500175                       Sunshine Flower Tangie  3.5g  94.50000
-9     591023                          RSO - Hitz - LSD - 1 Gram  92.20000
-10  16026136                      Redbird -Bubba Smash - PR -1g  90.20000
-11  16026136                      Redbird -Bubba Smash - PR -1g  90.20000
-12  16336514                      Wave Caramels 1:1 CBD  3.95oz  90.10000
-13  16336514               Wave Caramels 1:1 CBD HYBRID  3.95oz  90.10000
-14  17249590  Lil Rays Lemonade Sugar Free Pineapple 100mg 1.75  85.40000
-15  17249590  Lil Rays Lemonade Sugar Free Pineapple 100mg 1.75  85.40000
-16  11331292           White Label - Concentrate - Gods Gift 1g  81.80000
-17  11331292         Silver Series - Concentrate - Gods Gift 1g  81.80000
-18  15124569                            1g Cinex Wax Sauce Boss  80.83333
-19  16788528    INDOSMOKES - Dutchberry - Filtered - 10pk x .7g  79.43750
-20  16791234                       SH - Cosmic Chem 2pk PR 1.2g  78.40000
-   velocity_4w trend_units
-1         0.25   0.6500000
-2         0.25   0.6500000
-3         0.25   0.2954545
-4         0.25   0.2954545
-5         0.25   0.4642857
-6         0.25   0.6500000
-7         0.25   0.6500000
-8         0.25   0.5416667
-9         0.25   0.6500000
-10        0.25   0.6500000
-11        0.25   0.6500000
-12        0.25   0.3250000
-13        0.25   0.3250000
-14        0.25   0.6500000
-15        0.25   0.6500000
-16        0.25   0.6500000
-17        0.25   0.6500000
-18        0.25   0.5416667
-19        0.25   0.2031250
-20        0.25   0.6500000</code></pre>
-</div>
-</div>
-<section id="retailer-exposure" class="level3">
-<h3 class="anchored" data-anchor-id="retailer-exposure">Retailer Exposure:</h3>
-<p>We identified 291 retailers currently carrying measurable quantities of doomed SKUs.</p>
-</section>
-<section id="store-level-risk-which-stores-carry-the-most-doomed-products" class="level3">
-<h3 class="anchored" data-anchor-id="store-level-risk-which-stores-carry-the-most-doomed-products">Store-level Risk: which stores carry the most doomed products?</h3>
-<p><strong>The table displays only 20 of the 291 stores as an example</strong></p>
-<div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 10%">
-<col style="width: 19%">
+<col style="width: 59%">
+<col style="width: 23%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: right;">Inventory_Ratio</th>
+<th style="text-align: right;">Trend_Units</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+<td style="text-align: right;">0.6500000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+<td style="text-align: right;">0.6500000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+<td style="text-align: right;">0.6500000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+<td style="text-align: right;">0.6500000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+<td style="text-align: right;">0.6500000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+<td style="text-align: right;">0.6500000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+<td style="text-align: right;">0.6500000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+<td style="text-align: right;">0.6500000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+<td style="text-align: right;">0.6500000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Walden - Concentrate - Guava Punch 1g</td>
+<td style="text-align: right;">141.6000</td>
+<td style="text-align: right;">0.6500000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+<td style="text-align: right;">0.4642857</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+<td style="text-align: right;">0.4642857</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+<td style="text-align: right;">0.4642857</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+<td style="text-align: right;">0.4642857</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+<td style="text-align: right;">0.4642857</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+<td style="text-align: right;">0.4642857</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+<td style="text-align: right;">0.4642857</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cinex - Live Foggers - 2x0.5g</td>
+<td style="text-align: right;">104.7143</td>
+<td style="text-align: right;">0.4642857</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">White Label - Concentrate - Gods Gift 1g</td>
+<td style="text-align: right;">104.2000</td>
+<td style="text-align: right;">0.6500000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">White Label - Concentrate - Gods Gift 1g</td>
+<td style="text-align: right;">104.2000</td>
+<td style="text-align: right;">0.6500000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>High inventory ratio numbers reflects overstocked products.</strong></p>
+<section id="retailer-exposure" class="level3">
+<h3 class="anchored" data-anchor-id="retailer-exposure">Retailer Exposure:</h3>
+<p>We identified 282 retailers currently carrying measurable quantities of doomed SKUs.</p>
+</section>
+<section id="store-level-risk-which-stores-carry-the-most-doomed-products" class="level3">
+<h3 class="anchored" data-anchor-id="store-level-risk-which-stores-carry-the-most-doomed-products">Store-level Risk: which stores carry the most doomed products?</h3>
+<p><strong>The table displays only 20 of the 282 stores as an example</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Top 20 Retailers by Number of Doomed Products</caption>
+<colgroup>
+<col style="width: 11%">
 <col style="width: 22%">
-<col style="width: 15%">
-<col style="width: 13%">
-<col style="width: 10%">
-<col style="width: 8%">
+<col style="width: 26%">
+<col style="width: 17%">
+<col style="width: 12%">
+<col style="width: 9%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -416,191 +982,170 @@ Every January, WA retailers refresh their shelves — and thousands of slow‑mo
 <th style="text-align: right;">doomed_product_count</th>
 <th style="text-align: right;">total_initial_qty_doomed</th>
 <th style="text-align: right;">total_qoh_doomed</th>
-<th style="text-align: right;">total_qty_sold</th>
 <th style="text-align: right;">pct_on_hand</th>
 <th style="text-align: right;">pct_sold</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">1049</td>
-<td style="text-align: right;">111</td>
-<td style="text-align: right;">22026</td>
-<td style="text-align: right;">10020</td>
-<td style="text-align: right;">12006</td>
-<td style="text-align: right;">45.49169</td>
-<td style="text-align: right;">54.50831</td>
+<td style="text-align: left;">895</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">22478</td>
+<td style="text-align: right;">7973</td>
+<td style="text-align: right;">35.47024</td>
+<td style="text-align: right;">64.52976</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">895</td>
-<td style="text-align: right;">111</td>
-<td style="text-align: right;">31648</td>
-<td style="text-align: right;">11334</td>
-<td style="text-align: right;">20314</td>
-<td style="text-align: right;">35.81269</td>
-<td style="text-align: right;">64.18731</td>
+<td style="text-align: left;">991</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">13008</td>
+<td style="text-align: right;">6977</td>
+<td style="text-align: right;">53.63622</td>
+<td style="text-align: right;">46.36378</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3032</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">22082</td>
+<td style="text-align: right;">6829</td>
+<td style="text-align: right;">30.92564</td>
+<td style="text-align: right;">69.07436</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1049</td>
+<td style="text-align: right;">62</td>
+<td style="text-align: right;">16203</td>
+<td style="text-align: right;">7403</td>
+<td style="text-align: right;">45.68907</td>
+<td style="text-align: right;">54.31093</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">971</td>
-<td style="text-align: right;">107</td>
-<td style="text-align: right;">33232</td>
-<td style="text-align: right;">10896</td>
-<td style="text-align: right;">22336</td>
-<td style="text-align: right;">32.78767</td>
-<td style="text-align: right;">67.21233</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">19818</td>
+<td style="text-align: right;">6733</td>
+<td style="text-align: right;">33.97416</td>
+<td style="text-align: right;">66.02584</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">3032</td>
-<td style="text-align: right;">105</td>
-<td style="text-align: right;">29398</td>
-<td style="text-align: right;">9327</td>
-<td style="text-align: right;">20071</td>
-<td style="text-align: right;">31.72665</td>
-<td style="text-align: right;">68.27335</td>
+<td style="text-align: left;">2602</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">22379</td>
+<td style="text-align: right;">8667</td>
+<td style="text-align: right;">38.72827</td>
+<td style="text-align: right;">61.27173</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">991</td>
-<td style="text-align: right;">96</td>
-<td style="text-align: right;">16141</td>
-<td style="text-align: right;">8535</td>
-<td style="text-align: right;">7606</td>
-<td style="text-align: right;">52.87776</td>
-<td style="text-align: right;">47.12224</td>
+<td style="text-align: left;">1055</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">16539</td>
+<td style="text-align: right;">5586</td>
+<td style="text-align: right;">33.77471</td>
+<td style="text-align: right;">66.22529</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">2031</td>
-<td style="text-align: right;">82</td>
-<td style="text-align: right;">29207</td>
-<td style="text-align: right;">9608</td>
-<td style="text-align: right;">19599</td>
-<td style="text-align: right;">32.89622</td>
-<td style="text-align: right;">67.10378</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2602</td>
-<td style="text-align: right;">79</td>
-<td style="text-align: right;">24893</td>
-<td style="text-align: right;">9953</td>
-<td style="text-align: right;">14940</td>
-<td style="text-align: right;">39.98313</td>
-<td style="text-align: right;">60.01687</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">1055</td>
-<td style="text-align: right;">78</td>
-<td style="text-align: right;">22037</td>
-<td style="text-align: right;">7144</td>
-<td style="text-align: right;">14893</td>
-<td style="text-align: right;">32.41821</td>
-<td style="text-align: right;">67.58179</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">795</td>
-<td style="text-align: right;">71</td>
-<td style="text-align: right;">19742</td>
-<td style="text-align: right;">6085</td>
-<td style="text-align: right;">13657</td>
-<td style="text-align: right;">30.82261</td>
-<td style="text-align: right;">69.17739</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">1036</td>
-<td style="text-align: right;">67</td>
-<td style="text-align: right;">16832</td>
-<td style="text-align: right;">6857</td>
-<td style="text-align: right;">9975</td>
-<td style="text-align: right;">40.73788</td>
-<td style="text-align: right;">59.26212</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2053</td>
-<td style="text-align: right;">67</td>
-<td style="text-align: right;">16336</td>
-<td style="text-align: right;">6911</td>
-<td style="text-align: right;">9425</td>
-<td style="text-align: right;">42.30534</td>
-<td style="text-align: right;">57.69466</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2659</td>
-<td style="text-align: right;">67</td>
-<td style="text-align: right;">35147</td>
-<td style="text-align: right;">7043</td>
-<td style="text-align: right;">28104</td>
-<td style="text-align: right;">20.03869</td>
-<td style="text-align: right;">79.96131</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2963</td>
-<td style="text-align: right;">65</td>
-<td style="text-align: right;">18996</td>
-<td style="text-align: right;">6340</td>
-<td style="text-align: right;">12656</td>
-<td style="text-align: right;">33.37545</td>
-<td style="text-align: right;">66.62455</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">3227</td>
-<td style="text-align: right;">65</td>
-<td style="text-align: right;">15479</td>
-<td style="text-align: right;">7233</td>
-<td style="text-align: right;">8246</td>
-<td style="text-align: right;">46.72782</td>
-<td style="text-align: right;">53.27218</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2368</td>
-<td style="text-align: right;">64</td>
-<td style="text-align: right;">13635</td>
-<td style="text-align: right;">5537</td>
-<td style="text-align: right;">8098</td>
-<td style="text-align: right;">40.60873</td>
-<td style="text-align: right;">59.39127</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2272</td>
-<td style="text-align: right;">63</td>
-<td style="text-align: right;">24459</td>
-<td style="text-align: right;">8887</td>
-<td style="text-align: right;">15572</td>
-<td style="text-align: right;">36.33427</td>
-<td style="text-align: right;">63.66573</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">23077</td>
+<td style="text-align: right;">7319</td>
+<td style="text-align: right;">31.71556</td>
+<td style="text-align: right;">68.28444</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">2213</td>
-<td style="text-align: right;">62</td>
-<td style="text-align: right;">16696</td>
-<td style="text-align: right;">6952</td>
-<td style="text-align: right;">9744</td>
-<td style="text-align: right;">41.63872</td>
-<td style="text-align: right;">58.36128</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">13848</td>
+<td style="text-align: right;">5890</td>
+<td style="text-align: right;">42.53322</td>
+<td style="text-align: right;">57.46678</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">3043</td>
-<td style="text-align: right;">60</td>
-<td style="text-align: right;">12512</td>
-<td style="text-align: right;">6052</td>
-<td style="text-align: right;">6460</td>
-<td style="text-align: right;">48.36957</td>
-<td style="text-align: right;">51.63043</td>
+<td style="text-align: left;">3227</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">12881</td>
+<td style="text-align: right;">6344</td>
+<td style="text-align: right;">49.25083</td>
+<td style="text-align: right;">50.74917</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2272</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">18517</td>
+<td style="text-align: right;">7093</td>
+<td style="text-align: right;">38.30534</td>
+<td style="text-align: right;">61.69466</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2368</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">9053</td>
+<td style="text-align: right;">4127</td>
+<td style="text-align: right;">45.58710</td>
+<td style="text-align: right;">54.41290</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">3103</td>
-<td style="text-align: right;">58</td>
-<td style="text-align: right;">15617</td>
-<td style="text-align: right;">6754</td>
-<td style="text-align: right;">8863</td>
-<td style="text-align: right;">43.24774</td>
-<td style="text-align: right;">56.75226</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">11954</td>
+<td style="text-align: right;">5350</td>
+<td style="text-align: right;">44.75489</td>
+<td style="text-align: right;">55.24511</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">1036</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">12551</td>
+<td style="text-align: right;">5371</td>
+<td style="text-align: right;">42.79340</td>
+<td style="text-align: right;">57.20660</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3043</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">9234</td>
+<td style="text-align: right;">4611</td>
+<td style="text-align: right;">49.93502</td>
+<td style="text-align: right;">50.06498</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3151</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">9800</td>
+<td style="text-align: right;">4848</td>
+<td style="text-align: right;">49.46939</td>
+<td style="text-align: right;">50.53061</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">1017</td>
-<td style="text-align: right;">57</td>
-<td style="text-align: right;">19793</td>
-<td style="text-align: right;">6573</td>
-<td style="text-align: right;">13220</td>
-<td style="text-align: right;">33.20871</td>
-<td style="text-align: right;">66.79129</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">14865</td>
+<td style="text-align: right;">4955</td>
+<td style="text-align: right;">33.33333</td>
+<td style="text-align: right;">66.66667</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">795</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">13592</td>
+<td style="text-align: right;">4189</td>
+<td style="text-align: right;">30.81960</td>
+<td style="text-align: right;">69.18040</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2963</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">16015</td>
+<td style="text-align: right;">4814</td>
+<td style="text-align: right;">30.05932</td>
+<td style="text-align: right;">69.94068</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">728</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">11025</td>
+<td style="text-align: right;">6042</td>
+<td style="text-align: right;">54.80272</td>
+<td style="text-align: right;">45.19728</td>
 </tr>
 </tbody>
 </table>

@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-09-03">
+<meta name="dcterms.date" content="2025-11-28">
 
-<title>On the Road Again: Cannabis Product Movement Across the State – The Evergreen Canna Ledger</title>
+<title>The Expiring Market: Who’s at Risk of Losing a License in Washington? – The Evergreen Canna Ledger</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -74,23 +74,29 @@ ul.task-list li input[type="checkbox"] {
 
 <script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 
-<script src="../site_libs/plotly-binding-4.10.4/plotly.js"></script>
+<link href="../site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
 
-<script src="../site_libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="../site_libs/datatables-binding-0.34.0/datatables.js"></script>
 
-<script src="../site_libs/jquery-3.5.1/jquery.min.js"></script>
+<script src="../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+
+<link href="../site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+
+<link href="../site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+
+<script src="../site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+
+<link href="../site_libs/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet">
+
+<script src="../site_libs/nouislider-7.0.10/jquery.nouislider.min.js"></script>
+
+<link href="../site_libs/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet">
+
+<script src="../site_libs/selectize-0.12.0/selectize.min.js"></script>
 
 <link href="../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
 
 <script src="../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
-
-<link href="../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
-
-<script src="../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
-
-<script src="../site_libs/kePrint-0.0.1/kePrint.js"></script>
-
-<link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
 
 
@@ -149,16 +155,30 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#the-bottom-line-up-front" id="toc-the-bottom-line-up-front" class="nav-link active" data-scroll-target="#the-bottom-line-up-front">The Bottom Line Up Front</a></li>
-  <li><a href="#number-of-shipments-by-month" id="toc-number-of-shipments-by-month" class="nav-link" data-scroll-target="#number-of-shipments-by-month">Number of Shipments by Month</a></li>
-  <li><a href="#top-shipping-routes" id="toc-top-shipping-routes" class="nav-link" data-scroll-target="#top-shipping-routes">Top Shipping Routes</a></li>
-  <li><a href="#top-transportation-routes-who-moves-the-most" id="toc-top-transportation-routes-who-moves-the-most" class="nav-link" data-scroll-target="#top-transportation-routes-who-moves-the-most">Top Transportation Routes: Who Moves the Most?</a></li>
-  <li><a href="#potential-bottlenecks-high-volume-origins-or-destinations" id="toc-potential-bottlenecks-high-volume-origins-or-destinations" class="nav-link" data-scroll-target="#potential-bottlenecks-high-volume-origins-or-destinations">Potential Bottlenecks: High Volume Origins or Destinations</a>
+  <li><a href="#why-license-expiration-analysis-matters" id="toc-why-license-expiration-analysis-matters" class="nav-link" data-scroll-target="#why-license-expiration-analysis-matters">Why License Expiration Analysis Matters</a>
   <ul class="collapse">
-  <li><a href="#top-20-potential-bottlenecks" id="toc-top-20-potential-bottlenecks" class="nav-link" data-scroll-target="#top-20-potential-bottlenecks">Top 20 Potential Bottlenecks</a></li>
+  <li><a href="#regulatory-continuity" id="toc-regulatory-continuity" class="nav-link" data-scroll-target="#regulatory-continuity"><strong>Regulatory continuity</strong></a></li>
+  <li><a href="#supply-chain-stability" id="toc-supply-chain-stability" class="nav-link" data-scroll-target="#supply-chain-stability"><strong>Supply chain stability</strong></a></li>
+  <li><a href="#market-churn" id="toc-market-churn" class="nav-link" data-scroll-target="#market-churn"><strong>Market churn</strong></a></li>
   </ul></li>
-  <li><a href="#item-volume-by-product-type-top-10" id="toc-item-volume-by-product-type-top-10" class="nav-link" data-scroll-target="#item-volume-by-product-type-top-10">Item Volume by Product Type (Top 10)</a></li>
-  <li><a href="#what-products-move-the-most" id="toc-what-products-move-the-most" class="nav-link" data-scroll-target="#what-products-move-the-most">What Products Move the Most?</a></li>
-  <li><a href="#why-this-matters-for-washington-operators" id="toc-why-this-matters-for-washington-operators" class="nav-link" data-scroll-target="#why-this-matters-for-washington-operators">Why This Matters for Washington Operators</a></li>
+  <li><a href="#what-the-data-shows-a-six-month-expiration-wave" id="toc-what-the-data-shows-a-six-month-expiration-wave" class="nav-link" data-scroll-target="#what-the-data-shows-a-six-month-expiration-wave">What the Data Shows: A Six-Month Expiration Wave</a>
+  <ul class="collapse">
+  <li><a href="#end-of-year-concentration" id="toc-end-of-year-concentration" class="nav-link" data-scroll-target="#end-of-year-concentration"><strong>End-of-year concentration</strong></a></li>
+  <li><a href="#early-2026-continuation" id="toc-early-2026-continuation" class="nav-link" data-scroll-target="#early-2026-continuation"><strong>Early 2026 continuation</strong></a></li>
+  </ul></li>
+  <li><a href="#where-are-at-risk-licensees-located" id="toc-where-are-at-risk-licensees-located" class="nav-link" data-scroll-target="#where-are-at-risk-licensees-located">Where Are At-Risk Licensees Located?</a></li>
+  <li><a href="#the-at-risk-category-whos-most-vulnerable" id="toc-the-at-risk-category-whos-most-vulnerable" class="nav-link" data-scroll-target="#the-at-risk-category-whos-most-vulnerable">The At-Risk Category: Who’s Most Vulnerable?</a>
+  <ul class="collapse">
+  <li><a href="#why-this-matters" id="toc-why-this-matters" class="nav-link" data-scroll-target="#why-this-matters"><strong>Why this matters</strong></a></li>
+  </ul></li>
+  <li><a href="#market-implications" id="toc-market-implications" class="nav-link" data-scroll-target="#market-implications">Market Implications</a>
+  <ul class="collapse">
+  <li><a href="#end-of-year-congestion" id="toc-end-of-year-congestion" class="nav-link" data-scroll-target="#end-of-year-congestion"><strong>1. End-of-Year Congestion</strong></a></li>
+  <li><a href="#retail-disruption" id="toc-retail-disruption" class="nav-link" data-scroll-target="#retail-disruption"><strong>2. Retail Disruption</strong></a></li>
+  <li><a href="#increased-ma-activity" id="toc-increased-ma-activity" class="nav-link" data-scroll-target="#increased-ma-activity"><strong>3. Increased M&amp;A Activity</strong></a></li>
+  <li><a href="#equity-rural-impact" id="toc-equity-rural-impact" class="nav-link" data-scroll-target="#equity-rural-impact"><strong>4. Equity &amp; Rural Impact</strong></a></li>
+  </ul></li>
+  <li><a href="#takeaways-for-operators-regulators-stakeholders" id="toc-takeaways-for-operators-regulators-stakeholders" class="nav-link" data-scroll-target="#takeaways-for-operators-regulators-stakeholders">Takeaways for Operators, Regulators &amp; Stakeholders</a></li>
   </ul>
 </nav>
     </div>
@@ -167,13 +187,11 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">On the Road Again: Cannabis Product Movement Across the State</h1>
-<p class="subtitle lead">Analyzing Transportation Patterns &amp; Trading Routes (2023-2025)</p>
+<h1 class="title">The Expiring Market: Who’s at Risk of Losing a License in Washington?</h1>
   <div class="quarto-categories">
     <div class="quarto-category">CCRS</div>
-    <div class="quarto-category">Transportation</div>
-    <div class="quarto-category">Supply Chain</div>
-    <div class="quarto-category">3Yrs</div>
+    <div class="quarto-category">Expiration</div>
+    <div class="quarto-category">Licenses</div>
   </div>
   </div>
 
@@ -185,7 +203,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 3, 2025</p>
+      <p class="date">November 28, 2025</p>
     </div>
   </div>
   
@@ -199,362 +217,304 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="the-bottom-line-up-front" class="level2">
 <h2 class="anchored" data-anchor-id="the-bottom-line-up-front">The Bottom Line Up Front</h2>
-<p>A data-driven look at logistics, bottlenecks, and shipment volumes. Transportation manifests offer critical insight into the scale, flow, and hotspots of the cannabis supply chain. Understanding shipping trends can help optimize logistics, improve regulatory compliance, and identify supply bottlenecks.</p>
-<p><strong>Transportation Overview</strong><br>
-Transportation is the hidden backbone of Washington’s cannabis industry. As CCRS data becomes more structured and complete, transportation visibility is emerging as the next frontier in understanding wholesale and retail dynamics.</p>
-<p>This report explores the flow of cannabis products across Washington, based on CCRS manifest data. It draws from two key tables:</p>
-<ul>
-<li><p><strong>manifest_header_master:</strong> Shipment metadata (origin, destination, date)</p></li>
-<li><p><strong>transported_items_master:</strong> Shipment contents</p></li>
-</ul>
-<p>Why Transportation Visibility Matters</p>
-<p>Transportation drives three critical industry functions:</p>
-<p>✔ Operational Efficiency</p>
-<p>Efficient routing lowers delivery costs, enables faster inventory turnover, and stabilizes retail stock availability.</p>
-<p>✔ Compliance &amp; Traceability</p>
-<p>Every shipment must be logged, traceable, and compliant with CCRS. High-volume lanes and repeated bilateral transfers reveal central distribution hubs functioning as de-facto logistics centers.</p>
-<p>✔ Market Insight</p>
-<p>Transport data highlights:</p>
-<ul>
-<li><p>Who distributes at scale</p></li>
-<li><p>Which retailers receive the highest volume</p></li>
-<li><p>Seasonal surges in supply movement</p></li>
-<li><p>Potential congestion or inefficiencies at destination nodes</p></li>
-</ul>
-<p>In a maturing market, transportation data becomes a predictive signal of retail performance and product availability.</p>
+<p>License expiration is a quiet but powerful structural force. When thousands of licenses cluster within a narrow time window, the entire cannabis ecosystem feels the weight—from growers to retailers, labs, and regulators.</p>
+<p>By mapping expiration risk statewide, TECL provides clarity where the market previously lacked visibility. This empowers businesses, strengthens the supply chain, and supports a more resilient Washington cannabis economy.</p>
+<p><strong>Overview</strong><br>
+License expiration is an under-analyzed but critical signal in Washington’s cannabis ecosystem. Every license—producer, processor, or retailer—must renew on a predictable annual cycle, and failure to renew leads to immediate inactivity, product immobility, and permanent loss of market position.</p>
 </section>
-<section id="number-of-shipments-by-month" class="level2">
-<h2 class="anchored" data-anchor-id="number-of-shipments-by-month">Number of Shipments by Month</h2>
-<div class="cell">
-<div class="cell-output-display">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-7d517edf4d1a736c64cf" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-7d517edf4d1a736c64cf">{"x":{"visdat":{"4db4438d41dc":["function () ","plotlyVisDat"]},"cur_data":"4db4438d41dc","attrs":{"4db4438d41dc":{"x":{},"y":{},"mode":"lines+markers","line":{"color":"#2c3e50","width":2},"marker":{"color":"#3498db","size":6},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Monthly Cannabis Shipments Across Washington","xaxis":{"domain":[0,1],"automargin":true,"title":"Month"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Total Shipments","tickformat":",d"},"hovermode":"x unified","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2023-01-01","2023-02-01","2023-03-01","2023-05-01","2023-10-01","2023-11-01","2023-12-01","2024-01-01","2024-02-01","2024-03-01","2024-04-01","2024-05-01","2024-06-01","2024-07-01","2024-08-01","2024-09-01","2024-10-01","2024-11-01","2024-12-01","2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01"],"y":[1,3,5,1,2,3,1,1,11,3,3,26,17,485,566,171,40736,17145,34300,38894,32080,35897,33865,26593,15042,13925,6134,52199,34919],"mode":"lines+markers","line":{"color":"#2c3e50","width":2},"marker":{"color":"#3498db","size":6,"line":{"color":"rgba(31,119,180,1)"}},"type":"scatter","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-</section>
-<section id="top-shipping-routes" class="level2">
-<h2 class="anchored" data-anchor-id="top-shipping-routes">Top Shipping Routes</h2>
-</section>
-<section id="top-transportation-routes-who-moves-the-most" class="level2">
-<h2 class="anchored" data-anchor-id="top-transportation-routes-who-moves-the-most">Top Transportation Routes: Who Moves the Most?</h2>
-<p>The largest shipment lanes show a dense network of vertically integrated operators, distribution-heavy producers, and high-volume retail destinations.</p>
-<p>Top 20 Shipment Routes (2023–2025)</p>
-<p>(by manifest count)</p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table caption-top table-sm table-striped small">
-<caption>Top 20 Cannabis Shipping Routes (by Manifest Count)</caption>
-<thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">OriginLicenseName</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">DestinationLicenseName</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">ShipmentCount</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">LUX POT SHOP</td>
-<td style="text-align: left;">LUX POT SHOP</td>
-<td style="text-align: right;">656</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">PHAT N STICKY</td>
-<td style="text-align: left;">GROW OP FARMS</td>
-<td style="text-align: right;">509</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">FORBIDDEN FARMS</td>
-<td style="text-align: left;">ZIPS CANNABIS</td>
-<td style="text-align: right;">462</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">TTL HOLDINGS LLC</td>
-<td style="text-align: left;">TTL HOLDINGS LLC</td>
-<td style="text-align: right;">455</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">NORTHWEST CANNABIS SOLUTIONS</td>
-<td style="text-align: left;">ZIPS CANNABIS</td>
-<td style="text-align: right;">374</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">NORTHWEST CANNABIS SOLUTIONS</td>
-<td style="text-align: left;">Integrity Labs</td>
-<td style="text-align: right;">361</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">GROW OP FARMS</td>
-<td style="text-align: left;">NIRVANA CANNABIS COMPANY</td>
-<td style="text-align: right;">361</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">1555 INDUSTRIAL LLC</td>
-<td style="text-align: left;">MAMA JS</td>
-<td style="text-align: right;">346</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">NORTHWEST CANNABIS SOLUTIONS</td>
-<td style="text-align: left;">NIRVANA CANNABIS COMPANY</td>
-<td style="text-align: right;">339</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">BLUE ROOTS CANNABIS</td>
-<td style="text-align: left;">BLUE ROOTS CANNABIS</td>
-<td style="text-align: right;">305</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">LIFTED CANNABIS</td>
-<td style="text-align: left;">Confidence Analytics</td>
-<td style="text-align: right;">295</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">MAMA JS</td>
-<td style="text-align: left;">1555 INDUSTRIAL LLC</td>
-<td style="text-align: right;">291</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">ROLLING FARMS</td>
-<td style="text-align: left;">NIRVANA CANNABIS COMPANY</td>
-<td style="text-align: right;">290</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">CRAFT ELIXIRS</td>
-<td style="text-align: left;">CRAFT ELIXIRS</td>
-<td style="text-align: right;">281</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">LIFTED CANNABIS</td>
-<td style="text-align: left;">ZIPS CANNABIS</td>
-<td style="text-align: right;">278</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">GROW OP FARMS</td>
-<td style="text-align: left;">THE KUSHERY</td>
-<td style="text-align: right;">278</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">GROW OP FARMS</td>
-<td style="text-align: left;">THE HERBERY</td>
-<td style="text-align: right;">275</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">GROW OP FARMS</td>
-<td style="text-align: left;">UNCLE IKES</td>
-<td style="text-align: right;">272</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">PRISMATIC BRANDS</td>
-<td style="text-align: left;">COMMENCEMENT BAY CANNABIS</td>
-<td style="text-align: right;">270</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">MOMMA CHAN</td>
-<td style="text-align: left;">MGE DISTRIBUTIONS LLC</td>
-<td style="text-align: right;">269</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><strong>Key Observations</strong></p>
+<section id="why-license-expiration-analysis-matters" class="level2">
+<h2 class="anchored" data-anchor-id="why-license-expiration-analysis-matters">Why License Expiration Analysis Matters</h2>
+<p>License expiration is not simply an administrative milestone — it drives several critical dynamics across Washington’s cannabis ecosystem.</p>
+<section id="regulatory-continuity" class="level3">
+<h3 class="anchored" data-anchor-id="regulatory-continuity"><strong>Regulatory continuity</strong></h3>
 <ul>
-<li><p>Vertical integration is common: Many of the top routes are self-to-self movements (e.g., LUX POT SHOP → LUX POT SHOP). This indicates centralized processing before final distribution.</p></li>
-<li><p>Three major distribution hubs emerge: Grow Op Farms, Northwest Cannabis Solutions, and TTL Holdings appear repeatedly across unrelated routes, acting as logistics anchors for smaller brands.</p></li>
-<li><p>Retail chains create dense inbound networks: ZIPS Cannabis, Nirvana, and The Kushery collectively account for thousands of inbound shipments.</p></li>
+<li>Lapses create compliance gaps<br>
+</li>
+<li>Untaggable product disrupts seed-to-sale traceability<br>
+</li>
+<li>Operators risk falling out of reporting compliance</li>
 </ul>
-<p><br></p>
-<p>Key Observations</p>
-<p>Vertical integration is common: Many of the top routes are self-to-self movements (e.g., LUX POT SHOP → LUX POT SHOP). This indicates centralized processing before final distribution.</p>
-<p>Three major distribution hubs emerge: Grow Op Farms, Northwest Cannabis Solutions, and TTL Holdings appear repeatedly across unrelated routes, acting as logistics anchors for smaller brands.</p>
-<p>Retail chains create dense inbound networks: ZIPS Cannabis, Nirvana, and The Kushery collectively account for thousands of inbound shipments.</p>
-<p>Shipment Volume by Month</p>
+</section>
+<section id="supply-chain-stability" class="level3">
+<h3 class="anchored" data-anchor-id="supply-chain-stability"><strong>Supply chain stability</strong></h3>
+<ul>
+<li>Retailers with expiring licenses may interrupt high-volume customer pipelines<br>
+</li>
+<li>Producers facing renewal deadlines often scale back activity<br>
+</li>
+<li>Distributors may experience routing or manifest delays</li>
+</ul>
+</section>
+<section id="market-churn" class="level3">
+<h3 class="anchored" data-anchor-id="market-churn"><strong>Market churn</strong></h3>
+<p>Expiration spikes are often followed by:</p>
+<ul>
+<li>Mergers &amp; acquisitions<br>
+</li>
+<li>Location closures<br>
+</li>
+<li>Ownership changes<br>
+</li>
+<li>Reduced operating hours<br>
+</li>
+<li>Inventory liquidations</li>
+</ul>
+<p>The closer an entire sector gets to mass renewal events, the greater the strain on licensing authorities and business operations.</p>
+<hr>
+</section>
+</section>
+<section id="what-the-data-shows-a-six-month-expiration-wave" class="level2">
+<h2 class="anchored" data-anchor-id="what-the-data-shows-a-six-month-expiration-wave">What the Data Shows: A Six-Month Expiration Wave</h2>
+<p>The stacked bar chart below highlights a significant renewal surge across Washington’s cannabis market.</p>
+<section id="end-of-year-concentration" class="level3">
+<h3 class="anchored" data-anchor-id="end-of-year-concentration"><strong>End-of-year concentration</strong></h3>
+<ul>
+<li><strong>197 licenses</strong> expiring in <strong>November 2025</strong><br>
+</li>
+<li><strong>242 licenses</strong> expiring in <strong>December 2025</strong></li>
+</ul>
+<p>That means <strong>439 licenses will require renewal within a 61-day window</strong>.</p>
+<p>No regulatory system — LCB, WSDA, local governments, or labs — functions without stress when thousands of entities require action simultaneously.</p>
+</section>
+<section id="early-2026-continuation" class="level3">
+<h3 class="anchored" data-anchor-id="early-2026-continuation"><strong>Early 2026 continuation</strong></h3>
+<p>The months that follow show smaller but meaningful renewal waves:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
 <th>Month</th>
-<th>Total Shipments</th>
+<th>Expiring Licenses</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Jan–Dec 2023</td>
-<td>Mostly 1–5 per month</td>
+<td>Jan 2026</td>
+<td>67</td>
 </tr>
 <tr class="even">
-<td>Jan–Apr 2024</td>
-<td>1–11 per month</td>
+<td>Feb 2026</td>
+<td>75</td>
 </tr>
 <tr class="odd">
-<td><strong>Jul 2024</strong></td>
-<td>485</td>
+<td>Mar 2026</td>
+<td>80</td>
 </tr>
 <tr class="even">
-<td><strong>Aug 2024</strong></td>
-<td>566</td>
+<td>Apr 2026</td>
+<td>57</td>
 </tr>
 <tr class="odd">
-<td><strong>Oct 2024</strong></td>
-<td><strong>40,736</strong></td>
+<td>May 2026</td>
+<td>73</td>
 </tr>
 <tr class="even">
-<td><strong>Nov 2024</strong></td>
-<td>17,145</td>
-</tr>
-<tr class="odd">
-<td><strong>Dec 2024</strong></td>
-<td>34,300</td>
-</tr>
-<tr class="even">
-<td><strong>Jan 2025</strong></td>
-<td>38,894</td>
-</tr>
-<tr class="odd">
-<td>Feb–Apr 2025</td>
-<td>32–36k per month</td>
-</tr>
-<tr class="even">
-<td>Aug 2025</td>
-<td>6,134</td>
-</tr>
-<tr class="odd">
-<td>Sept 2025</td>
-<td><strong>52,199</strong></td>
-</tr>
-<tr class="even">
-<td>Oct 2025</td>
-<td>34,919</td>
+<td>Jun 2026</td>
+<td>1</td>
 </tr>
 </tbody>
 </table>
-<p><strong>What caused this explosion?</strong></p>
-<ul>
-<li><p>Standardized CCRS transport reporting increased dramatically beginning mid-2024.</p></li>
-<li><p>Several large operators transitioned to more centralized distribution models.</p></li>
-<li><p>Retail chains consolidated purchasing, creating higher-frequency, higher-volume transport lanes.</p></li>
-</ul>
-</section>
-<section id="potential-bottlenecks-high-volume-origins-or-destinations" class="level2">
-<h2 class="anchored" data-anchor-id="potential-bottlenecks-high-volume-origins-or-destinations">Potential Bottlenecks: High Volume Origins or Destinations</h2>
-<p><strong>Identifying Transportation Bottlenecks</strong></p>
-<p>We aggregated incoming shipments per retailer to identify destination bottlenecks—retailers that receive disproportionately high inbound shipment volume and may face:</p>
-<ul>
-<li><p>Receiving delays</p></li>
-<li><p>Storage and backroom congestion</p></li>
-<li><p>Frequent restocking cycles</p></li>
-<li><p>Staff workload spikes</p></li>
-</ul>
-<section id="top-20-potential-bottlenecks" class="level3">
-<h3 class="anchored" data-anchor-id="top-20-potential-bottlenecks">Top 20 Potential Bottlenecks</h3>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Destination</th>
-<th>Incoming Shipments</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>ZIPS CANNABIS</strong></td>
-<td><strong>9,934</strong></td>
-</tr>
-<tr class="even">
-<td>UNCLE IKES</td>
-<td>5,164</td>
-</tr>
-<tr class="odd">
-<td>COMMENCEMENT BAY CANNABIS</td>
-<td>4,482</td>
-</tr>
-<tr class="even">
-<td>THE KUSHERY</td>
-<td>4,358</td>
-</tr>
-<tr class="odd">
-<td>CANNAZONE</td>
-<td>4,168</td>
-</tr>
-<tr class="even">
-<td>THE HERBERY</td>
-<td>4,155</td>
-</tr>
-<tr class="odd">
-<td>CINDER</td>
-<td>3,955</td>
-</tr>
-<tr class="even">
-<td>BLOOM</td>
-<td>3,560</td>
-</tr>
-<tr class="odd">
-<td>CLEAR CHOICE CANNABIS</td>
-<td>3,534</td>
-</tr>
-<tr class="even">
-<td>PRC</td>
-<td>3,326</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Interpretation</strong></p>
-<p>These retailers function as regional demand hubs. High shipment volume often means:</p>
-<ul>
-<li><p>Dependence on rapid inventory turnover</p></li>
-<li><p>Frequent procurement cycles</p></li>
-<li><p>Upstream suppliers scheduling deliveries around specific buyers</p></li>
-</ul>
-<p>This is also where logistics strain is most visible in the system. <br></p>
+<p>Renewals spike sharply at year-end before flattening in the spring.</p>
+<hr>
 </section>
 </section>
-<section id="item-volume-by-product-type-top-10" class="level2">
-<h2 class="anchored" data-anchor-id="item-volume-by-product-type-top-10">Item Volume by Product Type (Top 10)</h2>
+<section id="where-are-at-risk-licensees-located" class="level2">
+<h2 class="anchored" data-anchor-id="where-are-at-risk-licensees-located">Where Are At-Risk Licensees Located?</h2>
+<p>The dataset contains <strong>171 County–month combinations</strong> of expiring licenses — from major metros to small rural agricultural communities.</p>
+<p>Examples include:</p>
+<ul>
+<li><strong>King – 104</strong><br>
+</li>
+<li><strong>Snohomish – 82</strong><br>
+</li>
+<li><strong>Spokane – 67</strong><br>
+</li>
+<li><strong>Okanogan – 59</strong><br>
+</li>
+<li><strong>Pierce – 56</strong><br>
+</li>
+<li><strong>Grant – 53</strong><br>
+</li>
+<li><strong>Whatcom – 42</strong><br>
+</li>
+<li><strong>Benton – 26</strong></li>
+</ul>
+<p>When viewed at the city level, several small towns show <strong>high concentrations relative to population</strong>, signaling that communities anchored by cultivation and processing may experience simultaneous operational risk.</p>
+<hr>
+</section>
+<section id="the-at-risk-category-whos-most-vulnerable" class="level2">
+<h2 class="anchored" data-anchor-id="the-at-risk-category-whos-most-vulnerable">The At-Risk Category: Who’s Most Vulnerable?</h2>
+<p>We identified <strong>792 “at risk” licensees</strong> in the “0–3 months” or “3–6 months” expiration groups.</p>
+<p>These include:</p>
+<ul>
+<li>Individual sole proprietors<br>
+</li>
+<li>Small rural farms<br>
+</li>
+<li>Brands with only one licensed location<br>
+</li>
+<li>Older labs and processors<br>
+</li>
+<li>Retailers in dense metro corridors</li>
+</ul>
+<section id="why-this-matters" class="level3">
+<h3 class="anchored" data-anchor-id="why-this-matters"><strong>Why this matters</strong></h3>
+<p>Licensees in the at-risk category face the highest operational vulnerability:</p>
+<ul>
+<li>Missed renewal deadlines<br>
+</li>
+<li>Product in transit risking quarantine<br>
+</li>
+<li>Retail shelves experiencing regional shortages<br>
+</li>
+<li>Operators using expiration as a natural exit point</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="market-implications" class="level2">
+<h2 class="anchored" data-anchor-id="market-implications">Market Implications</h2>
+<section id="end-of-year-congestion" class="level3">
+<h3 class="anchored" data-anchor-id="end-of-year-congestion"><strong>1. End-of-Year Congestion</strong></h3>
+<p><strong>439 licenses</strong> expiring in Nov–Dec 2025 will saturate LCB’s renewal queue.<br>
+Slow processing times may delay approvals into Q1 2026.</p>
+</section>
+<section id="retail-disruption" class="level3">
+<h3 class="anchored" data-anchor-id="retail-disruption"><strong>2. Retail Disruption</strong></h3>
+<p>Many of the state’s <strong>highest-volume retailers</strong> identified in the <a href="www.evergreencannaledger.org/posts/2025-09-03_transportation_visibility">transportation bottleneck analysis</a> operate in cities with large expiration clusters.<br>
+As such, this aligns <strong>expiry risk with distribution risk</strong>.</p>
+</section>
+<section id="increased-ma-activity" class="level3">
+<h3 class="anchored" data-anchor-id="increased-ma-activity"><strong>3. Increased M&amp;A Activity</strong></h3>
+<p>Expiration waves historically precede:</p>
+<ul>
+<li>License transfers<br>
+</li>
+<li>Corporate restructuring<br>
+</li>
+<li>Strategic acquisitions<br>
+</li>
+<li>Capital repositioning</li>
+</ul>
+</section>
+<section id="equity-rural-impact" class="level3">
+<h3 class="anchored" data-anchor-id="equity-rural-impact"><strong>4. Equity &amp; Rural Impact</strong></h3>
+<p>Cannabis-dependent rural communities such as <strong>Okanogan, Oroville, Royal City, and Centralia</strong> experience disproportionate effects.<br>
+License expiration in these areas directly impacts:</p>
+<ul>
+<li>Local employment<br>
+</li>
+<li>Agricultural supply chains<br>
+</li>
+<li>Municipal tax revenue</li>
+</ul>
+<hr>
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="2025-09-03_Transportation_Visibility_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="960"></p>
+<p><img src="2025-11-28_Expiring_Licenses_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="2880"></p>
 </figure>
 </div>
 </div>
 </div>
+<p><strong>NA refers to other license holders such as state-authorized analytical labs that must renew in March 2026</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-935f9703d4bf854df673" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-935f9703d4bf854df673">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"date\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"1764547200000\" data-max=\"1.780272e+12\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"1\" data-max=\"30\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[["2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2025-12-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-01-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-02-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-03-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-04-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-05-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01","2026-06-01"],["ADAMS","BENTON","CHELAN","CLALLAM","CLARK","COOPERATIVE","COWLITZ","DOUGLAS","GRANT","GRAYS HARBOR","ISLAND","JEFFERSON","KING","KITSAP","KITTITAS","KLICKITAT","LEWIS","LINCOLN","MASON","OKANOGAN","PACIFIC","PIERCE","SAN JUAN","SKAGIT","SNOHOMISH","SPOKANE","STEVENS","THURSTON","WAHKIAKUM","WALLA WALLA","WHATCOM","WHITMAN","YAKIMA","ADAMS","BENTON","CLALLAM","CLARK","COWLITZ","GRANT","GRAYS HARBOR","ISLAND","KING","KITTITAS","LINCOLN","MASON","OKANOGAN","PIERCE","SAN JUAN","SKAMANIA","SNOHOMISH","SPOKANE","THURSTON","WAHKIAKUM","WHATCOM","ADAMS","CHELAN","CLARK","COWLITZ","DOUGLAS","GRANT","GRAYS HARBOR","KING","KITSAP","KITTITAS","LINCOLN","MASON","OKANOGAN","PACIFIC","PIERCE","SKAGIT","SNOHOMISH","SPOKANE","STEVENS","THURSTON","WHATCOM","WHITMAN","YAKIMA","CHELAN","COWLITZ","GRANT","GRAYS HARBOR","ISLAND","JEFFERSON","KING","KITSAP","KLICKITAT","MASON","OKANOGAN","PIERCE","SKAMANIA","SNOHOMISH","SPOKANE","STEVENS","THURSTON","WHATCOM",null,"BENTON","CLALLAM","CLARK","DOUGLAS","FRANKLIN","GRANT","GRAYS HARBOR","ISLAND","KING","KITSAP","LEWIS","OKANOGAN","PACIFIC","PIERCE","SKAGIT","SNOHOMISH","SPOKANE","THURSTON","WHATCOM","ADAMS","BENTON","CLARK","DOUGLAS","GRANT","GRAYS HARBOR","KING","KITSAP","KITTITAS","LINCOLN","MASON","OKANOGAN","PIERCE","SKAGIT","SNOHOMISH","SPOKANE","STEVENS","THURSTON","WHATCOM","WHITMAN","ADAMS","BENTON","CLALLAM","CLARK","COWLITZ","DOUGLAS","FERRY","GRANT","GRAYS HARBOR","ISLAND","KING","KITSAP","OKANOGAN","PACIFIC","PIERCE","SKAGIT","SNOHOMISH","SPOKANE","STEVENS","THURSTON","WALLA WALLA","WHITMAN","YAKIMA"],[7,13,1,3,8,1,3,1,21,7,1,2,30,9,1,2,2,4,5,24,1,11,1,8,22,19,7,16,1,2,14,2,4,2,3,1,2,1,2,2,1,5,1,1,2,2,6,1,1,12,9,4,1,3,3,1,1,2,2,6,3,10,2,1,1,2,8,2,6,3,9,8,1,3,1,2,1,1,1,8,4,1,1,12,1,1,4,6,3,1,9,3,3,2,5,1,1,1,2,1,1,4,1,2,8,1,3,5,1,1,4,6,1,3,5,1,3,2,3,7,2,9,4,1,3,4,4,6,1,5,5,4,4,5,1,3,3,1,2,1,3,1,4,5,2,7,1,7,4,7,5,5,3,1,1,1,1,6]],"container":"<table class=\"stripe hover\">\n  <thead>\n    <tr>\n      <th>expiry_month<\/th>\n      <th>County<\/th>\n      <th>n<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":50,"lengthMenu":[25,50,100,200],"scrollX":true,"columnDefs":[{"className":"dt-right","targets":2},{"name":"expiry_month","targets":0},{"name":"County","targets":1},{"name":"n","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p><br></p>
+<p>License expiration is an under-analyzed but critical signal in Washington’s cannabis ecosystem. Every license—producer, processor, or retailer—must renew on a predictable annual cycle, and failure to renew leads to immediate inactivity, product immobility, and permanent loss of market position.</p>
+<p>Using CCRS-aligned licensee data, TECL analyzed more than 1,842 active cannabis license records and identified 792 licensees whose licenses expire within the next six months. The findings highlight emerging regional vulnerabilities, volume surges, and market-level risks that operators and policymakers cannot ignore.</p>
 </section>
-<section id="what-products-move-the-most" class="level2">
-<h2 class="anchored" data-anchor-id="what-products-move-the-most">What Products Move the Most?</h2>
-<p>Understanding what moves is as important as understanding where and how often shipments occur.</p>
-<p>Top 10 Transported Items (by volume)</p>
-<p>(Total quantity moved across 2023–2025)</p>
-<p>2.08.24 – (g) – 37,012,672 units &lt;- outlier detection and incorrect description use; large shipment on Feb.&nbsp;8, 2024!?</p>
-<p>SG Wet Stem Flower – Runtz – (g) – 27,643,089</p>
-<p>Bulk Other Plant Material Lot – Hybrid – 23,751,983</p>
-<p>Bulk Flower Lot – Blast Frozen – 22,192,229</p>
-<p>Wet Weight – 21,406,570</p>
-<p>TJ Runtz – Flower – 18,000,000</p>
-<p>Whole Wet Plants – AAG2.0 – 17,699,171</p>
-<p>Bulk Distillate – Mixed – 15,809,974</p>
-<p>Bulk Wet Flower – 13,517,049</p>
-<p>Whole Wet Plants – AAG1.0 – 13,267,576</p>
-<p>Observation: Washington’s cannabis transport system overwhelmingly moves bulk biomass, not packaged retail-ready goods. This is a hallmark of vertically integrated models and in-state processing requirements.</p>
 </section>
-<section id="why-this-matters-for-washington-operators" class="level2">
-<h2 class="anchored" data-anchor-id="why-this-matters-for-washington-operators">Why This Matters for Washington Operators</h2>
-<p><strong>For Producers &amp; Processors</strong></p>
+<section id="takeaways-for-operators-regulators-stakeholders" class="level2">
+<h2 class="anchored" data-anchor-id="takeaways-for-operators-regulators-stakeholders">Takeaways for Operators, Regulators &amp; Stakeholders</h2>
+<div class="callout callout-style-default callout-tip callout-titled" title="For Operators">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>For Operators
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
-<li><p>Shipment frequency can identify potential partnership opportunities with busy retailers.</p></li>
-<li><p>Understanding bottlenecks helps time deliveries to reduce wait times and avoid rejected shipments.</p></li>
+<li>Confirm renewal dates well ahead of deadlines<br>
+</li>
+<li>Align renewal timing with product cycles<br>
+</li>
+<li>Prepare compliance packages early<br>
+</li>
+<li>Anticipate potential LCB delays in Nov–Dec<br>
+</li>
 </ul>
-<p><strong>For Retailers</strong></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="For Regulators">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>For Regulators
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
-<li><p>Destination-volume data provides early warning of staffing or receiving issues.</p></li>
-<li><p>Retail chains can benchmark efficiency across stores.</p></li>
+<li>Prepare for high renewal load during Q4 2025<br>
+</li>
+<li>Consider auto-renew or streamlined renewal guidance<br>
+</li>
+<li>Provide early warning communications to at-risk licensees<br>
+</li>
 </ul>
-<p><strong>For Regulators &amp; Policymakers</strong></p>
-<p>** Transportation data highlights structural inefficiencies, consolidation, and potential compliance pressure points.</p>
-<p><strong>For Consumers &amp; Researchers</strong></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled" title="For Retailers">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>For Retailers
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
-<li>Shipment flows reveal how product actually moves across the state—driving price, selection, and supply consistency.</li>
+<li>Identify whether suppliers appear in the “0–3 month” category<br>
+</li>
+<li>Strategize procurement ahead of expiration windows<br>
+</li>
+<li>Hold buffer inventory where applicable<br>
+</li>
 </ul>
-<p><br> The movement of cannabis products across Washington State is one of the most overlooked components of the legal supply chain. While cultivation, processing, and retail metrics receive most of the industry’s attention, transportation activity is where operational efficiency—and risk—often converge.</p>
-<p>Using Washington’s CCRS (Cannabis Central Reporting System) transport manifests, the Evergreen Canna Ledger analyzed more than 150,000+ shipments spanning 2023–2025 to understand how cannabis moves, which routes dominate the network, and where bottlenecks signal operational or structural challenges.</p>
-<p>At The Evergreen Canna Ledger, our mission is to make these logistics patterns visible, accessible, and actionable—for operators, analysts, policymakers, and the public.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled" title="For Policy Analysts">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>For Policy Analysts
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Track whether expirations correlate with business exits<br>
+</li>
+<li>Monitor rural cluster expiration risk<br>
+</li>
+<li>Evaluate local tax revenue and employment impacts<br>
+</li>
+<li>Inform legislative discussions on renewal reform<br>
+</li>
+</ul>
+</div>
+</div>
 
 
 </section>

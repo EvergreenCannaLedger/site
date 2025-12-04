@@ -1,6 +1,8 @@
 ---
 title: "The Doomed Product Detector: Which Cannabis SKUs Are About to Disappear?"
 subtitle: "Identifying Products at Risk of Discontinuation"
+description: "Detects underperforming cannabis products based on sales and inventory trends."
+image: false
 date: "2025-11-30"
 categories: [CCRS, Product, Lifecycle]
 project:
@@ -33,7 +35,7 @@ Every January, WA retailers refresh their shelves — and thousands of slow‑mo
 
 This annual “reset cycle” removes products that no longer sell, have aged out of rotation, or have accumulated too much on-hand inventory.
 
-Using 12+ million CCRS product-store movement records and real retail sales velocity between August 04 - November 03, 2025, we modeled which active products show patterns consistent with impending extintion.
+Using 22+ million CCRS product-store movement records and real retail sales velocity between August 04 - November 03, 2025, we modeled which active products show patterns consistent with impending extintion.
 
 We identify “doomed” products by comparing:
 
@@ -49,7 +51,7 @@ Products with low velocity, shrinking demand, low penetration, and high inventor
 
 The analysis covers a 91-day window dating backward 4- and 13- weeks from 11-03-2025.
 
-Table of dates used in this report: 
+**Table of dates used in this report:**  
 
 | Metric                | Dates Used            |
 | --------------------- | --------------------- |
@@ -60,150 +62,19 @@ Table of dates used in this report:
 | **13-Week Length**    | 91 days               |
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, include = FALSE)
-
-library(ggplot2)
-library(DBI)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+getwd()
 library(dplyr)
-library(magrittr)
-library(lubridate)
-library(plotly)
-library(arrow)
-library(duckdb)
-library(fs)
-library(glue)
+library(readr)
 library(kableExtra)
-library(scales)
-library(stringr)
-library(DT)
+library(here)
 
-if (exists("con")) 
-    try(DBI::dbDisconnect(con), silent = TRUE)
-
-# Connect to DuckDB (read-only mode)
-source(here::here("R_scripts", "connect_duckdb_readonly.R"))
+# Load preprocessed data
+doomed_products <- readRDS("../data/doomed_products.rds")
+store_risk <- readRDS("../data/store_risk.rds")
+last_sold <- readRDS("../data/last_sold.rds")
 
 ```
-
-```{r}
-
-# build tables
-# ---- SALES DETAIL ----
-sales <- dbGetQuery(con, "
-  SELECT DISTINCT SaleDetailId, SaleHeaderId,
-         InventoryId, Quantity, UnitPrice, PlantId
-  FROM SalesDetail_all
-")
-
-# ---- SALE HEADERS ----
-headers <- dbGetQuery(con, "
-  SELECT DISTINCT SaleHeaderId, LicenseeId, SaleDate,
-         SaleType, IsDeleted, SoldToLicenseeId
-  FROM SaleHeader_all
-")
-
-# ---- PRODUCT INFO ----
-products <- dbGetQuery(con, "
-  SELECT DISTINCT ProductId, Name, Description,
-         InventoryType, IsDeleted, LicenseeId
-  FROM Product_all
-")
-
-# ---- INVENTORY INFO ----
-inventory <- dbGetQuery(con, "
-  SELECT DISTINCT InventoryId, ProductId, LicenseeId,
-         InitialQuantity, QuantityOnHand,
-         TotalCost, IsMedical, IsDeleted, StrainId
-  FROM Inventory_all
-")
-
-# Define windows
-end_date <- as.Date("2025-11-03")
-w4 <- end_date - weeks(4)
-w13 <- end_date - weeks(13)
-
-sales_full <- sales %>%
-  inner_join(headers, by = "SaleHeaderId") %>%
-  distinct(LicenseeId, SaleDetailId, SaleHeaderId, InventoryId, SoldToLicenseeId, .keep_all = TRUE)   # Ensure no dup SaleDetail rows
-
-inventory_dedup <- inventory %>%
-  filter(!is.na(InventoryId)) %>%
-  distinct(LicenseeId, InventoryId, .keep_all = TRUE)  # Avoid duplication
-
-sales_full <- sales_full %>%
-  inner_join(inventory_dedup, by = "InventoryId")
-
-products_dedup <- products %>%
-  filter(!is.na(ProductId)) %>%
-  distinct(LicenseeId, ProductId, .keep_all = TRUE)
-
-sales_full <- sales_full %>%
-  inner_join(products_dedup, by = "ProductId")
-
-sales_full <- sales_full %>%
-  mutate(
-    SaleDate = as.Date(SaleDate),
-    Quantity = as.numeric(Quantity),
-    UnitPrice = as.numeric(UnitPrice),
-    revenue = Quantity * UnitPrice
-  )
-
-sales_4w  <- sales_full %>% filter(SaleDate >= w4)
-sales_13w <- sales_full %>% filter(SaleDate >= w13)
-
-# 4wk 
-p4 <- sales_4w %>%
-  group_by(ProductId) %>%
-  filter(UnitPrice > 0L) %>%
-  summarise(
-    units_4w   = sum(Quantity, na.rm = TRUE),
-    revenue_4w = sum(revenue,  na.rm = TRUE),
-    stores_4w  = n_distinct(LicenseeId)
-  )
-
-p13 <- sales_13w %>%
-  group_by(ProductId) %>%
-  filter(UnitPrice > 0L) %>%
-  summarise(
-    units_13w   = sum(Quantity, na.rm = TRUE),
-    revenue_13w = sum(revenue,  na.rm = TRUE),
-    stores_13w  = n_distinct(LicenseeId)
-  )
-
-# inventory pressures
-inv <- inventory %>%
-  filter(IsDeleted != "TRUE" & TotalCost > 0L) %>%
-  group_by(ProductId) %>%
-  summarise(
-    qoh_total       = sum(as.numeric(QuantityOnHand, na.rm = TRUE)),
-    stores_with_inv = n_distinct(LicenseeId)
-  )
-
-# product metrics
-product_metrics <- products %>%
-  filter(IsDeleted != "TRUE") %>%
-  left_join(p4,  by = "ProductId") %>%
-  left_join(p13, by = "ProductId") %>%
-  left_join(inv,  by = "ProductId") %>%
-  mutate(
-    velocity_4w  = units_4w  / pmax(stores_4w,  1) / 4,
-    velocity_13w = units_13w / pmax(stores_13w, 1) / 13,
-
-    penetration = stores_with_inv,
-
-    inv_ratio = qoh_total / pmax(units_13w, 1),
-
-    trend_units =
-      units_4w / pmax(units_13w / 3.25, 1),
-
-    trend_revenue =
-      revenue_4w / pmax(revenue_13w / 3.25, 1)
-  )
-
-```
-
-<br>
-
 ## Building the “Doom Score”
 
 **A simple, intuitive rule‑of‑thumb score:**
@@ -219,43 +90,24 @@ product_metrics <- products %>%
 When all four conditions align, the “doom_flag” is triggered.
 
 These SKUs will likely be delisted before spring resets or stocked until best buy date has passed.
-```{r}
 
-# Quantile Percentiles for normalization
-v_thresh   <- quantile(product_metrics$velocity_4w, 0.25, na.rm = TRUE)
-inv_thresh <- quantile(product_metrics$inv_ratio,   0.75, na.rm = TRUE)
-trend_thresh <- 0.80
-
-doomed_products <- product_metrics %>%
-  mutate(
-    doom_flag = case_when(
-      !is.na(velocity_4w) & velocity_4w <= v_thresh &
-      !is.na(inv_ratio)   & inv_ratio >= inv_thresh &
-      !is.na(trend_units) & trend_units <= trend_thresh ~ "Likely Doomed",
-      TRUE ~ "Healthy"
-    )
-  ) %>%
-  arrange(doom_flag, velocity_4w)
-
-#doomed_products %>%
-#  count(doom_flag)
-
-```
-## Doomed Product Table
-
-Only showing 25 of 11,130 products as example: 
+## Doomed Product Table  
+Only showing 25 of 26,089 products as example: 
 ```{r, include=TRUE}
 
+kable(
 doomed_products %>%
-  filter(doom_flag == "Likely Doomed") %>%
-  select(ProductId, Name, InventoryType, velocity_4w, trend_units,
-         inv_ratio, penetration) %>%
-  select(ProductId, Name) %>% 
-  head(25)
+filter(doom_flag == "Likely Doomed") %>%
+select(InventoryType, Name, inv_ratio) %>%
+arrange(desc(inv_ratio)) %>%
+rename(Inventory_Ratio = inv_ratio, Inventory_Type = InventoryType) %>%
+head(25),
+caption = "Top 25 Doomed Products by Inventory Ratio"
+)
 
 ```
 
-**11,130 products** were found to be likely doomed. 
+**26,089 products** were found to be likely doomed. 
 
 ### Contact us for the complete list. 
 
@@ -264,11 +116,12 @@ doomed_products %>%
 
 #doomed_products %>% select(Name, InventoryType, doom_flag) %>% kable()
 
-doomed_products %>%
+kable(doomed_products %>%
   filter(doom_flag != "Healthy") %>%
+  select(Name, InventoryType, doom_flag) %>%
   count(InventoryType, doom_flag, sort = TRUE) %>%
-  rename(Count = n, Flag = doom_flag, Inventory_Type = InventoryType)
-
+  rename(Count = n, Inventory_Type = InventoryType, Doom_Flag = doom_flag)
+)
 
 ```
 
@@ -277,16 +130,10 @@ doomed_products %>%
 Measure time since last sale:
 ```{r, include=TRUE}
 
-last_sold <- sales_full %>%
-  filter(SaleDate >= "2025-08-04") %>%
-  group_by(ProductId, Name) %>%
-  summarise(last_sale = max(SaleDate)) %>%
-  mutate(days_since_sale = as.numeric(end_date - as.Date(last_sale))) 
-
-last_sold %>% arrange(desc(days_since_sale))
+kable(last_sold %>% arrange(desc(Days_Since_Last_Sale)) %>% head(50))
 
 ```
-**675,974 products** stalling out of market in the last 91 days.
+Short list of products stalling out of market in the last 91 days.
 
 **Some stores have:**
 
@@ -297,7 +144,9 @@ last_sold %>% arrange(desc(days_since_sale))
 + A few retailers carry only 1–3 doomed SKUs, indicating tight inventory control.
 
 
-The core insight is most “Doomed” products are not bad products — They Are Orphans -   
+The core insight is most “Doomed” products are not bad products — 
+
+They are orphans.   
 
 **They don’t have:**
 
@@ -316,47 +165,34 @@ Even strong brands produce doomed items if a SKU fails to scale.
 ## Top 20 Overstocked Products
 ```{r, include=TRUE}
 
-doomed_products %>%
+kable(doomed_products %>%
   filter(doom_flag == "Likely Doomed") %>%
   arrange(desc(inv_ratio)) %>%
-  select(ProductId, Name, inv_ratio, velocity_4w, trend_units) %>%
+  select(Name, inv_ratio, trend_units) %>%
+  rename(Inventory_Ratio = inv_ratio, Trend_Units = trend_units) %>%
   head(20)
+)
 
 ```
+**High inventory ratio numbers reflects overstocked products.**
 
 ### Retailer Exposure: 
 
-We identified 291 retailers currently carrying measurable quantities of doomed SKUs.
+We identified 282 retailers currently carrying measurable quantities of doomed SKUs.
 
 ### Store-level Risk: which stores carry the most doomed products?
-**The table displays only 20 of the 291 stores as an example**
+**The table displays only 20 of the 282 stores as an example**
 ```{r, include=TRUE}
 
 # Filter doomed products
-doomed_product_ids <- doomed_products %>%
-  filter(doom_flag == "Likely Doomed") %>%
-  pull(ProductId)
-
-# Join with inventory to get which licensees carry doomed products
-store_risk <- inventory %>%
-  filter(ProductId %in% doomed_product_ids, IsDeleted != "TRUE", !is.na(InitialQuantity), !is.na(QuantityOnHand)) %>%
-   mutate(
-    QuantityOnHand = as.numeric(QuantityOnHand)
-  ) %>%
-  group_by(LicenseeId) %>%
-  summarise(
-    doomed_product_count = n_distinct(ProductId),
-    total_initial_qty_doomed = sum(as.numeric(InitialQuantity), na.rm = TRUE),
-    total_qoh_doomed = sum(as.numeric(QuantityOnHand), na.rm = TRUE),
-    total_qty_sold = total_initial_qty_doomed - total_qoh_doomed,
-    pct_on_hand = total_qoh_doomed / total_initial_qty_doomed * 100,
-    pct_sold = total_qty_sold / total_initial_qty_doomed * 100
-  ) %>%
-  #select(-total_initial_qty_doomed, -total_qoh_doomed) %>%
-  arrange(desc(doomed_product_count))
-
 # View top at-risk stores
-kable(store_risk %>% head(20))
+kable(
+store_risk %>%
+arrange(desc(doomed_product_count)) %>%
+head(20),
+caption = "Top 20 Retailers by Number of Doomed Products"
+)
+#kable(store_risk %>% head(20))
 # industry benchmarking
 #store_risk %>% mean(pct_sold)
 #store_risk %>% mean(pct_on_hand)
