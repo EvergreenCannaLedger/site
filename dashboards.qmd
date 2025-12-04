@@ -241,7 +241,7 @@ type = "bar",
 marker = list(color = "#2C7BB6")
 ) %>%
 layout(
-title = "Number of Licensees Reporting Monthly (Dec 2021 - Aug 2025)",
+title = "Number of Licensees Reporting Monthly (Dec 2021 - Nov 2025)",
 xaxis = list(title = "Month"),
 yaxis = list(title = "Licensee Count"),
 hovermode = "x unified"

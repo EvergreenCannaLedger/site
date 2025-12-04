@@ -165,13 +165,13 @@ Even strong brands produce doomed items if a SKU fails to scale.
 ## Top 20 Overstocked Products
 ```{r, include=TRUE}
 
-kable(doomed_products %>%
+doomed_products %>%
   filter(doom_flag == "Likely Doomed") %>%
   arrange(desc(inv_ratio)) %>%
   select(Name, inv_ratio, trend_units) %>%
   rename(Inventory_Ratio = inv_ratio, Trend_Units = trend_units) %>%
-  head(20)
-)
+  head(20) %>%
+  kable()
 
 ```
 **High inventory ratio numbers reflects overstocked products.**
@@ -186,12 +186,11 @@ We identified 282 retailers currently carrying measurable quantities of doomed S
 
 # Filter doomed products
 # View top at-risk stores
-kable(
 store_risk %>%
 arrange(desc(doomed_product_count)) %>%
-head(20),
-caption = "Top 20 Retailers by Number of Doomed Products"
-)
+head(20) %>% 
+kable(caption = "Top 20 Retailers by Number of Doomed Products")
+
 #kable(store_risk %>% head(20))
 # industry benchmarking
 #store_risk %>% mean(pct_sold)
