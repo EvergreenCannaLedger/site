@@ -14,7 +14,7 @@ execute:
 editor: visual
 ---
 
-## Number of Licensees (2021-present)
+## Number of Licensees (2021-2025)
 
 ```{r, echo=FALSE, include=FALSE}
 
@@ -200,7 +200,7 @@ CAST(sd.Quantity AS DOUBLE) * CAST(sd.UnitPrice AS DOUBLE) +
 CAST(sd.SalesTax AS DOUBLE) + CAST(sd.OtherTax AS DOUBLE) AS Revenue
 FROM sales_detail_all sd
 JOIN sale_header_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
-WHERE DATE(CAST(sh.SaleDate AS DATE)) BETWEEN '2021-12-01' AND '2025-08-31'
+WHERE DATE(CAST(sh.SaleDate AS DATE)) BETWEEN '2021-12-01' AND '2025-11-03'
 AND CAST(sd.UnitPrice AS DOUBLE) < 200
 ),
 grouped AS (
