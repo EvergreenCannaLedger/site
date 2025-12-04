@@ -24,6 +24,8 @@ arrow/
 arrow/**
 R_scripts/
 .parquet
+data/
+*.rds
 
 # ================================
 # R ARTIFACTS
