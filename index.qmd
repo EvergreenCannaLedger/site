@@ -1,6 +1,7 @@
 ---
 title: "Welcome to The Evergreen Canna Ledger"
 subtitle: "Washington's Cannabis Industry Investigative Data Journalism"
+comments: false
 ---
 
 The Evergreen Cannabis Ledger (TECL) explores data-driven trends and insights across Washington’s cannabis industry — from licensee growth to sales distribution and policy impacts.  Analyzing Washington's CCRS Traceability data submitted by active cannabis license holders can help remove the human aspect of business decision making and effectively move toward a data-based decision framework used widely in many different businesses. 

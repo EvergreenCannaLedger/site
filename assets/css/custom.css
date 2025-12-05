@@ -12,22 +12,72 @@ table {
 
 /* Evergreen Canna Ledger theme - Comment box styling */
 
-.ec-comment-box {
-  background-color: #f4fff4; /* light green tint */
-  border-left: 4px solid #228B22; /* forest green */
-  padding: 2em 2em 1em;
-  margin-top: 3em;
-  font-family: 'Inter', sans-serif;
-  font-size: 1.05rem;
+<style>
+
+/* GENERAL CONTAINER */
+#commento {
+  --tecl-navy: #2F4154;
+  --tecl-accent: #3c594d;
+  --tecl-light: #eef4f2;
+  --tecl-text: #1c1c1c;
+  font-family: "Franklin Gothic", Arial, sans-serif;
 }
 
-.ec-comment-box h3 {
-  margin-top: 0;
-  color: #228B22;
-  font-weight: 700;
+/* COMMENT BOX */
+.commento-textarea {
+  border: 1px solid #c5c5c5 !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+  background: #ffffff !important;
 }
 
-.ec-comment-box em,
-.ec-comment-box p {
-  color: #555;
+/* HEADER */
+.commento-root .commento-separator-text {
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  color: var(--tecl-navy) !important;
+  margin-bottom: 8px !important;
 }
+
+/* SUB-HEADER */
+.commento-root .commento-subtitle {
+  font-size: 15px !important;
+  font-style: italic !important;
+  color: #4b4b4b !important;
+  margin-bottom: 20px !important;
+}
+
+/* LOGIN BUTTON */
+.commento-login-box span,
+.commento-login-box a {
+  color: var(--tecl-navy) !important;
+  font-weight: 600 !important;
+}
+
+/* COMMENT BUTTON */
+.commento-button {
+  background: var(--tecl-navy) !important;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+  padding: 8px 16px !important;
+  border: none !important;
+}
+.commento-button:hover {
+  background: #3b5067 !important;
+}
+
+/* COMMENT BLOCK APPEARANCE */
+.commento-card {
+  border-radius: 10px !important;
+  background: var(--tecl-light) !important;
+  border-left: 4px solid var(--tecl-accent) !important;
+  padding: 15px !important;
+  margin-bottom: 15px !important;
+}
+
+/* FOOTER BRANDING */
+.commento-footer {
+  display: none !important; /* optional: hides “Powered by Commento” */
+}
+
+</style>

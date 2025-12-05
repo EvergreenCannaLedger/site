@@ -1,7 +1,6 @@
 ---
 title: "Washington Cannabis Dashboards" 
 subtitle: "The Appreciation of Licensees Adopting CCRS"
-description: "To assess how CCRS data can address (or fails to address) concerns raised by the Washington State Auditor in October 2024"
 format:
   html:
     theme: flatly
@@ -12,6 +11,7 @@ execute:
   warning: false
   message: false
 editor: visual
+comments: false
 ---
 
 ## Number of Licensees (2021-2025)
