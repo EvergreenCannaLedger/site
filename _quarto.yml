@@ -13,7 +13,9 @@ website:
       - text: "Home"
         href: index.qmd
       - text: "Blog"
-        href: blog.qmd       
+        href: blog.qmd
+      - text: "Contact"
+        href: contact.qmd
       - text: "Dashboards"
         href: dashboards.qmd
       - text: "About"

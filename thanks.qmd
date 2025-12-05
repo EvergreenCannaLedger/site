@@ -1,0 +1,27 @@
+---
+title: "Thank You"
+---
+
+<div style="text-align:center; padding:40px 20px; font-family:Franklin, franklin-gothic-book;">
+
+  <h1>Message Received!</h1>
+
+  <p style="font-size:18px; max-width:600px; margin:20px auto;">
+    Thanks for getting in touch — your message has been successfully sent.
+    Team TECL will review it and get back to you as soon as we can.
+  </p>
+
+  <a href="/" style="
+    display:inline-block;
+    margin-top:30px;
+    padding:10px 20px;
+    font-size:16px;
+    text-decoration:none;
+    background:#2F4154;
+    color:white;
+    border-radius:6px;
+  ">
+    Return to Home
+  </a>
+
+</div>
