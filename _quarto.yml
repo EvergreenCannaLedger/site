@@ -27,6 +27,7 @@ website:
 
 format:
   html:
+    allow-html: true
     theme: flatly
     css: assets/css/custom.css
     toc: true

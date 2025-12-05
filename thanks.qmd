@@ -1,6 +1,9 @@
 ---
 title: "Thank You"
+format: html
 ---
+
+:::{#thanks-theme}
 
 <div style="text-align:center; padding:40px 20px; font-family:Franklin, franklin-gothic-book;">
 
@@ -25,3 +28,5 @@ title: "Thank You"
   </a>
 
 </div>
+
+:::

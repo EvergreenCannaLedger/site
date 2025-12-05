@@ -1,7 +1,9 @@
 ---
 title: "Contact Us"
+format: html
 ---
 
+::: {#contact-form}
 <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
   <input type="hidden" name="form-name" value="contact" />
   
@@ -29,3 +31,4 @@ title: "Contact Us"
 
 <input type="hidden" name="redirect" value="/thanks.html">
 
+:::
