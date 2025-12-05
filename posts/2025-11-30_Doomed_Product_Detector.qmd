@@ -170,6 +170,7 @@ doomed_products %>%
   arrange(desc(inv_ratio)) %>%
   select(Name, inv_ratio, trend_units) %>%
   rename(Inventory_Ratio = inv_ratio, Trend_Units = trend_units) %>%
+  distinct(Name) %>%
   head(20) %>%
   kable()
 
@@ -190,11 +191,16 @@ store_risk %>%
 arrange(desc(doomed_product_count)) %>%
 head(20) %>% 
 kable(caption = "Top 20 Retailers by Number of Doomed Products")
-
 #kable(store_risk %>% head(20))
 # industry benchmarking
 #store_risk %>% mean(pct_sold)
 #store_risk %>% mean(pct_on_hand)
+```
+
+```{r}
+
+rm(doomed_products, store_risk, last_sold)
+
 ```
 
 ### Contact us for the full report. 

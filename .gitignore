@@ -22,7 +22,7 @@ duckdb_combined.duckdb
 *.duckdb
 arrow/
 arrow/**
-R_scripts/
+R_scripts/*.R
 .parquet
 data/
 *.rds
