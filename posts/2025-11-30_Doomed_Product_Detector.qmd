@@ -35,7 +35,7 @@ Every January, WA retailers refresh their shelves — and thousands of slow‑mo
 
 This annual “reset cycle” removes products that no longer sell, have aged out of rotation, or have accumulated too much on-hand inventory.
 
-Using 22+ million CCRS product-store movement records and real retail sales velocity between August 04 - November 03, 2025, we modeled which active products show patterns consistent with impending extintion.
+Using 22+ million CCRS product-store movement records of 5.6+ million cannabis products and retail sales velocity metrics between August 04 - November 03, 2025, we modeled which active products show patterns consistent with impending extinction.
 
 We identify “doomed” products by comparing:
 
@@ -92,13 +92,14 @@ When all four conditions align, the “doom_flag” is triggered.
 These SKUs will likely be delisted before spring resets or stocked until best buy date has passed.
 
 ## Doomed Product Table  
-Only showing 25 of 26,089 products as example: 
+Only showing 25 of 4,915 products as example: 
 ```{r, include=TRUE}
 
 kable(
 doomed_products %>%
 filter(doom_flag == "Likely Doomed") %>%
 select(InventoryType, Name, inv_ratio) %>%
+distinct(Name, .keep_all = TRUE) %>%
 arrange(desc(inv_ratio)) %>%
 rename(Inventory_Ratio = inv_ratio, Inventory_Type = InventoryType) %>%
 head(25),
@@ -107,7 +108,7 @@ caption = "Top 25 Doomed Products by Inventory Ratio"
 
 ```
 
-**26,089 products** were found to be likely doomed. 
+**4,915 products** were found to be likely doomed. 
 
 ### Contact us for the complete list. 
 
@@ -118,6 +119,7 @@ caption = "Top 25 Doomed Products by Inventory Ratio"
 
 kable(doomed_products %>%
   filter(doom_flag != "Healthy") %>%
+  distinct(Name, .keep_all = TRUE) %>%
   select(Name, InventoryType, doom_flag) %>%
   count(InventoryType, doom_flag, sort = TRUE) %>%
   rename(Count = n, Inventory_Type = InventoryType, Doom_Flag = doom_flag)
@@ -130,7 +132,7 @@ kable(doomed_products %>%
 Measure time since last sale:
 ```{r, include=TRUE}
 
-kable(last_sold %>% arrange(desc(Days_Since_Last_Sale)) %>% head(50))
+last_sold %>% distinct(Name, .keep_all = TRUE) %>% arrange(desc(Days_Since_Last_Sale)) %>% head(50) %>% kable(caption = "Table of Product Market Staleness") 
 
 ```
 Short list of products stalling out of market in the last 91 days.
