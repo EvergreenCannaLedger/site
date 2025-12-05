@@ -149,29 +149,74 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div id="contact-form">
+<style>
+.contact-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 30px 40px;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  font-family: "Franklin Gothic", Arial, sans-serif;
+}
+
+.contact-container label {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #1a1a1a;
+}
+
+.contact-container input,
+.contact-container textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #c5c5c5;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.contact-container textarea {
+  resize: vertical;
+}
+
+.contact-btn {
+  margin-top: 15px;
+  background-color: #2F4154;
+  color: white;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.contact-btn:hover {
+  background-color: #3b5067;
+}
+</style>
+<div class="contact-container">
 <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
 <p><input type="hidden" name="form-name" value="contact"></p>
-<p style="display:none;">
-<label>Don’t fill this out: <input name="bot-field"></label>
+<p>
+<label>Your Name:</label> <input type="text" name="name" required="">
 </p>
-<div>
-<pre><code>&lt;label&gt;Your Name:&lt;br&gt;
-&lt;input type="text" name="name" required&gt;&lt;/label&gt;</code></pre>
-</div>
-<div>
-<pre><code>&lt;label&gt;Your Email:&lt;br&gt;
-&lt;input type="email" name="email" required&gt;&lt;/label&gt;</code></pre>
-</div>
-<div>
-<pre><code>&lt;label&gt;Your Message:&lt;br&gt;
-&lt;textarea name="message" rows="6" required&gt;&lt;/textarea&gt;&lt;/label&gt;</code></pre>
-</div>
-<button type="submit">
+<p>
+<label>Your Email:</label> <input type="email" name="email" required="">
+</p>
+<p>
+<label>Your Message:</label>
+<textarea name="message" rows="6" required=""></textarea>
+</p>
+<p>
+<button type="submit" class="contact-btn">
 Send Message
 </button>
+</p>
 </form>
-<p><input type="hidden" name="redirect" value="/thanks.html"></p>
 </div>
 
 
