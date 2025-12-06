@@ -33,15 +33,17 @@ format:
     toc: true
     toc-depth: 3
     smooth-scroll: true
-    html-math-method: katex
     link-external-newwindow: true
     link-external-icon: true
     code-copy: true
+    include-after-body: _includes/commento.html
+    
     grid:
       sidebar-width: 220px
       body-width: 900px
       margin-width: 350px
       gutter-width: 2.0rem
+    
     meta:
       keywords: "Washington cannabis data, CCRS data, Evergreen Canna Ledger, cannabis analytics, cannabis dashboards, WA marijuana statistics, cannabis license expirations, cannabis supply chain Washington"
       author: "Evergreen Canna Ledger"
@@ -50,7 +52,10 @@ format:
       og:description: "Independent cannabis analytics, dashboards, compliance insights, and open data reporting for Washington State."
       og:type: "website"
       og:url: "https://www.evergreencannaledger.org"
+    
     sitemap: true
+    
     self-contained: false
+    
     embed-resources: false
-    include-after-body: _includes/commento.html
+    

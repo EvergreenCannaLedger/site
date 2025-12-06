@@ -2,7 +2,6 @@
 title: "The Big Reveal: Washington’s New Centralized Cannabis Reporting System"
 date: 2021-12-10
 categories: [CCRS, Data Policy, Hello World]
-#image: ../assets/images/ccrs_dashboard.png
 editor: 
   markdown: 
     wrap: 72

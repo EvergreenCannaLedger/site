@@ -9,7 +9,7 @@ format:
     fig-width: 6
     toc: true
     code-fold: false
-    theme: cosmo
+    theme: flatly
 editor:
   markdown:
     wrap: 72

@@ -330,7 +330,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 </main> <!-- /main -->
-{{#if comments}}
+{% if comments %}
+
+
 
 <!-- commento -->
 
@@ -348,7 +350,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </div>
 
-{{/if}}
+
+
+{% endif %}
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

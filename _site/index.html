@@ -203,7 +203,9 @@ Explore: - <a href="posts/">Blogs</a> - <a href="./dashboards.html">Interactive 
 </section>
 
 </main> <!-- /main -->
-{{#if comments}}
+{% if comments %}
+
+
 
 <!-- commento -->
 
@@ -221,7 +223,9 @@ Explore: - <a href="posts/">Blogs</a> - <a href="./dashboards.html">Interactive 
 
 </div>
 
-{{/if}}
+
+
+{% endif %}
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
