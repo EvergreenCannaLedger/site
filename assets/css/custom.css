@@ -1,3 +1,4 @@
+/* Site base typography */
 body {
   font-family: 'Roboto', sans-serif;
 }
@@ -11,8 +12,6 @@ table {
 }
 
 /* Evergreen Canna Ledger theme - Comment box styling */
-
-<style>
 
 /* GENERAL CONTAINER */
 #commento {
@@ -77,7 +76,5 @@ table {
 
 /* FOOTER BRANDING */
 .commento-footer {
-  display: none !important; /* optional: hides “Powered by Commento” */
+  display: none !important;
 }
-
-</style>
