@@ -53,6 +53,4 @@ format:
     sitemap: true
     self-contained: false
     embed-resources: false
-    filters:
-      - conditional-comments.lua
     include-after-body: _includes/commento.html
