@@ -323,4 +323,7 @@ kable(sales_licensee_summary)
 
 ```
 
+<br>
+
+{{< include _includes/commento.html >}}
 

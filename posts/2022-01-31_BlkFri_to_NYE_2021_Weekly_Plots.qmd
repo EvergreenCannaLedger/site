@@ -246,3 +246,7 @@ ggplot(weekly_discounts, aes(x = Week)) +
   theme_minimal()
 
 ```
+
+<br>
+
+{{< include _includes/commento.html >}}

@@ -240,3 +240,7 @@ Rapid price drops over the last 60–90 days often signal overstock or liquidati
 Track how many stores have stopped ordering a product over the last 8 weeks.
 
 The Evergreen Canna Ledger exists so operators — big and small — can rely on open, transparent, and independently analyzed data instead of rumors or vendor claims.
+
+<br>
+
+{{< include _includes/commento.html >}}

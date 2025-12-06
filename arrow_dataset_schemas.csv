@@ -1,3 +1,4 @@
+We have tables with nomenclature: 
 "table","column"
 "areas_master","LicenseeId"
 "areas_master","Name"
@@ -252,3 +253,4 @@
 "transported_items_master","IsDeleted"
 "transported_items_master","Operation"
 "transported_items_master","ErrorMessage"
+

@@ -1,0 +1,30 @@
+For comments in blog posts, place at bottom of qmd with no 'comments: true' in yaml.
+{{< include _includes/commento.html >}}
+
+# How to find text in root; replace text in "x":
+grep -R "{% if comments %}" -n .
+
+# DUCKDB_COMBINED.DUCKDB
+# views_to_create <- c(
+#   "Areas", "Contacts", "Integrator", "Inventory", "InventoryAdjustment",
+#   "InventoryPlantTransfer", "LabResult", "Licensee", "ManifestHeader",
+#   "Plant", "PlantDestructions", "Product", "SaleHeader", "SalesDetail",
+#   "Strains", "TransportedItems"
+# )
+
+dbListFields(con, "Areas_all")
+dbListFields(con, "Contacts_all")
+dbListFields(con, "Integrator_all")
+dbListFields(con, "Inventory_all")
+dbListFields(con, "InventoryAdjustment_all")
+dbListFields(con, "InventoryPlantTransfer_all")
+dbListFields(con, "LabResult_all")
+dbListFields(con, "Licensee_all")
+dbListFields(con, "ManifestHeader_all")
+dbListFields(con, "Plant_all")
+dbListFields(con, "PlantDestructions_all")
+dbListFields(con, "Product_all")
+dbListFields(con, "SaleHeader_all")
+dbListFields(con, "SalesDetail_all")
+dbListFields(con, "Strains_all")
+dbListFields(con, "TransportedItems_all")
