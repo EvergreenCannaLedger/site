@@ -11,8 +11,6 @@
 /.quarto/
 
 # Static site
-_site
-_site/**
 _drafts/*.qmd
 _drafts
 _drafts/

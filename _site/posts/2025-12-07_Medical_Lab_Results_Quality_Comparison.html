@@ -6,9 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-05-01">
+<meta name="dcterms.date" content="2025-12-06">
+<meta name="description" content="This analysis joins lab results with inventory to compare the chemical profiles (e.g., THC, CBD) of medical and non-medical cannabis. Summary statistics and visualizations help reveal quality differences across categories.">
 
-<title>What Washington Retailers Did for 4/20: April Sales Trends 2022–2024 – The Evergreen Canna Ledger</title>
+<title>Lab Results and Product Quality Correlation – The Evergreen Canna Ledger</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -70,24 +71,6 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
-<link href="../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
-
-<script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
-
-<script src="../site_libs/plotly-binding-4.10.4/plotly.js"></script>
-
-<script src="../site_libs/typedarray-0.1/typedarray.min.js"></script>
-
-<script src="../site_libs/jquery-3.5.1/jquery.min.js"></script>
-
-<link href="../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
-
-<script src="../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
-
-<link href="../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
-
-<script src="../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
-
 <script src="../site_libs/kePrint-0.0.1/kePrint.js"></script>
 
 <link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
@@ -147,25 +130,38 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-bottom-line-up-front" id="toc-the-bottom-line-up-front" class="nav-link active" data-scroll-target="#the-bottom-line-up-front">The Bottom Line Up Front</a></li>
+  <li><a href="#focused-thc-and-cbd-test-analysis" id="toc-focused-thc-and-cbd-test-analysis" class="nav-link" data-scroll-target="#focused-thc-and-cbd-test-analysis">Focused THC and CBD Test Analysis</a></li>
+  <li><a href="#test-value-distribution" id="toc-test-value-distribution" class="nav-link" data-scroll-target="#test-value-distribution">Test Value Distribution</a></li>
+  <li><a href="#what-industry-should-consider" id="toc-what-industry-should-consider" class="nav-link" data-scroll-target="#what-industry-should-consider">What Industry Should Consider</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">What Washington Retailers Did for 4/20: April Sales Trends 2022–2024</h1>
-<p class="subtitle lead">Washington Retailers Show Maturity in 4/20 Strategies: Sales Triple, Discounts Steady</p>
+<h1 class="title">Lab Results and Product Quality Correlation</h1>
+<p class="subtitle lead">Do medical products have higher test values than non-medical?</p>
   <div class="quarto-categories">
-    <div class="quarto-category">Cannabis</div>
-    <div class="quarto-category">Holiday</div>
-    <div class="quarto-category">Sales</div>
-    <div class="quarto-category">Discount</div>
-    <div class="quarto-category">3Years</div>
+    <div class="quarto-category">cannabis</div>
+    <div class="quarto-category">lab tests</div>
+    <div class="quarto-category">quality</div>
+    <div class="quarto-category">medical</div>
   </div>
   </div>
 
+<div>
+  <div class="description">
+    <p>This analysis joins lab results with inventory to compare the chemical profiles (e.g., THC, CBD) of medical and non-medical cannabis. Summary statistics and visualizations help reveal quality differences across categories.</p>
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -174,7 +170,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 1, 2024</p>
+      <p class="date">December 6, 2025</p>
     </div>
   </div>
   
@@ -186,278 +182,191 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><strong>The Bottom Line Up Front</strong><br>
-Three Aprils into CCRS reporting, Washington’s cannabis retail sector has entered a new equilibrium:</p>
+<section id="the-bottom-line-up-front" class="level2">
+<h2 class="anchored" data-anchor-id="the-bottom-line-up-front">The Bottom Line Up Front</h2>
+<p>Medical cannabis programs are designed with patients in mind — but Washington’s merged retail model means medical consumers often rely on the <strong><em>same products</em></strong> used for recreation.</p>
+<p>This leads to important policy questions:</p>
+<ol type="1">
+<li>Are medically registered patients actually getting formulations tailored to therapeutic needs?</li>
+<li>Or are they simply getting “recreational-first” products with medical tax treatment?</li>
+</ol>
+<p>Patient-oriented products typically emphasize:</p>
 <ul>
-<li>More participants</li>
-<li>Higher sales and</li>
-<li>Smarter pricing strategies</li>
+<li><p>balanced THC:CBD ratios</p></li>
+<li><p>acidic cannabinoids (e.g., THCA, CBDA)</p></li>
+<li><p>lower psychoactive intensity</p></li>
 </ul>
-<p>The 4/20 holiday remains a clear driver of April revenue, but the surrounding data show the maturing normalization of a statewide retail system that’s no longer defined solely by its biggest day of the year.<br>
-</p>
-<p><strong>This analysis:</strong></p>
-<ul>
-<li><p>Compares April sales trends over 3 years</p></li>
-<li><p>Shows both monthly and weekly granularity</p></li>
-<li><p>Highlights differences in revenue and discounting behavior</p></li>
-<li><p>Ready to expand (e.g., transactions, product types, regions)</p></li>
-</ul>
-<p><strong>Contact me if you want summaries for:</strong></p>
-<ul>
-<li><p>Top retailers by revenue per year</p></li>
-<li><p>Product categories split</p></li>
-<li><p>Deep-Dive Report<br>
-<br>
-</p></li>
-</ul>
+<p>But the data shows: <strong>high-THC products dominate both markets.</strong></p>
 <p><strong>Overview</strong><br>
-Every April, Washington’s cannabis retailers prepare for the 4/20 holiday, the single busiest day on the cannabis retail calendar. Using CCRS data compiled through DuckDB, The Evergreen Canna Ledger analyzed three years of April performance—2022, 2023, and 2024—to understand how participation, total revenue, and discount behavior evolved during this key retail window.</p>
-<p>The data reveal a clear pattern: participation and revenue have expanded sharply, while discount strategies have become more measured and sustainable over time.<br>
-<br>
-<strong>Monthly Comparison Plot</strong></p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-0f5873de5a50cfc72ac4" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-0f5873de5a50cfc72ac4">{"x":{"visdat":{"421c6fcf164c":["function () ","plotlyVisDat"]},"cur_data":"421c6fcf164c","attrs":{"421c6fcf164c":{"x":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"y":{},"type":"bar","name":"Revenue","marker":{"color":"#1f77b4"},"inherit":true},"421c6fcf164c.1":{"x":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"y":{},"type":"scatter","mode":"lines","name":"Discount % (×100k)","yaxis":"y2","line":{"color":"#d62728"},"inherit":true}},"layout":{"width":700,"height":400,"margin":{"b":40,"l":60,"t":25,"r":10},"title":"April Revenue & Discount % (2022–2024)","xaxis":{"domain":[0,1],"automargin":true,"title":"Year","type":"category","categoryorder":"array","categoryarray":["2022","2023","2024"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Revenue (USD)"},"yaxis2":{"overlaying":"y","side":"right","title":"Discount % (×100k)","showgrid":false},"barmode":"group","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2022","2023","2024"],"y":[2559748.0499999998,5522014.6900000004,9636612.1500000004],"type":"bar","name":"Revenue","marker":{"color":"#1f77b4","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2022","2023","2024"],"y":[618000,113999.99999999999,491000],"type":"scatter","mode":"lines","name":"Discount % (×100k)","yaxis":"y2","line":{"color":"#d62728"},"marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"xaxis":"x","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-<p>From 2022 to 2024, the number of retailers reporting April sales grew more than fourfold, while total monthly revenue expanded nearly six times. This growth reflects both increased CCRS compliance and broader retail coverage across Washington’s market.</p>
-<p>The 2023 season marked a turning point: retailers generated over $5 million in April sales with minimal average discounting, showing that demand remained strong even without deep markdowns. By April 2024, both participation and discounting normalized, with more than 60 licensees and a modest 5% average discount rate, suggesting healthy competition and strategic pricing.<br>
-<br> <strong>Monthly Summary Table</strong></p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table caption-top table-sm table-striped small">
-<caption>April Monthly Summary (2022–2024)</caption>
-<thead>
-<tr class="header">
-<th style="text-align: right;" data-quarto-table-cell-role="th">Year</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Licensees Reporting</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Total Revenue</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Avg. Discount %</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">2022</td>
-<td style="text-align: right;">16</td>
-<td style="text-align: left;">$2,559,748</td>
-<td style="text-align: left;">6.2%</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2023</td>
-<td style="text-align: right;">17</td>
-<td style="text-align: left;">$5,522,015</td>
-<td style="text-align: left;">1.1%</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2024</td>
-<td style="text-align: right;">65</td>
-<td style="text-align: left;">$9,636,612</td>
-<td style="text-align: left;">4.9%</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><br><br>
-<strong>Query: April 2022–2024 Weekly Summary</strong> <strong>Weekly Revenue Line Chart</strong></p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-1a0bef1754f66e8c96f7" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-1a0bef1754f66e8c96f7">{"x":{"visdat":{"421c6c1c61e0":["function () ","plotlyVisDat"]},"cur_data":"421c6c1c61e0","attrs":{"421c6c1c61e0":{"x":{},"y":{},"mode":"lines+markers","color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"width":700,"height":400,"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Weekly Revenue in April (2022–2024)","xaxis":{"domain":[0,1],"automargin":true,"title":"Week Start"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Revenue (USD)"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2022-03-28","2022-04-04","2022-04-11","2022-04-18","2022-04-25"],"y":[72339.100000000006,489769.62,177245.12,1621964,198430.20999999999],"mode":"lines+markers","type":"scatter","name":"2022","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-03-27","2023-04-03","2023-04-10","2023-04-17","2023-04-24"],"y":[321151.53000000003,1146885.4099999999,1278613.23,1665967.4099999999,1109397.1100000001],"mode":"lines+markers","type":"scatter","name":"2023","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2024-04-01","2024-04-08","2024-04-15","2024-04-22","2024-04-29"],"y":[1785225.5800000001,2075260.75,3242476.8300000001,1858125.9299999999,675523.06000000006],"mode":"lines+markers","type":"scatter","name":"2024","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-<p><strong>Weekly Discount % Line Chart</strong></p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-5a02250ad7ca1830e47a" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-5a02250ad7ca1830e47a">{"x":{"visdat":{"421c7c8f153e":["function () ","plotlyVisDat"]},"cur_data":"421c7c8f153e","attrs":{"421c7c8f153e":{"x":{},"y":{},"mode":"lines+markers","color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"width":700,"height":400,"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Weekly Discount % in April (2022–2024)","xaxis":{"domain":[0,1],"automargin":true,"title":"Week Start"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Avg. Discount %"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["2022-03-28","2022-04-04","2022-04-11","2022-04-18","2022-04-25"],"y":[16.989999999999998,9.2799999999999994,14.99,2.8300000000000001,14.06],"mode":"lines+markers","type":"scatter","name":"2022","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2023-03-27","2023-04-03","2023-04-10","2023-04-17","2023-04-24"],"y":[-5.2300000000000004,3.5,-2.8199999999999998,2.5600000000000001,2.9900000000000002],"mode":"lines+markers","type":"scatter","name":"2023","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2024-04-01","2024-04-08","2024-04-15","2024-04-22","2024-04-29"],"y":[5.4100000000000001,4.7999999999999998,5.0499999999999998,4.7300000000000004,3.7599999999999998],"mode":"lines+markers","type":"scatter","name":"2024","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-<p><br><br>
-<strong>Discount Behavior Over Time</strong><br>
-The shift in average discount percentage tells the story of maturing retail discipline:</p>
+Cannabis quality isn’t just about brand reputation, strain hype, or shelf placement — it’s in the chemistry. Independent lab results provide one of the clearest signals of what consumers are actually buying…and ingesting.</p>
+<p>So, we analyzed 7.27 million potency results submitted to the Washington State Cannabis Central Reporting System (CCRS), covering 2021–2025. Our goal: compare medical vs non-medical product profiles across major cannabinoids.</p>
+<p>What we found may challenge some assumptions.</p>
 <ul>
-<li><p>2022: Retailers leaned heavily on promotional markdowns, averaging nearly 10% off list prices, with spikes above 15–20% in some weeks.</p></li>
-<li><p>2023: Discounting dropped to near-zero, suggesting confidence in steady baseline demand.</p></li>
-<li><p>2024: Discounts rose slightly (4–6%)—likely strategic rather than desperate—reflecting a balance between competition and profitability.</p></li>
+<li>Data Sources &amp; Methodology:**
+<ul>
+<li>7.27M submitted lab results</li>
+<li>Post-processing to remove:</li>
+<li>non-potency results (moisture, pesticides, etc.)</li>
+<li>unreadable values like “&lt;0.044”</li>
+</ul></li>
+<li>Normalized into 24 comparable potency metrics</li>
+<li>Grouped by CCRS inventory “Category” field:
+<ul>
+<li>Medical</li>
+<li>Non-Medical</li>
+</ul></li>
 </ul>
-<p>This evolution suggests that as CCRS data matured, retailers learned to optimize rather than over-rely on promotions, using 4/20 as a targeted engagement moment instead of a margin-cutting event.<br>
-<br><br>
-<strong>Weekly Summary Table</strong></p>
+<p>Analysis focuses on averages of verified potency values per product category.</p>
+</section>
+<section id="focused-thc-and-cbd-test-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="focused-thc-and-cbd-test-analysis">Focused THC and CBD Test Analysis</h2>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table table-striped table-hover caption-top table-sm small">
-<caption>Weekly Summary of April Sales (2022–2024)</caption>
-<thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">Week Start</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Year</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">Licensees Reporting</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Revenue</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Avg. Discount %</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">2022-03-28</td>
-<td style="text-align: left;">2022</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: left;">$72,339</td>
-<td style="text-align: left;">17.0%</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2022-04-04</td>
-<td style="text-align: left;">2022</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: left;">$489,770</td>
-<td style="text-align: left;">9.3%</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2022-04-11</td>
-<td style="text-align: left;">2022</td>
-<td style="text-align: right;">7</td>
-<td style="text-align: left;">$177,245</td>
-<td style="text-align: left;">15.0%</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2022-04-18</td>
-<td style="text-align: left;">2022</td>
-<td style="text-align: right;">7</td>
-<td style="text-align: left;">$1,621,964</td>
-<td style="text-align: left;">2.8%</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2022-04-25</td>
-<td style="text-align: left;">2022</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: left;">$198,430</td>
-<td style="text-align: left;">14.1%</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2023-03-27</td>
-<td style="text-align: left;">2023</td>
-<td style="text-align: right;">12</td>
-<td style="text-align: left;">$321,152</td>
-<td style="text-align: left;">-5.2%</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2023-04-03</td>
-<td style="text-align: left;">2023</td>
-<td style="text-align: right;">13</td>
-<td style="text-align: left;">$1,146,885</td>
-<td style="text-align: left;">3.5%</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2023-04-10</td>
-<td style="text-align: left;">2023</td>
-<td style="text-align: right;">14</td>
-<td style="text-align: left;">$1,278,613</td>
-<td style="text-align: left;">-2.8%</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2023-04-17</td>
-<td style="text-align: left;">2023</td>
-<td style="text-align: right;">12</td>
-<td style="text-align: left;">$1,665,967</td>
-<td style="text-align: left;">2.6%</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2023-04-24</td>
-<td style="text-align: left;">2023</td>
-<td style="text-align: right;">14</td>
-<td style="text-align: left;">$1,109,397</td>
-<td style="text-align: left;">3.0%</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2024-04-01</td>
-<td style="text-align: left;">2024</td>
-<td style="text-align: right;">39</td>
-<td style="text-align: left;">$1,785,226</td>
-<td style="text-align: left;">5.4%</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2024-04-08</td>
-<td style="text-align: left;">2024</td>
-<td style="text-align: right;">42</td>
-<td style="text-align: left;">$2,075,261</td>
-<td style="text-align: left;">4.8%</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2024-04-15</td>
-<td style="text-align: left;">2024</td>
-<td style="text-align: right;">42</td>
-<td style="text-align: left;">$3,242,477</td>
-<td style="text-align: left;">5.0%</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2024-04-22</td>
-<td style="text-align: left;">2024</td>
-<td style="text-align: right;">41</td>
-<td style="text-align: left;">$1,858,126</td>
-<td style="text-align: left;">4.7%</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2024-04-29</td>
-<td style="text-align: left;">2024</td>
-<td style="text-align: right;">33</td>
-<td style="text-align: left;">$675,523</td>
-<td style="text-align: left;">3.8%</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><br><br>
-<strong>Weekly Patterns: The 4/20 Surge</strong></p>
-<table class="caption-top table">
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>Average Lab Test Values by Category</caption>
 <colgroup>
-<col style="width: 5%">
-<col style="width: 29%">
-<col style="width: 18%">
-<col style="width: 20%">
-<col style="width: 25%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
 </colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;">Year</th>
-<th style="text-align: right;">Peak Week (Start Date)</th>
-<th style="text-align: right;">Weekly Revenue</th>
-<th style="text-align: right;">Avg. Discount %</th>
-<th style="text-align: right;">Licensees Reporting</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; empty-cells: hide; border-bottom: hidden;"></th>
+<th colspan="4" data-quarto-table-cell-role="th" style="text-align: center; border-bottom: hidden; padding-bottom: 0; padding-left: 3px; padding-right: 3px;"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+CBD Compounds
+</div></th>
+<th colspan="4" data-quarto-table-cell-role="th" style="text-align: center; border-bottom: hidden; padding-bottom: 0; padding-left: 3px; padding-right: 3px;"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+THC Compounds
+</div></th>
+<th colspan="2" data-quarto-table-cell-role="th" style="text-align: center; border-bottom: hidden; padding-bottom: 0; padding-left: 3px; padding-right: 3px;"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Total CBD
+</div></th>
+<th colspan="2" data-quarto-table-cell-role="th" style="text-align: center; border-bottom: hidden; padding-bottom: 0; padding-left: 3px; padding-right: 3px;"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Total THC
+</div></th>
+</tr>
+<tr class="even">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Category</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg CBD (%)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg CBD (mg/g)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg CBDA (%)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg CBDA (mg/g)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg D9THC (%)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg D9THCA (%)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg Δ9-THC (mg/g)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg Δ9-THCA (mg/g)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg Total CBD (%)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg Total CBD (mg/g)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg Total THC (%)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg Total THC (mg/g)</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">2022</td>
-<td style="text-align: right;">Apr 18</td>
-<td style="text-align: right;">$684 K</td>
-<td style="text-align: right;">5.1 %</td>
-<td style="text-align: right;">6</td>
+<td style="text-align: left;">Medical</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">11.2</td>
+<td style="text-align: right;">0.4</td>
+<td style="text-align: right;">5.0</td>
+<td style="text-align: right;">15.1</td>
+<td style="text-align: right;">27.3</td>
+<td style="text-align: right;">172.3</td>
+<td style="text-align: right;">298.6</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">8.6</td>
+<td style="text-align: right;">38.3</td>
+<td style="text-align: right;">360.0</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">2023</td>
-<td style="text-align: right;">Apr 17</td>
-<td style="text-align: right;">$1.55 M</td>
-<td style="text-align: right;">1.3 %</td>
-<td style="text-align: right;">11</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2024</td>
-<td style="text-align: right;">Apr 15</td>
-<td style="text-align: right;">$2.45 M</td>
-<td style="text-align: right;">6.2 %</td>
-<td style="text-align: right;">40</td>
+<td style="text-align: left;">Non-Medical</td>
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">14.8</td>
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">1.8</td>
+<td style="text-align: right;">19.3</td>
+<td style="text-align: right;">26.5</td>
+<td style="text-align: right;">218.2</td>
+<td style="text-align: right;">337.2</td>
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">9.1</td>
+<td style="text-align: right;">42.5</td>
+<td style="text-align: right;">430.6</td>
 </tr>
 </tbody>
 </table>
-<p><br> Across all three years, the third week of April—the week containing April 20th—was consistently the highest-grossing.</p>
-<ul>
-<li><p>In 2022, fewer than 10 licensees were active, generating under $1 million during the 4/20 week.</p></li>
-<li><p>By 2023, the same period nearly doubled in revenue, with discounting largely subdued.</p></li>
-<li><p>In 2024, the 4/20 week exceeded $2.4 million, involving 40 retailers—a sign of market expansion and stronger retail organization.</p></li>
-<li><p>This week-over-week buildup illustrates how 4/20 continues to anchor the state’s retail sales calendar, even as the surrounding weeks show more stable baseline demand.</p></li>
-</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="test-value-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="test-value-distribution">Test Value Distribution</h2>
+<p>Distribution of Lab Test Potency Values by Category Table shows THC and CBD across both markets — Non-Medical products consistently skew higher in THC and lower in CBD-forward profiles.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Cannabinoid Category</th>
+<th style="text-align: right;"><strong>Medical</strong> Avg</th>
+<th style="text-align: right;"><strong>Non-Med</strong> Avg</th>
+<th>What It Suggests</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Total THC (%)</strong></td>
+<td style="text-align: right;"><strong>38.3%</strong></td>
+<td style="text-align: right;"><strong>42.5%</strong></td>
+<td>Adult-use products prioritize high-THC potency</td>
+</tr>
+<tr class="even">
+<td><strong>Total CBD (mg/g)</strong></td>
+<td style="text-align: right;"><strong>8.6 mg/g</strong></td>
+<td style="text-align: right;"><strong>9.1 mg/g</strong></td>
+<td>CBD levels surprisingly comparable</td>
+</tr>
+<tr class="odd">
+<td><strong>Δ9-THC (mg/g)</strong></td>
+<td style="text-align: right;"><strong>172.3 mg/g</strong></td>
+<td style="text-align: right;"><strong>218.2 mg/g</strong></td>
+<td>Strong bias toward psychoactive Δ9-THC in retail</td>
+</tr>
+<tr class="even">
+<td><strong>CBDA (%)</strong></td>
+<td style="text-align: right;"><strong>0.4%</strong></td>
+<td style="text-align: right;"><strong>0.1%</strong></td>
+<td>Medical SKUs more likely to preserve acidic cannabinoids</td>
+</tr>
+<tr class="odd">
+<td><strong>Δ9-THCA (%)</strong></td>
+<td style="text-align: right;"><strong>27.3%</strong></td>
+<td style="text-align: right;"><strong>26.5%</strong></td>
+<td>Slightly higher THCA in medical, but not by much</td>
+</tr>
+</tbody>
+</table>
+<p>Overall: Adult-use products are stronger, but medical products show slightly better cannabinoid diversity. Medical products chemistry profiles are created with intention, targeting pain and depression, while recreational cannabis products shoot for high total THC content.</p>
+</section>
+<section id="what-industry-should-consider" class="level2">
+<h2 class="anchored" data-anchor-id="what-industry-should-consider">What Industry Should Consider</h2>
+<p><strong>For Producers &amp; Processors</strong> + Medical-labeled SKUs should offer distinct cannabinoid profiles + Opportunity for premium medical brands focused on formulations &gt; potency</p>
+<p><strong>For Retailers</strong> + Patients may be underdosed on CBD, oversold on THC + Provide differentiated guidance for therapeutic use cases</p>
+<p><strong>For Policymakers &amp; Regulators</strong> + Current model risks erasing medical-specific value + Reevaluating medical standards could improve patient outcomes</p>
 <p><br></p>
 <!-- commento -->
 <div class="comments ec-comment-box">
@@ -474,6 +383,7 @@ Join the discussion
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

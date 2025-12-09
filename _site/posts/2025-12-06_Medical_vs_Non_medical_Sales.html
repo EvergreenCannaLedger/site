@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2025-12-06">
+<meta name="description" content="This analysis compares medical and non-medical cannabis sales, tracking quantity sold, discounts applied, and total revenue impact.">
+
+<title>Medical vs Non-Medical Cannabis Sales – The Evergreen Canna Ledger</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-089474e4536f4ae99f5de9845056add1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="../site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+<link href="../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+
+<script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+<script src="../site_libs/plotly-binding-4.10.4/plotly.js"></script>
+
+<script src="../site_libs/typedarray-0.1/typedarray.min.js"></script>
+
+<script src="../site_libs/jquery-3.5.1/jquery.min.js"></script>
+
+<link href="../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+
+<script src="../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+<link href="../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+
+<script src="../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+
+<link rel="stylesheet" href="../assets/css/custom.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">The Evergreen Canna Ledger</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../blog.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contact.html"> 
+<span class="menu-text">Contact</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../dashboards.html"> 
+<span class="menu-text">Dashboards</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-bottom-line-up-front" id="toc-the-bottom-line-up-front" class="nav-link active" data-scroll-target="#the-bottom-line-up-front">The Bottom Line Up Front</a></li>
+  <li><a href="#sales-summary-by-category" id="toc-sales-summary-by-category" class="nav-link" data-scroll-target="#sales-summary-by-category">Sales Summary by Category</a></li>
+  <li><a href="#revenue-comparison" id="toc-revenue-comparison" class="nav-link" data-scroll-target="#revenue-comparison">Revenue Comparison</a></li>
+  <li><a href="#discount-analysis" id="toc-discount-analysis" class="nav-link" data-scroll-target="#discount-analysis">Discount Analysis</a></li>
+  <li><a href="#tax-analysis-summary" id="toc-tax-analysis-summary" class="nav-link" data-scroll-target="#tax-analysis-summary">Tax Analysis Summary</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Medical vs Non-Medical Cannabis Sales</h1>
+<p class="subtitle lead">Comparing inventory, revenue, and discounts</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">cannabis</div>
+    <div class="quarto-category">sales</div>
+    <div class="quarto-category">medical</div>
+    <div class="quarto-category">retail</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    <p>This analysis compares medical and non-medical cannabis sales, tracking quantity sold, discounts applied, and total revenue impact.</p>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 6, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="the-bottom-line-up-front" class="level2">
+<h2 class="anchored" data-anchor-id="the-bottom-line-up-front">The Bottom Line Up Front</h2>
+<p>Washington’s medical cannabis system is under-utilized, even as medical consumers continue to spend more on average. Meanwhile, the adult-use market is maturing into a competitive, discount-driven retail ecosystem.</p>
+<p>Better tax alignment and medical program participation could protect:</p>
+<ul>
+<li><p>patient affordability</p></li>
+<li><p>small-business revenue stability</p></li>
+<li><p>supply chain resilience</p></li>
+</ul>
+<p><strong>Overview</strong><br>
+Washington’s cannabis economy has always operated as a dual-track market — medical patients and adult-use consumers share the same shelves, but they behave very differently.</p>
+<p>With over 221 million transaction records analyzed through November 2025, the Evergreen Canna Ledger examined how revenue, discounting, and taxation vary between the two consumer groups.</p>
+</section>
+<section id="sales-summary-by-category" class="level2">
+<h2 class="anchored" data-anchor-id="sales-summary-by-category">Sales Summary by Category</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>Summary of Sales: Medical vs Non-Medical</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Category</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Transactions</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">TotalQuantity</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Revenue</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Discounts</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">SalesTax</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">OtherTax</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Non-Medical</td>
+<td style="text-align: left;">134,928,083</td>
+<td style="text-align: left;">4,316,330,112</td>
+<td style="text-align: left;">$4,170,070,518</td>
+<td style="text-align: left;">$545,973,161</td>
+<td style="text-align: left;">$133,536,645</td>
+<td style="text-align: left;">$15,322,886,788</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Medical</td>
+<td style="text-align: left;">70,986,358</td>
+<td style="text-align: left;">267,615,574</td>
+<td style="text-align: left;">$2,377,370,979</td>
+<td style="text-align: left;">$394,094,487</td>
+<td style="text-align: left;">$73,737,649</td>
+<td style="text-align: left;">$299,063,497</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">16,060,461</td>
+<td style="text-align: left;">486,172,535</td>
+<td style="text-align: left;">$455,740,174</td>
+<td style="text-align: left;">$60,504,672</td>
+<td style="text-align: left;">$15,821,517</td>
+<td style="text-align: left;">$256,755,881</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><strong>Table of Important Medical Cannabis Dates</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 83%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Date</th>
+<th>Event Label</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>2022-01-01</strong></td>
+<td>Post-CCR Migration Stabilization</td>
+</tr>
+<tr class="even">
+<td><strong>2023-07-23</strong></td>
+<td>Medical Program Changes &amp; Consolidated Rules</td>
+</tr>
+<tr class="odd">
+<td><strong>2024-01-01</strong></td>
+<td>New Tax/Fee Updates Begin (EPR fees + supply chain compliance shifts)</td>
+</tr>
+<tr class="even">
+<td><strong>2025-07-01</strong></td>
+<td>Retail License &amp; Packaging Rule Adjustments</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="revenue-comparison" class="level2">
+<h2 class="anchored" data-anchor-id="revenue-comparison">Revenue Comparison</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-3223fc78dc9017040721" style="width:100%;height:406px;"></div>
+<script type="application/json" data-for="htmlwidget-3223fc78dc9017040721">{"x":{"data":[{"x":[19135,19142,19149,19156,19163,19170,19177,19184,19191,19247,19317,19331,19338,19345,19380,19387,19401,19422,19429,19436,19443,19471,19478,19485,19492,19506,19513,19520,19534,19548,19555,19562,19569,19576,19583,19590,19597,19604,19611,19618,19625,19632,19639,19646,19653,19660,19667,19674,19681,19688,19695,19702,19709,19716,19723,19730,19737,19744,19751,19758,19765,19772,19779,19786,19793,19800,19807,19814,19821,19828,19835,19842,19849,19856,19863,19870,19877,19884,19891,19898,19905,19912,19919,19926,19933,19940,19947,19954,19961,19968,19975,19982,19989,19996,20003,20010,20017,20024,20031,20038,20045,20052,20059,20066,20073,20080,20087,20094,20101,20108,20115,20122,20129,20136,20143,20150,20157,20164,20171,20178,20185,20192,20199,20206,20213,20220,20227,20234,20241,20248,20255,20262,20269,20276,20283,20290,20297,20304,20311,20318,20325,20332,20339,20346,20353,20360,20367,20374,20381,20388,null],"y":[176.56,413.31999999999999,266.51999999999998,133.88,93.519999999999996,32.960000000000001,137.19999999999999,370.80000000000001,156.16,15.039999999999999,15.039999999999999,30.079999999999998,249.89999999999998,1759.5,60.159999999999997,60.079999999999998,60.079999999999998,8.1400000000000006,113.36,9.4399999999999995,9.5099999999999998,6.7999999999999998,28.800000000000001,153.07999999999998,14.94,13.5,30.550000000000001,14.94,243.84,16.510000000000002,75.799999999999997,57.359999999999999,55.68,63.810000000000002,86.420000000000002,132.74000000000001,2206.9400000000001,38.210000000000001,12065.969999999999,34.189999999999998,303.90000000000003,4051.79,797.39999999999998,1045.9200000000001,932.22000000000003,4357.7399999999998,2111.5700000000002,3707.46,4705.6499999999996,3883.7400000000002,1820.53,1653.8499999999999,11463.57,10779.469999999999,10402.91,5736.1400000000003,5852.3999999999996,14282.639999999999,7780.1400000000003,5323.1900000000005,7030.54,6783.6199999999999,14822.99,6717.4800000000005,10972.84,12985.969999999999,13404.129999999999,12953.139999999999,12352.26,13438.139999999999,12004.540000000001,21223.830000000002,17211.349999999999,21601.330000000002,30713.18,50330.900000000001,66661.179999999993,100597.13,123177.84,112182.39999999999,91808.75,92287.779999999999,110879.75999999999,143762.95999999999,233481.23999999999,565255.85999999999,341114.15999999997,540319.69999999995,778646.25,1039071.22,816062.31999999995,970423.30999999994,1396648.27,19299917.970999993,20750077.206999995,23992652.689999998,24598083.550000001,29688464.569499992,28649023.873199996,34526386.772600003,41723764.660000004,41849096.059600018,42354045.514000021,56423379.624000013,58230288.450000063,47255628.540000014,53451774.511000037,64848148.590000011,69232650.288600028,66731789.54800003,85970322.780500084,210353674.94000015,55381173.086800046,48977146.655000009,54056504.340200044,49072461.754000001,50325546.902000025,50674749.412,53762493.740000017,55199855.140400045,57451803.210500084,61886004.354000099,40486240.84510003,41998364.318000041,38808757.234200016,37173163.907500014,39114937.530000016,37554683.99400001,37957549.917199999,38100726.674999997,35388096.112999991,39938427.390000001,38459501.054000005,20704601.779999997,26651790.4857,36892279.902400002,35902479.3222,31472214.072999999,29586798.310999993,27698860.538999997,26184419.289999995,24215864.449999999,24003861.151999999,22080424.036999997,20516267.879999995,19983035.242999997,16557281.858999999,10847257.1644,9261935.3900000006,5197688.6349999998,9131.6700000000001],"text":["WeekStart: 2022-05-23<br />WeeklyRevenue:       176.56<br />Category: Medical","WeekStart: 2022-05-30<br />WeeklyRevenue:       413.32<br />Category: Medical","WeekStart: 2022-06-06<br />WeeklyRevenue:       266.52<br />Category: Medical","WeekStart: 2022-06-13<br />WeeklyRevenue:       133.88<br />Category: Medical","WeekStart: 2022-06-20<br />WeeklyRevenue:        93.52<br />Category: Medical","WeekStart: 2022-06-27<br />WeeklyRevenue:        32.96<br />Category: Medical","WeekStart: 2022-07-04<br />WeeklyRevenue:       137.20<br />Category: Medical","WeekStart: 2022-07-11<br />WeeklyRevenue:       370.80<br />Category: Medical","WeekStart: 2022-07-18<br />WeeklyRevenue:       156.16<br />Category: Medical","WeekStart: 2022-09-12<br />WeeklyRevenue:        15.04<br />Category: Medical","WeekStart: 2022-11-21<br />WeeklyRevenue:        15.04<br />Category: Medical","WeekStart: 2022-12-05<br />WeeklyRevenue:        30.08<br />Category: Medical","WeekStart: 2022-12-12<br />WeeklyRevenue:       249.90<br />Category: Medical","WeekStart: 2022-12-19<br />WeeklyRevenue:      1759.50<br />Category: Medical","WeekStart: 2023-01-23<br />WeeklyRevenue:        60.16<br />Category: Medical","WeekStart: 2023-01-30<br />WeeklyRevenue:        60.08<br />Category: Medical","WeekStart: 2023-02-13<br />WeeklyRevenue:        60.08<br />Category: Medical","WeekStart: 2023-03-06<br />WeeklyRevenue:         8.14<br />Category: Medical","WeekStart: 2023-03-13<br />WeeklyRevenue:       113.36<br />Category: Medical","WeekStart: 2023-03-20<br />WeeklyRevenue:         9.44<br />Category: Medical","WeekStart: 2023-03-27<br />WeeklyRevenue:         9.51<br />Category: Medical","WeekStart: 2023-04-24<br />WeeklyRevenue:         6.80<br />Category: Medical","WeekStart: 2023-05-01<br />WeeklyRevenue:        28.80<br />Category: Medical","WeekStart: 2023-05-08<br />WeeklyRevenue:       153.08<br />Category: Medical","WeekStart: 2023-05-15<br />WeeklyRevenue:        14.94<br />Category: Medical","WeekStart: 2023-05-29<br />WeeklyRevenue:        13.50<br />Category: Medical","WeekStart: 2023-06-05<br />WeeklyRevenue:        30.55<br />Category: Medical","WeekStart: 2023-06-12<br />WeeklyRevenue:        14.94<br />Category: Medical","WeekStart: 2023-06-26<br />WeeklyRevenue:       243.84<br />Category: Medical","WeekStart: 2023-07-10<br />WeeklyRevenue:        16.51<br />Category: Medical","WeekStart: 2023-07-17<br />WeeklyRevenue:        75.80<br />Category: Medical","WeekStart: 2023-07-24<br />WeeklyRevenue:        57.36<br />Category: Medical","WeekStart: 2023-07-31<br />WeeklyRevenue:        55.68<br />Category: Medical","WeekStart: 2023-08-07<br />WeeklyRevenue:        63.81<br />Category: Medical","WeekStart: 2023-08-14<br />WeeklyRevenue:        86.42<br />Category: Medical","WeekStart: 2023-08-21<br />WeeklyRevenue:       132.74<br />Category: Medical","WeekStart: 2023-08-28<br />WeeklyRevenue:      2206.94<br />Category: Medical","WeekStart: 2023-09-04<br />WeeklyRevenue:        38.21<br />Category: Medical","WeekStart: 2023-09-11<br />WeeklyRevenue:     12065.97<br />Category: Medical","WeekStart: 2023-09-18<br />WeeklyRevenue:        34.19<br />Category: Medical","WeekStart: 2023-09-25<br />WeeklyRevenue:       303.90<br />Category: Medical","WeekStart: 2023-10-02<br />WeeklyRevenue:      4051.79<br />Category: Medical","WeekStart: 2023-10-09<br />WeeklyRevenue:       797.40<br />Category: Medical","WeekStart: 2023-10-16<br />WeeklyRevenue:      1045.92<br />Category: Medical","WeekStart: 2023-10-23<br />WeeklyRevenue:       932.22<br />Category: Medical","WeekStart: 2023-10-30<br />WeeklyRevenue:      4357.74<br />Category: Medical","WeekStart: 2023-11-06<br />WeeklyRevenue:      2111.57<br />Category: Medical","WeekStart: 2023-11-13<br />WeeklyRevenue:      3707.46<br />Category: Medical","WeekStart: 2023-11-20<br />WeeklyRevenue:      4705.65<br />Category: Medical","WeekStart: 2023-11-27<br />WeeklyRevenue:      3883.74<br />Category: Medical","WeekStart: 2023-12-04<br />WeeklyRevenue:      1820.53<br />Category: Medical","WeekStart: 2023-12-11<br />WeeklyRevenue:      1653.85<br />Category: Medical","WeekStart: 2023-12-18<br />WeeklyRevenue:     11463.57<br />Category: Medical","WeekStart: 2023-12-25<br />WeeklyRevenue:     10779.47<br />Category: Medical","WeekStart: 2024-01-01<br />WeeklyRevenue:     10402.91<br />Category: Medical","WeekStart: 2024-01-08<br />WeeklyRevenue:      5736.14<br />Category: Medical","WeekStart: 2024-01-15<br />WeeklyRevenue:      5852.40<br />Category: Medical","WeekStart: 2024-01-22<br />WeeklyRevenue:     14282.64<br />Category: Medical","WeekStart: 2024-01-29<br />WeeklyRevenue:      7780.14<br />Category: Medical","WeekStart: 2024-02-05<br />WeeklyRevenue:      5323.19<br />Category: Medical","WeekStart: 2024-02-12<br />WeeklyRevenue:      7030.54<br />Category: Medical","WeekStart: 2024-02-19<br />WeeklyRevenue:      6783.62<br />Category: Medical","WeekStart: 2024-02-26<br />WeeklyRevenue:     14822.99<br />Category: Medical","WeekStart: 2024-03-04<br />WeeklyRevenue:      6717.48<br />Category: Medical","WeekStart: 2024-03-11<br />WeeklyRevenue:     10972.84<br />Category: Medical","WeekStart: 2024-03-18<br />WeeklyRevenue:     12985.97<br />Category: Medical","WeekStart: 2024-03-25<br />WeeklyRevenue:     13404.13<br />Category: Medical","WeekStart: 2024-04-01<br />WeeklyRevenue:     12953.14<br />Category: Medical","WeekStart: 2024-04-08<br />WeeklyRevenue:     12352.26<br />Category: Medical","WeekStart: 2024-04-15<br />WeeklyRevenue:     13438.14<br />Category: Medical","WeekStart: 2024-04-22<br />WeeklyRevenue:     12004.54<br />Category: Medical","WeekStart: 2024-04-29<br />WeeklyRevenue:     21223.83<br />Category: Medical","WeekStart: 2024-05-06<br />WeeklyRevenue:     17211.35<br />Category: Medical","WeekStart: 2024-05-13<br />WeeklyRevenue:     21601.33<br />Category: Medical","WeekStart: 2024-05-20<br />WeeklyRevenue:     30713.18<br />Category: Medical","WeekStart: 2024-05-27<br />WeeklyRevenue:     50330.90<br />Category: Medical","WeekStart: 2024-06-03<br />WeeklyRevenue:     66661.18<br />Category: Medical","WeekStart: 2024-06-10<br />WeeklyRevenue:    100597.13<br />Category: Medical","WeekStart: 2024-06-17<br />WeeklyRevenue:    123177.84<br />Category: Medical","WeekStart: 2024-06-24<br />WeeklyRevenue:    112182.40<br />Category: Medical","WeekStart: 2024-07-01<br />WeeklyRevenue:     91808.75<br />Category: Medical","WeekStart: 2024-07-08<br />WeeklyRevenue:     92287.78<br />Category: Medical","WeekStart: 2024-07-15<br />WeeklyRevenue:    110879.76<br />Category: Medical","WeekStart: 2024-07-22<br />WeeklyRevenue:    143762.96<br />Category: Medical","WeekStart: 2024-07-29<br />WeeklyRevenue:    233481.24<br />Category: Medical","WeekStart: 2024-08-05<br />WeeklyRevenue:    565255.86<br />Category: Medical","WeekStart: 2024-08-12<br />WeeklyRevenue:    341114.16<br />Category: Medical","WeekStart: 2024-08-19<br />WeeklyRevenue:    540319.70<br />Category: Medical","WeekStart: 2024-08-26<br />WeeklyRevenue:    778646.25<br />Category: Medical","WeekStart: 2024-09-02<br />WeeklyRevenue:   1039071.22<br />Category: Medical","WeekStart: 2024-09-09<br />WeeklyRevenue:    816062.32<br />Category: Medical","WeekStart: 2024-09-16<br />WeeklyRevenue:    970423.31<br />Category: Medical","WeekStart: 2024-09-23<br />WeeklyRevenue:   1396648.27<br />Category: Medical","WeekStart: 2024-09-30<br />WeeklyRevenue:  19299917.97<br />Category: Medical","WeekStart: 2024-10-07<br />WeeklyRevenue:  20750077.21<br />Category: Medical","WeekStart: 2024-10-14<br />WeeklyRevenue:  23992652.69<br />Category: Medical","WeekStart: 2024-10-21<br />WeeklyRevenue:  24598083.55<br />Category: Medical","WeekStart: 2024-10-28<br />WeeklyRevenue:  29688464.57<br />Category: Medical","WeekStart: 2024-11-04<br />WeeklyRevenue:  28649023.87<br />Category: Medical","WeekStart: 2024-11-11<br />WeeklyRevenue:  34526386.77<br />Category: Medical","WeekStart: 2024-11-18<br />WeeklyRevenue:  41723764.66<br />Category: Medical","WeekStart: 2024-11-25<br />WeeklyRevenue:  41849096.06<br />Category: Medical","WeekStart: 2024-12-02<br />WeeklyRevenue:  42354045.51<br />Category: Medical","WeekStart: 2024-12-09<br />WeeklyRevenue:  56423379.62<br />Category: Medical","WeekStart: 2024-12-16<br />WeeklyRevenue:  58230288.45<br />Category: Medical","WeekStart: 2024-12-23<br />WeeklyRevenue:  47255628.54<br />Category: Medical","WeekStart: 2024-12-30<br />WeeklyRevenue:  53451774.51<br />Category: Medical","WeekStart: 2025-01-06<br />WeeklyRevenue:  64848148.59<br />Category: Medical","WeekStart: 2025-01-13<br />WeeklyRevenue:  69232650.29<br />Category: Medical","WeekStart: 2025-01-20<br />WeeklyRevenue:  66731789.55<br />Category: Medical","WeekStart: 2025-01-27<br />WeeklyRevenue:  85970322.78<br />Category: Medical","WeekStart: 2025-02-03<br />WeeklyRevenue: 210353674.94<br />Category: Medical","WeekStart: 2025-02-10<br />WeeklyRevenue:  55381173.09<br />Category: Medical","WeekStart: 2025-02-17<br />WeeklyRevenue:  48977146.66<br />Category: Medical","WeekStart: 2025-02-24<br />WeeklyRevenue:  54056504.34<br />Category: Medical","WeekStart: 2025-03-03<br />WeeklyRevenue:  49072461.75<br />Category: Medical","WeekStart: 2025-03-10<br />WeeklyRevenue:  50325546.90<br />Category: Medical","WeekStart: 2025-03-17<br />WeeklyRevenue:  50674749.41<br />Category: Medical","WeekStart: 2025-03-24<br />WeeklyRevenue:  53762493.74<br />Category: Medical","WeekStart: 2025-03-31<br />WeeklyRevenue:  55199855.14<br />Category: Medical","WeekStart: 2025-04-07<br />WeeklyRevenue:  57451803.21<br />Category: Medical","WeekStart: 2025-04-14<br />WeeklyRevenue:  61886004.35<br />Category: Medical","WeekStart: 2025-04-21<br />WeeklyRevenue:  40486240.85<br />Category: Medical","WeekStart: 2025-04-28<br />WeeklyRevenue:  41998364.32<br />Category: Medical","WeekStart: 2025-05-05<br />WeeklyRevenue:  38808757.23<br />Category: Medical","WeekStart: 2025-05-12<br />WeeklyRevenue:  37173163.91<br />Category: Medical","WeekStart: 2025-05-19<br />WeeklyRevenue:  39114937.53<br />Category: Medical","WeekStart: 2025-05-26<br />WeeklyRevenue:  37554683.99<br />Category: Medical","WeekStart: 2025-06-02<br />WeeklyRevenue:  37957549.92<br />Category: Medical","WeekStart: 2025-06-09<br />WeeklyRevenue:  38100726.67<br />Category: Medical","WeekStart: 2025-06-16<br />WeeklyRevenue:  35388096.11<br />Category: Medical","WeekStart: 2025-06-23<br />WeeklyRevenue:  39938427.39<br />Category: Medical","WeekStart: 2025-06-30<br />WeeklyRevenue:  38459501.05<br />Category: Medical","WeekStart: 2025-07-07<br />WeeklyRevenue:  20704601.78<br />Category: Medical","WeekStart: 2025-07-14<br />WeeklyRevenue:  26651790.49<br />Category: Medical","WeekStart: 2025-07-21<br />WeeklyRevenue:  36892279.90<br />Category: Medical","WeekStart: 2025-07-28<br />WeeklyRevenue:  35902479.32<br />Category: Medical","WeekStart: 2025-08-04<br />WeeklyRevenue:  31472214.07<br />Category: Medical","WeekStart: 2025-08-11<br />WeeklyRevenue:  29586798.31<br />Category: Medical","WeekStart: 2025-08-18<br />WeeklyRevenue:  27698860.54<br />Category: Medical","WeekStart: 2025-08-25<br />WeeklyRevenue:  26184419.29<br />Category: Medical","WeekStart: 2025-09-01<br />WeeklyRevenue:  24215864.45<br />Category: Medical","WeekStart: 2025-09-08<br />WeeklyRevenue:  24003861.15<br />Category: Medical","WeekStart: 2025-09-15<br />WeeklyRevenue:  22080424.04<br />Category: Medical","WeekStart: 2025-09-22<br />WeeklyRevenue:  20516267.88<br />Category: Medical","WeekStart: 2025-09-29<br />WeeklyRevenue:  19983035.24<br />Category: Medical","WeekStart: 2025-10-06<br />WeeklyRevenue:  16557281.86<br />Category: Medical","WeekStart: 2025-10-13<br />WeeklyRevenue:  10847257.16<br />Category: Medical","WeekStart: 2025-10-20<br />WeeklyRevenue:   9261935.39<br />Category: Medical","WeekStart: 2025-10-27<br />WeeklyRevenue:   5197688.63<br />Category: Medical","WeekStart: NA<br />WeeklyRevenue:      9131.67<br />Category: Medical"],"type":"scatter","mode":"lines","line":{"width":3.7795275590551185,"color":"rgba(248,118,109,1)","dash":"solid"},"hoveron":"points","name":"Medical","legendgroup":"Medical","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[18806,18820,18827,18834,18841,18848,18855,18862,18869,18876,18883,18890,18897,18904,18911,18918,18925,18932,18939,18946,18953,18960,18967,18974,18981,18988,18995,19002,19009,19016,19023,19030,19037,19044,19051,19058,19065,19072,19079,19086,19093,19100,19107,19114,19121,19128,19135,19142,19149,19156,19163,19170,19177,19184,19191,19198,19205,19212,19219,19226,19233,19240,19247,19254,19261,19268,19275,19282,19289,19296,19303,19310,19317,19324,19331,19338,19345,19352,19359,19366,19373,19380,19387,19394,19401,19408,19415,19422,19429,19436,19443,19450,19457,19464,19471,19478,19485,19492,19499,19506,19513,19520,19527,19534,19541,19548,19555,19562,19569,19576,19583,19590,19597,19604,19611,19618,19625,19632,19639,19646,19653,19660,19667,19674,19681,19688,19695,19702,19709,19716,19723,19730,19737,19744,19751,19758,19765,19772,19779,19786,19793,19800,19807,19814,19821,19828,19835,19842,19849,19856,19863,19870,19877,19884,19891,19898,19905,19912,19919,19926,19933,19940,19947,19954,19961,19968,19975,19982,19989,19996,20003,20010,20017,20024,20031,20038,20045,20052,20059,20066,20073,20080,20087,20094,20101,20108,20115,20122,20129,20136,20143,20150,20157,20164,20171,20178,20185,20192,20199,20206,20213,20220,20227,20234,20241,20248,20255,20262,20269,20276,20283,20290,20297,20304,20311,20318,20325,20332,20339,20346,20353,20360,20367,20374,20381,20388,null],"y":[54.380000000000003,149.55000000000001,217.53,122.36000000000001,156.35000000000002,122.36000000000001,149.55000000000001,95.170000000000002,54.380000000000003,122.36000000000001,61.180000000000007,156.35000000000002,88.370000000000005,67.980000000000004,61.180000000000007,115.56,67.980000000000004,115.56,54.380000000000003,115.56,67.980000000000004,210829.64000000001,286225.10999999999,307526.42999999999,298392.69,321841.70000000001,548366.56999999995,5247506.5,2947864.8700000001,517153.96000000002,504608.84000000003,513489.82000000001,523055.38,479043.48999999999,12207133.77,119340.42,122685.92,4240460.9000000004,116328.48,121370.8,122679.35000000001,12143408.51,101757.94,62937.760000000002,67772.789999999994,54632.020000000004,110641.92,122148.00999999999,119928.42,130807.64999999999,4246404.6200000001,160904.73999999999,212197.69999999998,176794.51999999999,810280.63000000012,509664.43000000005,495209.27000000002,149361.79000000001,166471.60000000001,171248.22,232261.23000000001,328867.15999999997,301546.60999999999,387239.07000000001,371998.84000000003,708874.44999999995,579869.06000000006,585472.77000000002,560740.41000000003,852583.82000000007,683998.12,829812.01000000001,727400.55000000005,36887209.340000011,76271663.743500039,25290836.014999989,37544907.640000008,14126402.700000001,2852975.6799999997,7183256.6399999997,2489931.98,1468240.29,3620798.3899999997,578197.68000000005,522582.96999999997,565876.30000000005,772722.64000000001,590365.90000000002,646850.55000000005,639657.51000000001,743962.94999999995,1036230.33,1123866.6599999999,1510526.03,1063159.23,837983.94999999995,816086.14000000001,922604.10999999999,1002425.95,1423270.51,1309697.6699999999,1317063.9099999999,1281096.54,1520691.0800000001,1319907.27,1240520.78,1236194.9299999999,1251748.01,1551837.48,1391600.6299999999,1330473.73,1293359.5800000001,1500328.2,1092842.49,1175087.53,1228438.27,1236602.3499999999,1137156.4399999999,1205869.75,1191820.8899999999,1255997.8,1811539.5599999998,8513649.5500000007,1704296.3399999999,1466525.97,1453917.1040000001,1375172.1899999999,1288886.79,1454515.25,1109950.5120000001,2066220.5899999999,1114215.8800000001,1114551.3914999999,1401358.6100000001,1299957.8581999999,1494601.8873999999,1419502.75,1455227.28,1441248.02,1500185.3,1829412.98,1648887.4494,1745792.9399999999,1775781.0699999998,2338943.1499999999,3065091.52,2302849.3300000001,2400859.6099999999,2568296.3399999999,2230984.7999999998,4124009.9011999997,2261003.8100000001,2655295.4700000002,2725565.2749999999,2457905.5180000002,4262024.3480000002,2588420.4844,3441214.1275999998,4148670.8139999998,2534128.5179999997,2673431.9399999999,2041736.834,2129345.7149999999,4105838.4049999998,6420246.4899999993,5607332.8099999996,9177398.1899999995,10750369.09,14269754.001,65993122.002700016,69855395.38470003,71686453.632600084,75217517.24830009,83741969.297200114,82071682.848600119,78358871.459000066,86304272.265900105,86659787.942100167,85472529.051400125,97684773.949300125,95160774.207700148,81598577.157700166,96146774.771900177,122568495.6000002,126446272.88980016,139382579.08770019,182174946.33480009,417280688.79329908,109139084.06250024,81715726.207900122,87087084.249000132,80649584.910600081,75633233.080000103,74318693.310300097,73188066.087200046,75810227.762800083,72285807.946700141,76811886.684100151,50462741.236800052,54060050.530900061,47238309.910200037,41939878.291800015,41917954.808200009,41617797.590000011,38112803.534300014,29019692.791299991,26923388.293699987,29288993.643499997,29371972.313899994,17360970.614099998,22278635.060099997,30606375.365199994,28655215.193599995,26454823.4399,23829995.701400001,22716784.906199999,22722093.502599999,20879735.791999999,21246526.011599999,21230499.209099997,21483305.829699997,18212669.165099997,15831787.902099999,10790340.8467,8710430.9891999997,4469092.2698999997,904376.51199999999],"text":["WeekStart: 2021-06-28<br />WeeklyRevenue:        54.38<br />Category: Non-Medical","WeekStart: 2021-07-12<br />WeeklyRevenue:       149.55<br />Category: Non-Medical","WeekStart: 2021-07-19<br />WeeklyRevenue:       217.53<br />Category: Non-Medical","WeekStart: 2021-07-26<br />WeeklyRevenue:       122.36<br />Category: Non-Medical","WeekStart: 2021-08-02<br />WeeklyRevenue:       156.35<br />Category: Non-Medical","WeekStart: 2021-08-09<br />WeeklyRevenue:       122.36<br />Category: Non-Medical","WeekStart: 2021-08-16<br />WeeklyRevenue:       149.55<br />Category: Non-Medical","WeekStart: 2021-08-23<br />WeeklyRevenue:        95.17<br />Category: Non-Medical","WeekStart: 2021-08-30<br />WeeklyRevenue:        54.38<br />Category: Non-Medical","WeekStart: 2021-09-06<br />WeeklyRevenue:       122.36<br />Category: Non-Medical","WeekStart: 2021-09-13<br />WeeklyRevenue:        61.18<br />Category: Non-Medical","WeekStart: 2021-09-20<br />WeeklyRevenue:       156.35<br />Category: Non-Medical","WeekStart: 2021-09-27<br />WeeklyRevenue:        88.37<br />Category: Non-Medical","WeekStart: 2021-10-04<br />WeeklyRevenue:        67.98<br />Category: Non-Medical","WeekStart: 2021-10-11<br />WeeklyRevenue:        61.18<br />Category: Non-Medical","WeekStart: 2021-10-18<br />WeeklyRevenue:       115.56<br />Category: Non-Medical","WeekStart: 2021-10-25<br />WeeklyRevenue:        67.98<br />Category: Non-Medical","WeekStart: 2021-11-01<br />WeeklyRevenue:       115.56<br />Category: Non-Medical","WeekStart: 2021-11-08<br />WeeklyRevenue:        54.38<br />Category: Non-Medical","WeekStart: 2021-11-15<br />WeeklyRevenue:       115.56<br />Category: Non-Medical","WeekStart: 2021-11-22<br />WeeklyRevenue:        67.98<br />Category: Non-Medical","WeekStart: 2021-11-29<br />WeeklyRevenue:    210829.64<br />Category: Non-Medical","WeekStart: 2021-12-06<br />WeeklyRevenue:    286225.11<br />Category: Non-Medical","WeekStart: 2021-12-13<br />WeeklyRevenue:    307526.43<br />Category: Non-Medical","WeekStart: 2021-12-20<br />WeeklyRevenue:    298392.69<br />Category: Non-Medical","WeekStart: 2021-12-27<br />WeeklyRevenue:    321841.70<br />Category: Non-Medical","WeekStart: 2022-01-03<br />WeeklyRevenue:    548366.57<br />Category: Non-Medical","WeekStart: 2022-01-10<br />WeeklyRevenue:   5247506.50<br />Category: Non-Medical","WeekStart: 2022-01-17<br />WeeklyRevenue:   2947864.87<br />Category: Non-Medical","WeekStart: 2022-01-24<br />WeeklyRevenue:    517153.96<br />Category: Non-Medical","WeekStart: 2022-01-31<br />WeeklyRevenue:    504608.84<br />Category: Non-Medical","WeekStart: 2022-02-07<br />WeeklyRevenue:    513489.82<br />Category: Non-Medical","WeekStart: 2022-02-14<br />WeeklyRevenue:    523055.38<br />Category: Non-Medical","WeekStart: 2022-02-21<br />WeeklyRevenue:    479043.49<br />Category: Non-Medical","WeekStart: 2022-02-28<br />WeeklyRevenue:  12207133.77<br />Category: Non-Medical","WeekStart: 2022-03-07<br />WeeklyRevenue:    119340.42<br />Category: Non-Medical","WeekStart: 2022-03-14<br />WeeklyRevenue:    122685.92<br />Category: Non-Medical","WeekStart: 2022-03-21<br />WeeklyRevenue:   4240460.90<br />Category: Non-Medical","WeekStart: 2022-03-28<br />WeeklyRevenue:    116328.48<br />Category: Non-Medical","WeekStart: 2022-04-04<br />WeeklyRevenue:    121370.80<br />Category: Non-Medical","WeekStart: 2022-04-11<br />WeeklyRevenue:    122679.35<br />Category: Non-Medical","WeekStart: 2022-04-18<br />WeeklyRevenue:  12143408.51<br />Category: Non-Medical","WeekStart: 2022-04-25<br />WeeklyRevenue:    101757.94<br />Category: Non-Medical","WeekStart: 2022-05-02<br />WeeklyRevenue:     62937.76<br />Category: Non-Medical","WeekStart: 2022-05-09<br />WeeklyRevenue:     67772.79<br />Category: Non-Medical","WeekStart: 2022-05-16<br />WeeklyRevenue:     54632.02<br />Category: Non-Medical","WeekStart: 2022-05-23<br />WeeklyRevenue:    110641.92<br />Category: Non-Medical","WeekStart: 2022-05-30<br />WeeklyRevenue:    122148.01<br />Category: Non-Medical","WeekStart: 2022-06-06<br />WeeklyRevenue:    119928.42<br />Category: Non-Medical","WeekStart: 2022-06-13<br />WeeklyRevenue:    130807.65<br />Category: Non-Medical","WeekStart: 2022-06-20<br />WeeklyRevenue:   4246404.62<br />Category: Non-Medical","WeekStart: 2022-06-27<br />WeeklyRevenue:    160904.74<br />Category: Non-Medical","WeekStart: 2022-07-04<br />WeeklyRevenue:    212197.70<br />Category: Non-Medical","WeekStart: 2022-07-11<br />WeeklyRevenue:    176794.52<br />Category: Non-Medical","WeekStart: 2022-07-18<br />WeeklyRevenue:    810280.63<br />Category: Non-Medical","WeekStart: 2022-07-25<br />WeeklyRevenue:    509664.43<br />Category: Non-Medical","WeekStart: 2022-08-01<br />WeeklyRevenue:    495209.27<br />Category: Non-Medical","WeekStart: 2022-08-08<br />WeeklyRevenue:    149361.79<br />Category: Non-Medical","WeekStart: 2022-08-15<br />WeeklyRevenue:    166471.60<br />Category: Non-Medical","WeekStart: 2022-08-22<br />WeeklyRevenue:    171248.22<br />Category: Non-Medical","WeekStart: 2022-08-29<br />WeeklyRevenue:    232261.23<br />Category: Non-Medical","WeekStart: 2022-09-05<br />WeeklyRevenue:    328867.16<br />Category: Non-Medical","WeekStart: 2022-09-12<br />WeeklyRevenue:    301546.61<br />Category: Non-Medical","WeekStart: 2022-09-19<br />WeeklyRevenue:    387239.07<br />Category: Non-Medical","WeekStart: 2022-09-26<br />WeeklyRevenue:    371998.84<br />Category: Non-Medical","WeekStart: 2022-10-03<br />WeeklyRevenue:    708874.45<br />Category: Non-Medical","WeekStart: 2022-10-10<br />WeeklyRevenue:    579869.06<br />Category: Non-Medical","WeekStart: 2022-10-17<br />WeeklyRevenue:    585472.77<br />Category: Non-Medical","WeekStart: 2022-10-24<br />WeeklyRevenue:    560740.41<br />Category: Non-Medical","WeekStart: 2022-10-31<br />WeeklyRevenue:    852583.82<br />Category: Non-Medical","WeekStart: 2022-11-07<br />WeeklyRevenue:    683998.12<br />Category: Non-Medical","WeekStart: 2022-11-14<br />WeeklyRevenue:    829812.01<br />Category: Non-Medical","WeekStart: 2022-11-21<br />WeeklyRevenue:    727400.55<br />Category: Non-Medical","WeekStart: 2022-11-28<br />WeeklyRevenue:  36887209.34<br />Category: Non-Medical","WeekStart: 2022-12-05<br />WeeklyRevenue:  76271663.74<br />Category: Non-Medical","WeekStart: 2022-12-12<br />WeeklyRevenue:  25290836.01<br />Category: Non-Medical","WeekStart: 2022-12-19<br />WeeklyRevenue:  37544907.64<br />Category: Non-Medical","WeekStart: 2022-12-26<br />WeeklyRevenue:  14126402.70<br />Category: Non-Medical","WeekStart: 2023-01-02<br />WeeklyRevenue:   2852975.68<br />Category: Non-Medical","WeekStart: 2023-01-09<br />WeeklyRevenue:   7183256.64<br />Category: Non-Medical","WeekStart: 2023-01-16<br />WeeklyRevenue:   2489931.98<br />Category: Non-Medical","WeekStart: 2023-01-23<br />WeeklyRevenue:   1468240.29<br />Category: Non-Medical","WeekStart: 2023-01-30<br />WeeklyRevenue:   3620798.39<br />Category: Non-Medical","WeekStart: 2023-02-06<br />WeeklyRevenue:    578197.68<br />Category: Non-Medical","WeekStart: 2023-02-13<br />WeeklyRevenue:    522582.97<br />Category: Non-Medical","WeekStart: 2023-02-20<br />WeeklyRevenue:    565876.30<br />Category: Non-Medical","WeekStart: 2023-02-27<br />WeeklyRevenue:    772722.64<br />Category: Non-Medical","WeekStart: 2023-03-06<br />WeeklyRevenue:    590365.90<br />Category: Non-Medical","WeekStart: 2023-03-13<br />WeeklyRevenue:    646850.55<br />Category: Non-Medical","WeekStart: 2023-03-20<br />WeeklyRevenue:    639657.51<br />Category: Non-Medical","WeekStart: 2023-03-27<br />WeeklyRevenue:    743962.95<br />Category: Non-Medical","WeekStart: 2023-04-03<br />WeeklyRevenue:   1036230.33<br />Category: Non-Medical","WeekStart: 2023-04-10<br />WeeklyRevenue:   1123866.66<br />Category: Non-Medical","WeekStart: 2023-04-17<br />WeeklyRevenue:   1510526.03<br />Category: Non-Medical","WeekStart: 2023-04-24<br />WeeklyRevenue:   1063159.23<br />Category: Non-Medical","WeekStart: 2023-05-01<br />WeeklyRevenue:    837983.95<br />Category: Non-Medical","WeekStart: 2023-05-08<br />WeeklyRevenue:    816086.14<br />Category: Non-Medical","WeekStart: 2023-05-15<br />WeeklyRevenue:    922604.11<br />Category: Non-Medical","WeekStart: 2023-05-22<br />WeeklyRevenue:   1002425.95<br />Category: Non-Medical","WeekStart: 2023-05-29<br />WeeklyRevenue:   1423270.51<br />Category: Non-Medical","WeekStart: 2023-06-05<br />WeeklyRevenue:   1309697.67<br />Category: Non-Medical","WeekStart: 2023-06-12<br />WeeklyRevenue:   1317063.91<br />Category: Non-Medical","WeekStart: 2023-06-19<br />WeeklyRevenue:   1281096.54<br />Category: Non-Medical","WeekStart: 2023-06-26<br />WeeklyRevenue:   1520691.08<br />Category: Non-Medical","WeekStart: 2023-07-03<br />WeeklyRevenue:   1319907.27<br />Category: Non-Medical","WeekStart: 2023-07-10<br />WeeklyRevenue:   1240520.78<br />Category: Non-Medical","WeekStart: 2023-07-17<br />WeeklyRevenue:   1236194.93<br />Category: Non-Medical","WeekStart: 2023-07-24<br />WeeklyRevenue:   1251748.01<br />Category: Non-Medical","WeekStart: 2023-07-31<br />WeeklyRevenue:   1551837.48<br />Category: Non-Medical","WeekStart: 2023-08-07<br />WeeklyRevenue:   1391600.63<br />Category: Non-Medical","WeekStart: 2023-08-14<br />WeeklyRevenue:   1330473.73<br />Category: Non-Medical","WeekStart: 2023-08-21<br />WeeklyRevenue:   1293359.58<br />Category: Non-Medical","WeekStart: 2023-08-28<br />WeeklyRevenue:   1500328.20<br />Category: Non-Medical","WeekStart: 2023-09-04<br />WeeklyRevenue:   1092842.49<br />Category: Non-Medical","WeekStart: 2023-09-11<br />WeeklyRevenue:   1175087.53<br />Category: Non-Medical","WeekStart: 2023-09-18<br />WeeklyRevenue:   1228438.27<br />Category: Non-Medical","WeekStart: 2023-09-25<br />WeeklyRevenue:   1236602.35<br />Category: Non-Medical","WeekStart: 2023-10-02<br />WeeklyRevenue:   1137156.44<br />Category: Non-Medical","WeekStart: 2023-10-09<br />WeeklyRevenue:   1205869.75<br />Category: Non-Medical","WeekStart: 2023-10-16<br />WeeklyRevenue:   1191820.89<br />Category: Non-Medical","WeekStart: 2023-10-23<br />WeeklyRevenue:   1255997.80<br />Category: Non-Medical","WeekStart: 2023-10-30<br />WeeklyRevenue:   1811539.56<br />Category: Non-Medical","WeekStart: 2023-11-06<br />WeeklyRevenue:   8513649.55<br />Category: Non-Medical","WeekStart: 2023-11-13<br />WeeklyRevenue:   1704296.34<br />Category: Non-Medical","WeekStart: 2023-11-20<br />WeeklyRevenue:   1466525.97<br />Category: Non-Medical","WeekStart: 2023-11-27<br />WeeklyRevenue:   1453917.10<br />Category: Non-Medical","WeekStart: 2023-12-04<br />WeeklyRevenue:   1375172.19<br />Category: Non-Medical","WeekStart: 2023-12-11<br />WeeklyRevenue:   1288886.79<br />Category: Non-Medical","WeekStart: 2023-12-18<br />WeeklyRevenue:   1454515.25<br />Category: Non-Medical","WeekStart: 2023-12-25<br />WeeklyRevenue:   1109950.51<br />Category: Non-Medical","WeekStart: 2024-01-01<br />WeeklyRevenue:   2066220.59<br />Category: Non-Medical","WeekStart: 2024-01-08<br />WeeklyRevenue:   1114215.88<br />Category: Non-Medical","WeekStart: 2024-01-15<br />WeeklyRevenue:   1114551.39<br />Category: Non-Medical","WeekStart: 2024-01-22<br />WeeklyRevenue:   1401358.61<br />Category: Non-Medical","WeekStart: 2024-01-29<br />WeeklyRevenue:   1299957.86<br />Category: Non-Medical","WeekStart: 2024-02-05<br />WeeklyRevenue:   1494601.89<br />Category: Non-Medical","WeekStart: 2024-02-12<br />WeeklyRevenue:   1419502.75<br />Category: Non-Medical","WeekStart: 2024-02-19<br />WeeklyRevenue:   1455227.28<br />Category: Non-Medical","WeekStart: 2024-02-26<br />WeeklyRevenue:   1441248.02<br />Category: Non-Medical","WeekStart: 2024-03-04<br />WeeklyRevenue:   1500185.30<br />Category: Non-Medical","WeekStart: 2024-03-11<br />WeeklyRevenue:   1829412.98<br />Category: Non-Medical","WeekStart: 2024-03-18<br />WeeklyRevenue:   1648887.45<br />Category: Non-Medical","WeekStart: 2024-03-25<br />WeeklyRevenue:   1745792.94<br />Category: Non-Medical","WeekStart: 2024-04-01<br />WeeklyRevenue:   1775781.07<br />Category: Non-Medical","WeekStart: 2024-04-08<br />WeeklyRevenue:   2338943.15<br />Category: Non-Medical","WeekStart: 2024-04-15<br />WeeklyRevenue:   3065091.52<br />Category: Non-Medical","WeekStart: 2024-04-22<br />WeeklyRevenue:   2302849.33<br />Category: Non-Medical","WeekStart: 2024-04-29<br />WeeklyRevenue:   2400859.61<br />Category: Non-Medical","WeekStart: 2024-05-06<br />WeeklyRevenue:   2568296.34<br />Category: Non-Medical","WeekStart: 2024-05-13<br />WeeklyRevenue:   2230984.80<br />Category: Non-Medical","WeekStart: 2024-05-20<br />WeeklyRevenue:   4124009.90<br />Category: Non-Medical","WeekStart: 2024-05-27<br />WeeklyRevenue:   2261003.81<br />Category: Non-Medical","WeekStart: 2024-06-03<br />WeeklyRevenue:   2655295.47<br />Category: Non-Medical","WeekStart: 2024-06-10<br />WeeklyRevenue:   2725565.27<br />Category: Non-Medical","WeekStart: 2024-06-17<br />WeeklyRevenue:   2457905.52<br />Category: Non-Medical","WeekStart: 2024-06-24<br />WeeklyRevenue:   4262024.35<br />Category: Non-Medical","WeekStart: 2024-07-01<br />WeeklyRevenue:   2588420.48<br />Category: Non-Medical","WeekStart: 2024-07-08<br />WeeklyRevenue:   3441214.13<br />Category: Non-Medical","WeekStart: 2024-07-15<br />WeeklyRevenue:   4148670.81<br />Category: Non-Medical","WeekStart: 2024-07-22<br />WeeklyRevenue:   2534128.52<br />Category: Non-Medical","WeekStart: 2024-07-29<br />WeeklyRevenue:   2673431.94<br />Category: Non-Medical","WeekStart: 2024-08-05<br />WeeklyRevenue:   2041736.83<br />Category: Non-Medical","WeekStart: 2024-08-12<br />WeeklyRevenue:   2129345.71<br />Category: Non-Medical","WeekStart: 2024-08-19<br />WeeklyRevenue:   4105838.40<br />Category: Non-Medical","WeekStart: 2024-08-26<br />WeeklyRevenue:   6420246.49<br />Category: Non-Medical","WeekStart: 2024-09-02<br />WeeklyRevenue:   5607332.81<br />Category: Non-Medical","WeekStart: 2024-09-09<br />WeeklyRevenue:   9177398.19<br />Category: Non-Medical","WeekStart: 2024-09-16<br />WeeklyRevenue:  10750369.09<br />Category: Non-Medical","WeekStart: 2024-09-23<br />WeeklyRevenue:  14269754.00<br />Category: Non-Medical","WeekStart: 2024-09-30<br />WeeklyRevenue:  65993122.00<br />Category: Non-Medical","WeekStart: 2024-10-07<br />WeeklyRevenue:  69855395.38<br />Category: Non-Medical","WeekStart: 2024-10-14<br />WeeklyRevenue:  71686453.63<br />Category: Non-Medical","WeekStart: 2024-10-21<br />WeeklyRevenue:  75217517.25<br />Category: Non-Medical","WeekStart: 2024-10-28<br />WeeklyRevenue:  83741969.30<br />Category: Non-Medical","WeekStart: 2024-11-04<br />WeeklyRevenue:  82071682.85<br />Category: Non-Medical","WeekStart: 2024-11-11<br />WeeklyRevenue:  78358871.46<br />Category: Non-Medical","WeekStart: 2024-11-18<br />WeeklyRevenue:  86304272.27<br />Category: Non-Medical","WeekStart: 2024-11-25<br />WeeklyRevenue:  86659787.94<br />Category: Non-Medical","WeekStart: 2024-12-02<br />WeeklyRevenue:  85472529.05<br />Category: Non-Medical","WeekStart: 2024-12-09<br />WeeklyRevenue:  97684773.95<br />Category: Non-Medical","WeekStart: 2024-12-16<br />WeeklyRevenue:  95160774.21<br />Category: Non-Medical","WeekStart: 2024-12-23<br />WeeklyRevenue:  81598577.16<br />Category: Non-Medical","WeekStart: 2024-12-30<br />WeeklyRevenue:  96146774.77<br />Category: Non-Medical","WeekStart: 2025-01-06<br />WeeklyRevenue: 122568495.60<br />Category: Non-Medical","WeekStart: 2025-01-13<br />WeeklyRevenue: 126446272.89<br />Category: Non-Medical","WeekStart: 2025-01-20<br />WeeklyRevenue: 139382579.09<br />Category: Non-Medical","WeekStart: 2025-01-27<br />WeeklyRevenue: 182174946.33<br />Category: Non-Medical","WeekStart: 2025-02-03<br />WeeklyRevenue: 417280688.79<br />Category: Non-Medical","WeekStart: 2025-02-10<br />WeeklyRevenue: 109139084.06<br />Category: Non-Medical","WeekStart: 2025-02-17<br />WeeklyRevenue:  81715726.21<br />Category: Non-Medical","WeekStart: 2025-02-24<br />WeeklyRevenue:  87087084.25<br />Category: Non-Medical","WeekStart: 2025-03-03<br />WeeklyRevenue:  80649584.91<br />Category: Non-Medical","WeekStart: 2025-03-10<br />WeeklyRevenue:  75633233.08<br />Category: Non-Medical","WeekStart: 2025-03-17<br />WeeklyRevenue:  74318693.31<br />Category: Non-Medical","WeekStart: 2025-03-24<br />WeeklyRevenue:  73188066.09<br />Category: Non-Medical","WeekStart: 2025-03-31<br />WeeklyRevenue:  75810227.76<br />Category: Non-Medical","WeekStart: 2025-04-07<br />WeeklyRevenue:  72285807.95<br />Category: Non-Medical","WeekStart: 2025-04-14<br />WeeklyRevenue:  76811886.68<br />Category: Non-Medical","WeekStart: 2025-04-21<br />WeeklyRevenue:  50462741.24<br />Category: Non-Medical","WeekStart: 2025-04-28<br />WeeklyRevenue:  54060050.53<br />Category: Non-Medical","WeekStart: 2025-05-05<br />WeeklyRevenue:  47238309.91<br />Category: Non-Medical","WeekStart: 2025-05-12<br />WeeklyRevenue:  41939878.29<br />Category: Non-Medical","WeekStart: 2025-05-19<br />WeeklyRevenue:  41917954.81<br />Category: Non-Medical","WeekStart: 2025-05-26<br />WeeklyRevenue:  41617797.59<br />Category: Non-Medical","WeekStart: 2025-06-02<br />WeeklyRevenue:  38112803.53<br />Category: Non-Medical","WeekStart: 2025-06-09<br />WeeklyRevenue:  29019692.79<br />Category: Non-Medical","WeekStart: 2025-06-16<br />WeeklyRevenue:  26923388.29<br />Category: Non-Medical","WeekStart: 2025-06-23<br />WeeklyRevenue:  29288993.64<br />Category: Non-Medical","WeekStart: 2025-06-30<br />WeeklyRevenue:  29371972.31<br />Category: Non-Medical","WeekStart: 2025-07-07<br />WeeklyRevenue:  17360970.61<br />Category: Non-Medical","WeekStart: 2025-07-14<br />WeeklyRevenue:  22278635.06<br />Category: Non-Medical","WeekStart: 2025-07-21<br />WeeklyRevenue:  30606375.37<br />Category: Non-Medical","WeekStart: 2025-07-28<br />WeeklyRevenue:  28655215.19<br />Category: Non-Medical","WeekStart: 2025-08-04<br />WeeklyRevenue:  26454823.44<br />Category: Non-Medical","WeekStart: 2025-08-11<br />WeeklyRevenue:  23829995.70<br />Category: Non-Medical","WeekStart: 2025-08-18<br />WeeklyRevenue:  22716784.91<br />Category: Non-Medical","WeekStart: 2025-08-25<br />WeeklyRevenue:  22722093.50<br />Category: Non-Medical","WeekStart: 2025-09-01<br />WeeklyRevenue:  20879735.79<br />Category: Non-Medical","WeekStart: 2025-09-08<br />WeeklyRevenue:  21246526.01<br />Category: Non-Medical","WeekStart: 2025-09-15<br />WeeklyRevenue:  21230499.21<br />Category: Non-Medical","WeekStart: 2025-09-22<br />WeeklyRevenue:  21483305.83<br />Category: Non-Medical","WeekStart: 2025-09-29<br />WeeklyRevenue:  18212669.17<br />Category: Non-Medical","WeekStart: 2025-10-06<br />WeeklyRevenue:  15831787.90<br />Category: Non-Medical","WeekStart: 2025-10-13<br />WeeklyRevenue:  10790340.85<br />Category: Non-Medical","WeekStart: 2025-10-20<br />WeeklyRevenue:   8710430.99<br />Category: Non-Medical","WeekStart: 2025-10-27<br />WeeklyRevenue:   4469092.27<br />Category: Non-Medical","WeekStart: NA<br />WeeklyRevenue:    904376.51<br />Category: Non-Medical"],"type":"scatter","mode":"lines","line":{"width":3.7795275590551185,"color":"rgba(0,191,196,1)","dash":"solid"},"hoveron":"points","name":"Non-Medical","legendgroup":"Non-Medical","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":50.537152345371531,"r":8.634288086342881,"b":49.215442092154433,"l":113.10917393109173},"font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685766},"title":{"text":"Weekly Revenue Over Time with Policy Markers","font":{"color":"rgba(0,0,0,1)","family":"","size":20.722291407222919},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[18726.900000000001,20467.099999999999],"tickmode":"array","ticktext":["2022","2023","2024","2025","2026"],"tickvals":[18993,19358,19723,20089,20454],"categoryorder":"array","categoryarray":["2022","2023","2024","2025","2026"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":4.3171440431714414,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.814860938148612},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.78493528057662576,"zeroline":false,"anchor":"y","title":{"text":"Week Starting","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685766}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-20864027.299664956,438144722.89296401],"tickmode":"array","ticktext":["$0","$100,000,000","$200,000,000","$300,000,000","$400,000,000"],"tickvals":[0,99999999.999999985,200000000,300000000,400000000],"categoryorder":"array","categoryarray":["$0","$100,000,000","$200,000,000","$300,000,000","$400,000,000"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":4.3171440431714405,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.814860938148611},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.78493528057662576,"zeroline":false,"anchor":"x","title":{"text":"Revenue (USD)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685766}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":13.814860938148612},"title":{"text":"Category","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685766}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"610830cc67a9":{"x":{},"y":{},"colour":{},"type":"scatter"}},"cur_data":"610830cc67a9","visdat":{"610830cc67a9":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p><br></p>
+<p><strong>What we see in the timeline:</strong></p>
+<ul>
+<li><p>Early 2022 shows sporadic volatility as MJ-Freeway stabilization continued.</p></li>
+<li><p>Sales surge through 2024–2025, driven by:</p>
+<ul>
+<li><p>Tourism recovery</p></li>
+<li><p>Product innovation (vapes, solventless, edibles)</p></li>
+<li><p>Low-cost flower competition</p></li>
+</ul></li>
+<li><p>A sharp <strong>correction in mid-2025</strong> as discounting rises and margins tighten.</p></li>
+</ul>
+</section>
+<section id="discount-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="discount-analysis">Discount Analysis</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>Average Discounts: Medical vs Non-Medical</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Category</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg Discount Per Unit</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg Total Discount</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Medical</td>
+<td style="text-align: right;">$5.53</td>
+<td style="text-align: right;">$5.55</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Non-Medical</td>
+<td style="text-align: right;">$4.04</td>
+<td style="text-align: right;">$4.05</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Medical patients receive fewer discount opportunities and tend to buy <strong>higher-value products</strong> per visit (e.g., high-CBD tinctures, RSO).</p>
+<p>This suggests pricing may create access barriers for some medical consumers — a key policy insight.</p>
+</section>
+<section id="tax-analysis-summary" class="level2">
+<h2 class="anchored" data-anchor-id="tax-analysis-summary">Tax Analysis Summary</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed caption-top table-sm small">
+<caption>Average Tax Amounts per Unit: Medical vs Non-Medical</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Category</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg Sales Tax</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Avg Other Tax</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Medical</td>
+<td style="text-align: right;">$1.03</td>
+<td style="text-align: right;">$4.12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Non-Medical</td>
+<td style="text-align: right;">$0.97</td>
+<td style="text-align: right;">$3.78</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Despite eligibility for reduced taxes, many patients <strong>do not register as medical users</strong> at the point of sale — possibly due to:</p>
+<ul>
+<li><p>administrative hurdles</p></li>
+<li><p>stigma</p></li>
+<li><p>limited retailer participation in the medical program</p></li>
+</ul>
+<p>That leaves vulnerable consumers paying near-adult-use tax levels for medicine.</p>
+<p><br></p>
+<p><strong>What All This Means for Operators &amp; Policymakers.</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 58%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Insight</strong></th>
+<th><strong>Implication</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Medical consumers generate <strong>higher revenue per transaction</strong></td>
+<td>Continued growth in wellness-aligned SKUs</td>
+</tr>
+<tr class="even">
+<td>Adult-use volatility increases during economic uncertainty</td>
+<td>Price compression pressures margins</td>
+</tr>
+<tr class="odd">
+<td>Medical tax benefit usage remains low</td>
+<td>Opportunity for reforms that improve access</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<!-- commento -->
+<div class="comments ec-comment-box">
+<h3 class="anchored">
+Join the discussion
+</h3>
+<p>
+<em>You can sign in with Google, GitHub, or email to comment.</em>
+</p>
+<div id="commento">
+
+</div>
+<script defer="" src="https://cdn.commento.io/js/commento.js"></script>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/www\.evergreencannaledger\.org");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            // default icon
+            link.classList.add("external");
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>The Evergreen Canna Ledger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Open CCRS Data for Washington’s Cannabis Industry</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
