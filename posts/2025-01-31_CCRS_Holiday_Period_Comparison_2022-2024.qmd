@@ -199,3 +199,7 @@ The escalation from <1 % to >19 % average discounts indicates the industry’s p
 
 **3. Economic Signal, Not Just Cultural**  
 4/20 and year-end periods now behave like **standard consumer holidays**, with predictable revenue spikes and price competition shaping fiscal calendars.
+
+<br>
+
+{{< include _includes/commento.html >}}

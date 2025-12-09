@@ -296,3 +296,8 @@ This indicates a structural issue: production capacity has dramatically outpaced
 Cannabis Data Democracy in Practice
 
 TECL’s mission is to move Washington cannabis away from intuition-based production toward accountable, measurable, and transparent decision frameworks. Plant lifecycle efficiency is not a backend compliance metric — it is a predictive indicator of operational intelligence. The ability to reduce waste, anticipate production risk, and select high-performance strains is what will define the next generation of sustainable cannabis operators.
+
+<br>
+
+{{< include _includes/commento.html >}}
+

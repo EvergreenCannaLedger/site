@@ -221,3 +221,7 @@ Across all three years, the third week of April—the week containing April 20th
 
 + This week-over-week buildup illustrates how 4/20 continues to anchor the state’s retail sales calendar, even as the surrounding weeks show more stable baseline demand.
 
+<br>
+
+{{< include _includes/commento.html >}}
+

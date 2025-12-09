@@ -181,3 +181,8 @@ While “Overstock” appears smaller numerically, the vast majority of inventor
 TECL exists to empower licensees, policymakers, and stakeholders with transparent, actionable data. Inventory efficiency is not just a business concept — it is a market health indicator. By revealing where inefficiencies exist, we enable decision-makers to reduce waste, increase sustainability, and stabilize pricing ecosystems.
 
 This is data democracy in action: replacing intuition with evidence.
+
+<br>
+
+{{< include _includes/commento.html >}}
+

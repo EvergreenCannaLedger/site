@@ -280,3 +280,7 @@ The convergence of product variety, compliance transparency, and category maturi
 + Mid-market edibles and wellness products will dominate branding and licensing partnerships.
 
 + County-level innovation may shift toward formulation and co-packing, not just cultivation.
+
+<br>
+
+{{< include _includes/commento.html >}}

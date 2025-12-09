@@ -10,6 +10,14 @@
 # Local Quarto metadata
 /.quarto/
 
+# Static site
+_site
+_site/**
+_drafts/*.qmd
+_drafts
+_drafts/
+_drafts/**
+
 # ================================
 # NETLIFY BUILD OUTPUT
 # ================================
@@ -23,6 +31,7 @@ duckdb_combined.duckdb
 arrow/
 arrow/**
 R_scripts/*.R
+R_scripts/*.txt
 .parquet
 data/
 *.rds

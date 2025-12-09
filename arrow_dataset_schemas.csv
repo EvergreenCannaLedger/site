@@ -252,5 +252,58 @@ We have tables with nomenclature:
 "transported_items_master","RecordUpdatedDate"
 "transported_items_master","IsDeleted"
 "transported_items_master","Operation"
-"transported_items_master","ErrorMessage"
+"transported_items_master","ErrorMessage",
 
+write an r pipeline beginning with: 
+---
+title: 
+subtitle: 
+description:
+image: false
+date: 
+categories: [1, 2, 3, 4]
+project:
+  type: website
+format: 
+  html: 
+    toc: true
+    code-fold: false
+    theme: flatly
+editor:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+library(ggplot2)
+library(DBI)
+library(dplyr)
+library(magrittr)
+library(lubridate)
+library(plotly)
+library(arrow)
+library(duckdb)
+library(fs)
+library(glue)
+library(kableExtra)
+library(scales)
+library(stringr)
+library(DT)
+
+if (exists("con")) 
+    try(DBI::dbDisconnect(con), silent = TRUE)
+
+# Connect to DuckDB (read-only mode)
+source(here::here("R_scripts", "connect_duckdb_readonly.R"))
+
+```
+to complete the remaining r pipeline scripts for query, summary tables, kable table format, and plotly style plots, when needed.
+
+the last line of the qmd should be '{{< include _includes/commento.html >}}'. 
+
+write an r analysis pipeline to investigate: medical cannabis. List the top three ways we can analyze medical cannabis from sales to taxes to comparing with non-medical discounted products to 
+lab results. 
+
+then we will go one by one to create qmd files for blog posts. use qmd format for writing scripts.

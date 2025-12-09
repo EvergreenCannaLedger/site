@@ -1,0 +1,279 @@
+---
+title: "Lab Results and Product Quality Correlation"
+subtitle: "Do medical products have higher test values than non-medical?"
+description: >
+  This analysis joins lab results with inventory to compare the chemical profiles
+  (e.g., THC, CBD) of medical and non-medical cannabis. Summary statistics and
+  visualizations help reveal quality differences across categories.
+image: false
+date: 2025-12-06
+categories: [cannabis, lab tests, quality, medical]
+project:
+  type: website
+format: 
+  html: 
+    toc: true
+    code-fold: false
+    theme: flatly
+editor:
+  markdown:
+    wrap: 72
+---
+
+## The Bottom Line Up Front 
+Medical cannabis programs are designed with patients in mind — but Washington’s merged retail model means medical consumers often rely on the ***same products*** used for recreation.
+
+This leads to important policy questions:
+
+1. Are medically registered patients actually getting formulations tailored to therapeutic needs?
+2. Or are they simply getting “recreational-first” products with medical tax treatment?
+
+Patient-oriented products typically emphasize:
+
++ balanced THC:CBD ratios
+
++ acidic cannabinoids (e.g., THCA, CBDA)
+
++ lower psychoactive intensity
+
+But the data shows: **high-THC products dominate both markets.**
+
+**Overview**  
+Cannabis quality isn’t just about brand reputation, strain hype, or shelf placement — it’s in the chemistry. Independent lab results provide one of the clearest signals of what consumers are actually buying…and ingesting.
+
+So, we analyzed 7.27 million potency results submitted to the Washington State Cannabis Central Reporting System (CCRS), covering 2021–2025. Our goal: compare medical vs non-medical product profiles across major cannabinoids.
+
+What we found may challenge some assumptions.
+
++ Data Sources & Methodology:**  
+  + 7.27M submitted lab results
+  + Post-processing to remove:
+  + non-potency results (moisture, pesticides, etc.)
+  + unreadable values like “<0.044”
++ Normalized into 24 comparable potency metrics
++ Grouped by CCRS inventory “Category” field:
+  + Medical
+  + Non-Medical
+
+Analysis focuses on averages of verified potency values per product category.
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+library(ggplot2)
+library(DBI)
+library(dplyr)
+library(magrittr)
+library(lubridate)
+library(plotly)
+library(arrow)
+library(duckdb)
+library(fs)
+library(glue)
+library(kableExtra)
+library(scales)
+library(stringr)
+library(DT)
+library(tidyr)
+
+if (exists("con")) 
+  try(DBI::dbDisconnect(con), silent = TRUE)
+
+# Connect to DuckDB (read-only mode)
+source(here::here("R_scripts", "connect_duckdb_readonly.R"))
+```
+
+
+```{r}
+
+lab_data <- dbGetQuery(con, "
+  SELECT 
+    lr.LabResultId,
+    lr.TestName,
+    lr.TestValue,
+    inv.IsMedical,
+    inv.InventoryId
+  FROM LabResult_all lr
+  LEFT JOIN Inventory_all inv
+    ON lr.InventoryId = inv.InventoryId
+  WHERE LOWER(lr.IsDeleted) = 'false'
+    AND LOWER(inv.IsDeleted) = 'false'
+    AND lr.TestValue IS NOT NULL 
+    AND lr.TestName IS NOT NULL
+") %>%
+  mutate(
+    Category = ifelse(IsMedical, "Medical", "Non-Medical"),
+    TestName = str_to_upper(TestName)
+  )
+
+top_tests <- c(
+  "POTENCY - TOTAL THC (MG/G)",
+  "POTENCY - TOTAL CBD (MG/G)",
+  "POTENCY - DELTA-9-THC (MG/G)",
+  "POTENCY - DELTA-9-THCA (MG/G)",
+  "POTENCY - TOTAL CBD (%)",
+  "POTENCY - TOTAL THC (%)",
+  "POTENCY - CBD (MG/G)",
+  "POTENCY - CBDA (MG/G)",
+  "POTENCY - CBDA (%)",
+  "POTENCY - CBD (%)",
+  "POTENCY - D9THCA (%)",
+  "POTENCY - D9THC (%)"
+)
+
+
+filtered_tests <- lab_data %>%
+  filter(
+    TestName %in% top_tests,
+    !is.na(TestValue),
+    !is.na(Category)
+  )
+
+```
+## Focused THC and CBD Test Analysis
+```{r, include=TRUE}
+
+test_summary <- filtered_tests %>%
+group_by(Category, TestName) %>%
+mutate(TestValue = as.numeric(TestValue)) %>%
+summarise(
+AvgTestValue = mean(TestValue, na.rm = TRUE),
+.groups = "drop"
+) %>%
+mutate(AvgTestValue = comma(AvgTestValue, accuracy = 0.1))
+
+test_summary_table <- test_summary %>%
+  pivot_wider(names_from = TestName, values_from = AvgTestValue) %>%
+  rename(
+    `Avg CBD (%)`             = `POTENCY - CBD (%)`,
+    `Avg CBD (mg/g)`          = `POTENCY - CBD (MG/G)`,
+    `Avg CBDA (%)`            = `POTENCY - CBDA (%)`,
+    `Avg CBDA (mg/g)`         = `POTENCY - CBDA (MG/G)`,
+    `Avg D9THC (%)`           = `POTENCY - D9THC (%)`,
+    `Avg D9THCA (%)`          = `POTENCY - D9THCA (%)`,
+    `Avg Δ9-THC (mg/g)`       = `POTENCY - DELTA-9-THC (MG/G)`,
+    `Avg Δ9-THCA (mg/g)`      = `POTENCY - DELTA-9-THCA (MG/G)`,
+    `Avg Total CBD (%)`       = `POTENCY - TOTAL CBD (%)`,
+    `Avg Total CBD (mg/g)`    = `POTENCY - TOTAL CBD (MG/G)`,
+    `Avg Total THC (%)`       = `POTENCY - TOTAL THC (%)`,
+    `Avg Total THC (mg/g)`    = `POTENCY - TOTAL THC (MG/G)`
+  ) %>%
+  kbl(
+    caption = "Average Lab Test Values by Category",
+    align = "lrrrrrrrrrrrr"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    position = "left"
+  ) %>%
+add_header_above(
+  c(" " = 1, "CBD Compounds" = 4, "THC Compounds" = 4, "Total CBD" = 2, "Total THC" = 2)
+)
+
+test_summary_table
+
+```
+
+## Test Value Distribution
+```{r, include=FALSE, fig.width=45, fig.height=25}
+
+# # Define your brand colors
+# medical_color <- "#2C3E50"
+# nonmedical_color <- "#E26A8D"
+# 
+# filtered_tests %>% mutate(TestValue = as.numeric(TestValue)) %>%
+#   ggplot(aes(x = Category, y = TestValue, fill = Category)) +
+#   geom_boxplot(
+#     aes(color = Category),
+#     outlier.alpha = 0.3,
+#     outlier.size = 0.8,
+#     width = 0.6
+#   ) +
+#   # Add average line manually by group using stat_summary
+#   stat_summary(
+#     aes(group = Category),
+#     fun = mean,
+#     geom = "crossbar",
+#     width = 0.5,
+#     fatten = 0,
+#     size = 1,
+#     color = NA  # we'll override with custom layer below
+#   ) +
+#   # Now overlay category-colored average lines manually
+#   stat_summary(
+#     data = filtered_tests %>% filter(Category == "Medical"),
+#     aes(x = Category, y = as.numeric(TestValue)),
+#     fun = mean,
+#     geom = "crossbar",
+#     width = 0.5,
+#     fatten = 0,
+#     size = 1,
+#     color = medical_color
+#   ) +
+#   stat_summary(
+#     data = filtered_tests %>% filter(Category == "Non-Medical"),
+#     aes(x = Category, y = as.numeric(TestValue)),
+#     fun = mean,
+#     geom = "crossbar",
+#     width = 0.5,
+#     fatten = 0,
+#     size = 1,
+#     color = nonmedical_color
+#   ) +
+#   facet_wrap(~ TestName, scales = "free_y") +
+#   labs(
+#     title = "Distribution of Lab Test Values by Category",
+#     x = "Product Type",
+#     y = "Test Value (%)"
+#   ) +
+#   scale_y_continuous(labels = comma_format(accuracy = 1)) +
+#   scale_fill_manual(
+#     values = c("Medical" = medical_color, "Non-Medical" = nonmedical_color),
+#     guide = guide_legend(title = "Category")
+#   ) +
+#   scale_color_manual(
+#     values = c("Medical" = medical_color, "Non-Medical" = nonmedical_color)
+#   ) +
+#   theme_minimal(base_size = 13) +
+#   theme(
+#     legend.position = "right",
+#     plot.title = element_text(face = "bold", size = 16),
+#     strip.text = element_text(face = "bold", size = 11),
+#     axis.text.x = element_text(angle = 0, vjust = 0.5, size = 11),
+#     panel.grid.minor = element_blank()
+#   )
+
+
+```
+Distribution of Lab Test Potency Values by Category
+Table shows THC and CBD across both markets — Non-Medical products consistently skew higher in THC and lower in CBD-forward profiles.
+
+| Cannabinoid Category | **Medical** Avg | **Non-Med** Avg | What It Suggests                                         |
+| -------------------- | --------------: | --------------: | -------------------------------------------------------- |
+| **Total THC (%)**    |       **38.3%** |       **42.5%** | Adult-use products prioritize high-THC potency           |
+| **Total CBD (mg/g)** |    **8.6 mg/g** |    **9.1 mg/g** | CBD levels surprisingly comparable                       |
+| **Δ9-THC (mg/g)**    |  **172.3 mg/g** |  **218.2 mg/g** | Strong bias toward psychoactive Δ9-THC in retail         |
+| **CBDA (%)**         |        **0.4%** |        **0.1%** | Medical SKUs more likely to preserve acidic cannabinoids |
+| **Δ9-THCA (%)**      |       **27.3%** |       **26.5%** | Slightly higher THCA in medical, but not by much         |
+
+Overall: Adult-use products are stronger, but medical products show slightly better cannabinoid diversity. Medical products chemistry profiles are created with intention, targeting pain and depression, while recreational cannabis products shoot for high total THC content. 
+
+## What Industry Should Consider
+**For Producers & Processors**
++ Medical-labeled SKUs should offer distinct cannabinoid profiles
++ Opportunity for premium medical brands focused on formulations > potency
+
+**For Retailers**
++ Patients may be underdosed on CBD, oversold on THC
++ Provide differentiated guidance for therapeutic use cases
+
+**For Policymakers & Regulators**
++ Current model risks erasing medical-specific value
++ Reevaluating medical standards could improve patient outcomes
+
+<br>
+
+{{< include _includes/commento.html >}}
+
+

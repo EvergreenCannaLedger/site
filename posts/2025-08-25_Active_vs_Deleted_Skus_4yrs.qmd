@@ -272,3 +272,8 @@ Tracking deletion and survivorship helps identify:
 + Compliance bottlenecks (spikes in deletions following CCRS schema changes)
 
 For regulators and analysts alike, SKU lifecycle metrics offer a **leading indicator** of product-market fitness and business discipline.
+
+<br>
+
+{{< include _includes/commento.html >}}
+

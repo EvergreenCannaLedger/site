@@ -1,11 +1,9 @@
 ---
 title: "Understanding THC Potency in Washington’s Cannabis Market: What CCRS Data Reveals (Jan 2024-Oct 2025)"
-subtitle: ""
+subtitle: "A look at how strong marijuana is in Washington's Cannabis Industry"
 date: "2025-11-22"
 categories: [CCRS, Cannabis, THC, Lab Results ]
-params:
-  comments: true
-  project:
+project:
   type: website
 format: 
   html: 
@@ -368,3 +366,8 @@ Using millions of CCRS laboratory test results, The Evergreen Canna Ledger analy
 What was provided was a data-driven look at how potency behaves in Washington’s regulated market — and what those patterns mean for cultivators, processors, retailers, and policymakers.
 
 TECL will continue producing policy-ready data summaries such as these.
+
+<br>
+
+{{< include _includes/commento.html >}}
+

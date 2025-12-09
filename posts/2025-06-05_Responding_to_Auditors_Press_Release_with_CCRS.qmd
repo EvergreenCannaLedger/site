@@ -576,3 +576,8 @@ kable_styling(full_width = FALSE)
 Some of the tables above were only snippets of the full dataset.  
 
 [Feel free to reach out with any questions.](mailto:franklin@evergreencannaledger.org)
+
+<br>
+
+{{< include _includes/commento.html >}}
+

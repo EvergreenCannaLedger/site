@@ -339,3 +339,7 @@ As Washington’s cannabis market matures, the spotlight has shifted from retail
 2. “Other” Wholesalers — smaller, often single-category operations specializing in plants, clones, edibles, or unbranded flower.
 
 The analysis provide a rare look into how these entities shape the supply-side brand economy of Washington cannabis.
+
+<br>
+
+{{< include _includes/commento.html >}}

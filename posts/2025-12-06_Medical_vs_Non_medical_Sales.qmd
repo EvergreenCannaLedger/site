@@ -1,0 +1,356 @@
+---
+title: "Medical vs Non-Medical Cannabis Sales"
+subtitle: "Comparing inventory, revenue, and discounts"
+description: >
+  This analysis compares medical and non-medical cannabis sales, tracking quantity sold, discounts applied, and total revenue impact.
+image: false
+date: 2025-12-06
+categories: [cannabis, sales, medical, retail]
+project:
+  type: website
+format: 
+  html: 
+    toc: true
+    code-fold: false
+    theme: flatly
+editor:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, include=FALSE)
+
+library(ggplot2)
+library(DBI)
+library(dplyr)
+library(magrittr)
+library(lubridate)
+library(plotly)
+library(arrow)
+library(duckdb)
+library(fs)
+library(glue)
+library(kableExtra)
+library(scales)
+library(stringr)
+library(DT)
+library(readr)
+library(here)
+
+
+if (exists("con")) 
+  try(DBI::dbDisconnect(con), silent = TRUE)
+
+# Connect to DuckDB (read-only mode)
+source(here("R_scripts", "connect_duckdb_readonly.R"))
+```
+
+## The Bottom Line Up Front  
+Washington’s medical cannabis system is under-utilized, even as medical consumers continue to spend more on average. Meanwhile, the adult-use market is maturing into a competitive, discount-driven retail ecosystem.
+
+Better tax alignment and medical program participation could protect:
+
++ patient affordability
+
++ small-business revenue stability
+
++ supply chain resilience
+
+**Overview**  
+Washington’s cannabis economy has always operated as a dual-track market — medical patients and adult-use consumers share the same shelves, but they behave very differently.
+
+With over 221 million transaction records analyzed through November 2025, the Evergreen Canna Ledger examined how revenue, discounting, and taxation vary between the two consumer groups.
+
+```{r}
+
+# sales_data <- dbGetQuery(con, "
+#   SELECT 
+#     sh.SaleDate,
+#     sd.Quantity,
+#     sd.UnitPrice,
+#     sd.Discount,
+#     sd.SalesTax,
+#     sd.OtherTax,
+#     inv.IsMedical,
+#     inv.LicenseeId
+#   FROM SalesDetail_all sd
+#   LEFT JOIN SaleHeader_all sh
+#     ON sd.SaleHeaderId = sh.SaleHeaderId
+#   LEFT JOIN Inventory_all inv
+#     ON sd.InventoryId = inv.InventoryId
+#   WHERE sd.IsDeleted = FALSE
+# ") 
+# 
+# sales_data <- sales_data %>%
+#   mutate(
+#     SaleDate = as.Date(SaleDate),
+#     Quantity = as.numeric(Quantity),
+#     UnitPrice = as.numeric(UnitPrice), 
+#     Discount = as.numeric(Discount), 
+#     SalesTax = as.numeric(SalesTax), 
+#     OtherTax = as.numeric(OtherTax), 
+#     TotalPriceRevenue = Quantity * UnitPrice,
+#     TotalDiscount = Quantity * Discount,
+#     TotalSalesTax = Quantity * SalesTax,
+#     TotalOtherTax = Quantity * OtherTax,
+#     Category = ifelse(IsMedical, "Medical", "Non-Medical")
+#   )
+# sales_data <- saveRDS(sales_data, here::here("data", "medical_sales_data_table.rds"))
+# Close connection
+#dbDisconnect(con, shutdown = TRUE)
+
+# Load preprocessed data
+sales_data <- readRDS("../data/medical_sales_data_table.rds")
+# glimpse(sales_data)
+# Rows: 221,974,902
+# Columns: 13
+
+```
+## Sales Summary by Category
+```{r,include=TRUE}
+
+summary_sales <- sales_data %>%
+  group_by(Category) %>%
+  summarise(
+    Transactions = n(),
+    TotalQuantity = sum(Quantity, na.rm = TRUE),
+    Revenue = sum(TotalPriceRevenue, na.rm = TRUE),
+    Discounts = sum(TotalDiscount, na.rm = TRUE),
+    SalesTax = sum(TotalSalesTax, na.rm = TRUE),
+    OtherTax = sum(TotalOtherTax, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(Revenue)) %>%
+  mutate(
+    Transactions = comma(Transactions),
+    TotalQuantity = comma(TotalQuantity),
+    Revenue = dollar(Revenue),
+    Discounts = dollar(Discounts),
+    SalesTax = dollar(SalesTax),
+    OtherTax = dollar(OtherTax)
+  )
+
+summary_sales %>%
+  kbl(caption = "Summary of Sales: Medical vs Non-Medical") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+
+```
+**Table of Important Medical Cannabis Dates**  
+
+| Date           | Event Label                                                           |
+| -------------- | --------------------------------------------------------------------- |
+| **2022-01-01** | Post-CCR Migration Stabilization                                      |
+| **2023-07-23** | Medical Program Changes & Consolidated Rules                          |
+| **2024-01-01** | New Tax/Fee Updates Begin (EPR fees + supply chain compliance shifts) |
+| **2025-07-01** | Retail License & Packaging Rule Adjustments                           |
+
+
+## Revenue Comparison
+```{r, include=FALSE}
+
+# plot_revenue <- sales_data %>%
+#   mutate(WeekStart = floor_date(SaleDate, unit = "week", week_start = 1)) %>%
+#   group_by(WeekStart, Category) %>%
+#   summarise(
+#     WeeklyRevenue = sum(TotalPriceRevenue, na.rm = TRUE),
+#     .groups = "drop"
+#   ) %>%
+#   ggplot(aes(x = WeekStart, y = WeeklyRevenue, color = Category)) +
+#   geom_line(size = 1) +
+#   scale_y_continuous(labels = dollar_format()) +
+#   labs(
+#     title = "Weekly Revenue Over Time",
+#     x = "Week Starting",
+#     y = "Revenue (USD)",
+#     color = "Category"
+#   ) +
+#   theme_minimal()
+# 
+# ggplotly(plot_revenue)
+
+policy_events <- tibble(
+  WeekStart = as.Date(c(
+    "2022-01-01",
+    "2023-07-23",
+    "2024-01-01",
+    "2025-07-01"
+  )),
+  Event = c(
+    "Post-CCR Migration",
+    "Medical Rule Update",
+    "Tax & Compliance Shift",
+    "Retail/Packaging Rules"
+  )
+)
+
+plot_revenue_marked <- sales_data %>%
+  mutate(WeekStart = floor_date(SaleDate, unit = "week", week_start = 1)) %>%
+  group_by(WeekStart, Category) %>%
+  summarise(
+    WeeklyRevenue = sum(TotalPriceRevenue, na.rm = TRUE),
+    .groups = "drop") %>%
+  mutate(WeeklyRevenue = as.numeric(WeeklyRevenue))
+
+max_rev <- max(plot_revenue_marked$WeeklyRevenue, na.rm = TRUE)
+
+```
+
+```{r, include=TRUE, fig.width=40, fig.height=25}
+
+plot_revenue_marked <- 
+  ggplot(
+  plot_revenue_marked %>% filter(!is.na(Category)),
+  aes(x = WeekStart, y = WeeklyRevenue, color = Category)
+) +
+  geom_line(size = 1) +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(
+    title = "Weekly Revenue Over Time with Policy Markers",
+    subtitle = "Washington Cannabis Market (Medical vs Non-Medical)",
+    x = "Week Starting",
+    y = "Revenue (USD)",
+    color = "Category"
+  ) +
+  theme_minimal(base_size = 13) # +
+  # # ---- Policy markers ----
+  # geom_vline(
+  #   data = policy_events,
+  #   aes(xintercept = WeekStart),
+  #   linetype = "dashed",
+  #   color = "black",
+  #   linewidth = 0.6,
+  #   inherit.aes = FALSE
+  # ) +
+  # geom_text(
+  #   data = policy_events,
+  #   aes(
+  #     x = WeekStart,
+  #     y = max_rev * 0.95,
+  #     label = Event
+  #   ),
+  #   angle = 90,
+  #   hjust = -0.1,
+  #   vjust = 0.5,
+  #   size = 3.4,
+  #   fontface = "bold",
+  #   color = "black",
+  #   inherit.aes = FALSE
+  # )
+
+ggplotly(plot_revenue_marked)
+
+
+```
+
+<br>
+
+**What we see in the timeline:**
+
++ Early 2022 shows sporadic volatility as MJ-Freeway stabilization continued.
+
++ Sales surge through 2024–2025, driven by:
+
+  + Tourism recovery
+
+  + Product innovation (vapes, solventless, edibles)
+
+  + Low-cost flower competition
+
++ A sharp **correction in mid-2025** as discounting rises and margins tighten.
+
+## Discount Analysis
+```{r, include=TRUE}
+
+discount_analysis <- sales_data %>%
+  filter(!is.na(Category)) %>%  # remove NA rows
+  group_by(Category) %>%
+  summarise(
+    AvgDiscountPerUnit = mean(Discount, na.rm = TRUE),
+    AvgTotalDiscount = mean(TotalDiscount, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    AvgDiscountPerUnit = dollar(AvgDiscountPerUnit, accuracy = 0.01),
+    AvgTotalDiscount = dollar(AvgTotalDiscount, accuracy = 0.01)
+  )
+
+discount_analysis %>%
+  kbl(
+    caption = "Average Discounts: Medical vs Non-Medical",
+    col.names = c("Category", "Avg Discount Per Unit", "Avg Total Discount"),
+    align = "lrr"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    position = "left"
+  )
+
+```
+Medical patients receive fewer discount opportunities and tend to buy **higher-value products** per visit (e.g., high-CBD tinctures, RSO).
+
+This suggests pricing may create access barriers for some medical consumers — a key policy insight.
+
+## Tax Analysis Summary
+```{r, include=TRUE}
+
+tax_summary <- sales_data %>%
+  filter(!is.na(Category)) %>%  # Remove NA category rows
+  group_by(Category) %>%
+  summarise(
+    AvgSalesTax = mean(SalesTax, na.rm = TRUE),
+    AvgOtherTax = mean(OtherTax, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    AvgSalesTax = dollar(AvgSalesTax, accuracy = 0.01),
+    AvgOtherTax = dollar(AvgOtherTax, accuracy = 0.01)
+  )
+
+tax_summary %>%
+  kbl(
+    caption = "Average Tax Amounts per Unit: Medical vs Non-Medical",
+    col.names = c("Category", "Avg Sales Tax", "Avg Other Tax"),
+    align = "lrr"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    position = "left"
+  )
+
+
+```
+Despite eligibility for reduced taxes, many patients **do not register as medical users** at the point of sale — possibly due to:
+
++ administrative hurdles
+
++ stigma
+
++ limited retailer participation in the medical program
+
+That leaves vulnerable consumers paying near-adult-use tax levels for medicine.
+```{r}
+
+rm(sales_data)
+dbDisconnect(con, shutdown = TRUE)
+
+```
+
+<br>
+
+**What All This Means for Operators & Policymakers.**
+
+| **Insight**                                                       | **Implication**                                 |
+| ------------------------------------------------------------- | ------------------------------------------- |
+| Medical consumers generate **higher revenue per transaction** | Continued growth in wellness-aligned SKUs   |
+| Adult-use volatility increases during economic uncertainty    | Price compression pressures margins         |
+| Medical tax benefit usage remains low                         | Opportunity for reforms that improve access |
+
+
+<br>
+
+
+{{< include _includes/commento.html >}}

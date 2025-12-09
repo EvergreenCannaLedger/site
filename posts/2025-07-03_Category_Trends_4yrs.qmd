@@ -319,3 +319,8 @@ commodity base, strong mid-tier competition, and premium niches maintaining iden
 
 <br>
 From 2021’s early-stage artisanal market to 2025’s billion-dollar scale, the data reveal a tenfold jump in total revenue and a massive broadening of licensee participation, especially post-2023 when full CCRS compliance took hold.
+
+<br>
+
+{{< include _includes/commento.html >}}
+

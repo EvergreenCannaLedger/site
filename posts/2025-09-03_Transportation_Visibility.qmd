@@ -343,3 +343,8 @@ The movement of cannabis products across Washington State is one of the most ove
 Using Washington’s CCRS (Cannabis Central Reporting System) transport manifests, the Evergreen Canna Ledger analyzed more than 150,000+ shipments spanning 2023–2025 to understand how cannabis moves, which routes dominate the network, and where bottlenecks signal operational or structural challenges.
 
 At The Evergreen Canna Ledger, our mission is to make these logistics patterns visible, accessible, and actionable—for operators, analysts, policymakers, and the public.
+
+<br>
+
+{{< include _includes/commento.html >}}
+

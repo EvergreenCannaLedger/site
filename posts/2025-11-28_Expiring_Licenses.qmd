@@ -1,6 +1,6 @@
 ---
 title: "The Expiring Market: Who’s at Risk of Losing a License in Washington?"
-subtitle: ""
+subtitle: "A Prelude to Business Activity in Washington Cannabis Industry"
 date: "2025-11-28"
 categories: [CCRS, Expiration, Licenses]
 project:
@@ -286,3 +286,4 @@ Using CCRS-aligned licensee data, TECL analyzed more than 1,842 active cannabis 
 - Inform legislative discussions on renewal reform  
 :::
 
+{{< include _includes/commento.html >}}

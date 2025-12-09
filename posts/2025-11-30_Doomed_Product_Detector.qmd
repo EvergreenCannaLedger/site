@@ -1,7 +1,6 @@
 ---
 title: "The Doomed Product Detector: Which Cannabis SKUs Are About to Disappear?"
 subtitle: "Identifying Products at Risk of Discontinuation"
-description: "Detects underperforming cannabis products based on sales and inventory trends."
 image: false
 date: "2025-11-30"
 categories: [CCRS, Product, Lifecycle]
@@ -63,7 +62,7 @@ The analysis covers a 91-day window dating backward 4- and 13- weeks from 11-03-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
-getwd()
+
 library(dplyr)
 library(readr)
 library(kableExtra)
