@@ -342,4 +342,3 @@ The analysis provide a rare look into how these entities shape the supply-side b
 
 <br>
 
-{{< include _includes/commento.html >}}

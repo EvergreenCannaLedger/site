@@ -56,6 +56,6 @@ Whether you are a licensee, researcher, policymaker, advocate, or curious observ
 
 Welcome to The Evergreen Canna Ledger.  
 Explore:
-- [Blogs](posts/)
+- [Blogs](blog.qmd)
 - [Interactive Dashboards](dashboards.qmd)
 - [About TECL](about.qmd)

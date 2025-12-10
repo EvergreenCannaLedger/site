@@ -369,5 +369,4 @@ TECL will continue producing policy-ready data summaries such as these.
 
 <br>
 
-{{< include _includes/commento.html >}}
 

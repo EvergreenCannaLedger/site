@@ -1,0 +1,68 @@
+/* Evergreen Canna Ledger Comment Styling */
+
+/* Container */
+#commento, .commento-root {
+  --tecl-navy: #2F4154;
+  --tecl-green: #3c594d;
+  --tecl-light: #eef4f2;
+  --tecl-grey: #4b4b4b;
+
+  font-family: "Franklin Gothic", Arial, sans-serif;
+  color: var(--tecl-navy);
+  max-width: 800px;
+  margin: 0 auto 60px auto;
+  padding-top: 40px;
+}
+
+/* Section heading */
+.commento-separator-text {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: var(--tecl-navy) !important;
+  margin-bottom: 4px !important;
+}
+
+/* Subtext */
+.commento-subtitle {
+  font-size: 14px !important;
+  color: var(--tecl-grey) !important;
+  margin-bottom: 20px !important;
+}
+
+/* Inputs */
+.commento-textarea,
+.commento-name,
+.commento-email {
+  border: 1px solid #bbb !important;
+  border-radius: 6px !important;
+  padding: 8px !important;
+  background: #fff !important;
+  width: auto !important;
+}
+
+/* Comment card */
+.commento-card {
+  background: var(--tecl-light) !important;
+  border-left: 4px solid var(--tecl-green) !important;
+  border-radius: 6px !important;
+  padding: 12px !important;
+  margin-top: 15px !important;
+}
+
+/* Button styling */
+.commento-button {
+  background: var(--tecl-green) !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+  padding: 8px 14px !important;
+  border: none !important;
+  font-weight: 600 !important;
+}
+.commento-button:hover {
+  background: #4a6f5d !important;
+}
+
+/* Hide bottom branding */
+.commento-footer {
+  display: none !important;
+}

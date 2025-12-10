@@ -7,5 +7,4 @@ listing:
   categories: true
   date-format: "long"
 page-layout: full
-comments: false
 ---

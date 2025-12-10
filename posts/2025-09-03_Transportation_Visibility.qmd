@@ -346,5 +346,4 @@ At The Evergreen Canna Ledger, our mission is to make these logistics patterns v
 
 <br>
 
-{{< include _includes/commento.html >}}
 

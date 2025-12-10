@@ -68,4 +68,3 @@ Sources used for this article: Cannabis Observer, WSLCB Board Meetings, Public c
 CCRS rollout and data quality, Leaf Data Systems Retirement Announcement
 (https://lcb.wa.gov/traceability/leaf-data-sunset).
 
-{{< include _includes/commento.html >}}

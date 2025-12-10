@@ -1,2 +1,10 @@
-params: 
-  comments: true
+format:
+  html:
+    include-after-body:
+      - "_includes/comments_list.html"
+      - "_includes/comments_form.html"
+site:
+  url: "https://evergreencannaledger.org"  # domain
+
+page:
+  url: ""   # Quarto fills this automatically per page

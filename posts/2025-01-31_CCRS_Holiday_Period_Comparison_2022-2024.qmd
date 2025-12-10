@@ -202,4 +202,3 @@ The escalation from <1 % to >19 % average discounts indicates the industry’s p
 
 <br>
 
-{{< include _includes/commento.html >}}

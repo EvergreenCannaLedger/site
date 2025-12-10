@@ -579,5 +579,4 @@ Some of the tables above were only snippets of the full dataset.
 
 <br>
 
-{{< include _includes/commento.html >}}
 

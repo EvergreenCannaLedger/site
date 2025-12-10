@@ -10,6 +10,7 @@ format:
     toc: true
     code-fold: false
     theme: flatly
+    allow-html: true
 editor:
   markdown:
     wrap: 72
@@ -286,4 +287,3 @@ Using CCRS-aligned licensee data, TECL analyzed more than 1,842 active cannabis 
 - Inform legislative discussions on renewal reform  
 :::
 
-{{< include _includes/commento.html >}}

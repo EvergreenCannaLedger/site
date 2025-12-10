@@ -283,4 +283,3 @@ The convergence of product variety, compliance transparency, and category maturi
 
 <br>
 
-{{< include _includes/commento.html >}}

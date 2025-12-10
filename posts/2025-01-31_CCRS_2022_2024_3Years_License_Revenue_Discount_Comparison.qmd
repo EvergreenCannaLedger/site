@@ -227,5 +227,4 @@ width = 800, height = 400
 
 <br>
 
-{{< include _includes/commento.html >}}
 

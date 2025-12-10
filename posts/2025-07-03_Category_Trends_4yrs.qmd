@@ -322,5 +322,4 @@ From 2021’s early-stage artisanal market to 2025’s billion-dollar scale, the
 
 <br>
 
-{{< include _includes/commento.html >}}
 

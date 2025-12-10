@@ -242,4 +242,3 @@ The Evergreen Canna Ledger exists so operators — big and small — can rely on
 
 <br>
 
-{{< include _includes/commento.html >}}

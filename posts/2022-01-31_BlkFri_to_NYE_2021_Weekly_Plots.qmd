@@ -249,4 +249,3 @@ ggplot(weekly_discounts, aes(x = Week)) +
 
 <br>
 
-{{< include _includes/commento.html >}}

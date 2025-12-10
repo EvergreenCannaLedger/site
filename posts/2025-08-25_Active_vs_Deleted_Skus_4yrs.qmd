@@ -275,5 +275,4 @@ For regulators and analysts alike, SKU lifecycle metrics offer a **leading indic
 
 <br>
 
-{{< include _includes/commento.html >}}
 

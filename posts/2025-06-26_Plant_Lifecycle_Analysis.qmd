@@ -299,5 +299,4 @@ TECL’s mission is to move Washington cannabis away from intuition-based produc
 
 <br>
 
-{{< include _includes/commento.html >}}
 

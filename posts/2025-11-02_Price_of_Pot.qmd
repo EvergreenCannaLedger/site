@@ -270,5 +270,4 @@ What was provided was a data-driven look at how the price of pot behaves in Wash
 
 <br>
 
-{{< include _includes/commento.html >}}
 

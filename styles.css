@@ -1,1 +1,70 @@
 /* css styles */
+/* Evergreen Canna Ledger Comment System Styles */
+
+.tecl-comments-section {
+  margin-top: 60px;
+  padding-top: 25px;
+  border-top: 2px solid #d6d6d6;
+}
+
+.tecl-comments-header {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #2F4154;
+}
+
+.tecl-comments-subtext {
+  font-size: 15px;
+  color: #4b4b4b;
+  margin-bottom: 20px;
+}
+
+.tecl-comment-form {
+  margin-top: 20px;
+  max-width: 600px;
+  padding-bottom: 80px;
+}
+
+.tecl-form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.tecl-form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #2F4154;
+}
+
+.tecl-form-group input,
+.tecl-form-group textarea {
+  border: 1px solid #c5c5c5;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 14px;
+  background: #ffffff;
+  color: #1c1c1c;
+}
+
+.tecl-comment-button {
+  background: #3c594d;
+  color: #fff;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tecl-comment-button:hover {
+  background: #4a6f5d;
+}
+
+/* Hide Netlify branding */
+.commento-footer {
+  display: none !important;
+}
+

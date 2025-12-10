@@ -227,4 +227,3 @@ kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
 
 <br>
 
-{{< include _includes/commento.html >}}

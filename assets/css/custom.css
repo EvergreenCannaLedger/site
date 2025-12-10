@@ -11,70 +11,89 @@ table {
   background-color: #f9f9f9;
 }
 
-/* Evergreen Canna Ledger theme - Comment box styling */
+/* Evergreen Canna Ledger Comment System Styles */
 
-/* GENERAL CONTAINER */
-#commento {
-  --tecl-navy: #2F4154;
-  --tecl-accent: #3c594d;
-  --tecl-light: #eef4f2;
-  --tecl-text: #1c1c1c;
-  font-family: "Franklin Gothic", Arial, sans-serif;
+/* Evergreen Canna Ledger global font */
+/* Inherit global branding fonts */
+.tecl-comment-form,
+.tecl-comment-form input,
+.tecl-comment-form textarea,
+.tecl-comment-button,
+.tecl-comments-header,
+.tecl-comments-subtext {
+  font-family: inherit;
 }
 
-/* COMMENT BOX */
-.commento-textarea {
-  border: 1px solid #c5c5c5 !important;
-  border-radius: 8px !important;
-  padding: 12px !important;
-  background: #ffffff !important;
+/* Container spacing + border alignment */
+/* Comment Section Container */
+.tecl-comments-section {
+  margin-top: 60px;
+  padding-top: 35px;
+  border-top: 2px solid #d6d6d6;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center; /* Center header + subtext */
 }
 
-/* HEADER */
-.commento-root .commento-separator-text {
-  font-size: 22px !important;
-  font-weight: 700 !important;
-  color: var(--tecl-navy) !important;
-  margin-bottom: 8px !important;
+/* Header */
+.tecl-comments-header {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2F4154;
+  margin-bottom: 8px;
 }
 
-/* SUB-HEADER */
-.commento-root .commento-subtitle {
-  font-size: 15px !important;
-  font-style: italic !important;
-  color: #4b4b4b !important;
-  margin-bottom: 20px !important;
+/* Subtext */
+.tecl-comments-subtext {
+  font-size: 16px;
+  color: #4b4b4b;
+  margin-bottom: 28px;
 }
 
-/* LOGIN BUTTON */
-.commento-login-box span,
-.commento-login-box a {
-  color: var(--tecl-navy) !important;
-  font-weight: 600 !important;
+/* Form container – centered but inputs full width */
+/* Form container */
+.tecl-comment-form {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: left;
 }
 
-/* COMMENT BUTTON */
-.commento-button {
-  background: var(--tecl-navy) !important;
-  color: #ffffff !important;
-  border-radius: 6px !important;
-  padding: 8px 16px !important;
-  border: none !important;
-}
-.commento-button:hover {
-  background: #3b5067 !important;
+/* Form fields with better spacing */
+.tecl-form-group {
+  margin-bottom: 22px; /* Increased spacing */
 }
 
-/* COMMENT BLOCK APPEARANCE */
-.commento-card {
-  border-radius: 10px !important;
-  background: var(--tecl-light) !important;
-  border-left: 4px solid var(--tecl-accent) !important;
-  padding: 15px !important;
-  margin-bottom: 15px !important;
+.tecl-form-group input,
+.tecl-form-group textarea {
+  width: 100%;
+  padding: 14px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid #c5c5c5;
+  background: #ffffff;
 }
 
-/* FOOTER BRANDING */
+/* Right aligned submit button */
+.tecl-comment-button {
+  background: #2F4154;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  float: right;
+  margin-top: 10px;
+}
+
+.tecl-comment-button:hover {
+  background: #3b5067;
+}
+
+/* Hide Netlify branding */
 .commento-footer {
   display: none !important;
 }

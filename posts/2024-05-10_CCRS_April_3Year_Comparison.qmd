@@ -223,5 +223,4 @@ Across all three years, the third week of April—the week containing April 20th
 
 <br>
 
-{{< include _includes/commento.html >}}
 
