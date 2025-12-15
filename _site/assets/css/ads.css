@@ -1,0 +1,32 @@
+.ec-ad {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background-color: #fafafa;
+}
+
+.ec-ad-inner h3 {
+  margin-top: 0;
+  font-size: 1.25rem;
+}
+
+.ec-ad-inner ul {
+  margin: 0.75rem 0 1rem;
+  padding-left: 1.25rem;
+}
+
+.ec-ad-cta {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: #ffffff;
+  background-color: #2f4154;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+
+.ec-ad-cta:hover {
+  background-color: #3f5870;
+}

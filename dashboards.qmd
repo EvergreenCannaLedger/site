@@ -1,16 +1,16 @@
 ---
 title: "Washington Cannabis Dashboards" 
-subtitle: "The Appreciation of Licensees Adopting CCRS"
+subtitle: "The Appreciation of Licensees Adopting CCRS Reporting"
 format:
   html:
     theme: flatly
     toc: true
     embed-resources: false
+    allow-html: true
 execute:
   echo: false
   warning: false
   message: false
-editor: visual
 ---
 
 ## Number of Licensees (2021-2025)
@@ -249,7 +249,8 @@ hovermode = "x unified"
 ```
 
 ## Product Category Growth Over Time
-
+**Double click on a name in legend to isolate that field**
+**Double click again to reset and view all, repeat**
 ```{r}
 
 product_growth <- dbGetQuery(con, "
@@ -365,5 +366,10 @@ layout(
 
 <br>
 
-[Let TECL know if you have a dashboard request you want posted here](mailto:tecl@evergreencannaledger.org)
+```{=html}
+{{< include _includes/ad-survey.html >}}
+```
 
+<br>
+
+[Let TECL know if you have a dashboard request you want posted here](mailto:dashboard@evergreencannaledger.org)

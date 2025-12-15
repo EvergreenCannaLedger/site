@@ -16,7 +16,7 @@ website:
         href: blog.qmd
       - text: "Contact"
         href: contact.qmd
-      - text: "Dashboards"
+      - text: "Dashboard"
         href: dashboards.qmd
       - text: "About"
         href: about.qmd
@@ -28,7 +28,9 @@ website:
 format:
   html:
     theme: flatly
-    css: assets/css/custom.css
+    css: 
+      - assets/css/custom.css
+      - assets/css/ads.css
     toc: true
     toc-depth: 3
     smooth-scroll: true

@@ -68,3 +68,16 @@
   display: none !important;
 }
 
+/* Bluesky ref and icon formatting  */
+.social-icon {
+  display: inline-flex;
+  align-items: center;
+  color: #2F4154;   /* match site palette */
+  margin-left: 12px;
+  transition: color 0.2s ease-in-out;
+}
+
+.social-icon:hover {
+  color: #0A7AFF;   /* Bluesky blue */
+}
+
