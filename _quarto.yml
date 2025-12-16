@@ -17,10 +17,16 @@ website:
       - text: "Contact"
         href: contact.qmd
       - text: "Dashboard"
-        href: dashboards.qmd
+        href: dashboard.qmd
       - text: "About"
         href: about.qmd
-
+      - icon: github
+        href: https://github.com/EvergreenCannaLedger
+        target: _blank
+      - text: Bluesky
+        href: https://bsky.app/profile/thewacannaledger.bsky.social
+        target: _blank
+      
   page-footer:
     left: "The Evergreen Canna Ledger"
     right: "Open CCRS Data for Washington's Cannabis Industry"
@@ -38,6 +44,9 @@ format:
     link-external-icon: true
     code-copy: true
     allow-html: true
+    include-in-header:
+      - text: |
+          <script src="/assets/js/external-posts.js" defer></script>
     
     grid:
       sidebar-width: 220px

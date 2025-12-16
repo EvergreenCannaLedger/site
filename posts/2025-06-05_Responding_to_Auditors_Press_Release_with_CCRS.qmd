@@ -573,9 +573,20 @@ kable_styling(full_width = FALSE)
 ```
 
 <br>
-Some of the tables above were only snippets of the full dataset.  
+The tables above were only snapshots of the full dataset.
 
-[Feel free to reach out with any questions.](mailto:franklin@evergreencannaledger.org)
+At this time, the regulatory is just catching up with enforcing compliance of data submission, but not accuracy, correctness, or precision.  
+
+What's at stake with the lack of data compliance:
+
++ No accountability of seed-to-sale transactions.
++ WA-produced marijuana can leave the state, which is unlawful.
++ Misguided product claims.
++ Compromised data democracy and reporting for license holders.
+
+This observation is inline with the Office of the State Auditor observations mentioned above. While government regulations and compliance can be burdensome and like a chore to do, it helps level the state cannabis industry to one that is open, understood, and so, resilient to crisis.      
+
+[Feel free to reach out with any questions or request the full report.](mailto:tecl@evergreencannaledger.org)
 
 <br>
 
