@@ -372,4 +372,4 @@ layout(
 
 <br>
 
-[Let TECL know if you have a dashboard request you want posted here](mailto:dashboard@evergreencannaledger.org)
+[Let TECL know if you have a dashboard request you want posted here](mailto:tecl@evergreencannaledger.org)

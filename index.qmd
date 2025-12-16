@@ -1,6 +1,6 @@
 ---
 title: "Welcome to The Evergreen Canna Ledger"
-subtitle: "Washington's Cannabis Industry Investigative Data Journalism"
+subtitle: "Investigative Data Journalism of Washington's Cannabis Industry"
 comments: false
 ---
 
@@ -10,7 +10,7 @@ The key to it all is accessing the data, formatting to analyze and visualize, an
 
 TECL is an independent, data-forward initiative dedicated to advancing transparency, insight, and equity in Washington State’s regulated cannabis industry. Our mission is to democratize access to cannabis market intelligence by transforming complex CCRS traceability data into clear, actionable, and ethically grounded knowledge that benefits producers, licensees, policymakers, researchers, and the public.
 
-Drop us a line us for a custom report and we will get back to you ASAP!
+[Drop us a line us for a custom report and we will get back to you ASAP!](mailto:tecl@evergreencannaledger.org)
 
 ## What We Do
 

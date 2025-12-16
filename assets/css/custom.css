@@ -11,6 +11,21 @@ table {
   background-color: #f9f9f9;
 }
 
+/* site pages background color */
+/* Global page background */
+body {
+  background-color: #F8F7F4;
+}
+
+.page-columns,
+.content,
+main {
+  background-color: #ffffff;
+}
+
+/* sidebar TOC compatability */
+
+
 /* Evergreen Canna Ledger Comment System Styles */
 /* Evergreen Canna Ledger global font */
 /* Inherit global branding fonts */
