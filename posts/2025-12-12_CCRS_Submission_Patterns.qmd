@@ -281,9 +281,7 @@ kmeans_fit <- kmeans(cluster_matrix, centers = 3, nstart = 25)
 
 ```
 ## Clustering by Submission Behavior Dynamics
-**Licensee Behavioral Clusters**
-
-After correcting for industry-wide submission gaps in late 2025 and filtering for sufficient observation windows, Washington cannabis licensees fall into three distinct and stable behavioral archetypes.
+**Licensee Behavioral Clusters**  
 
 Clustering inputs:
 

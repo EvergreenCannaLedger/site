@@ -1,6 +1,6 @@
 ---
 title: "State of the WA Auditor Office on Cannabis Traceability"
-subtitle: "How Washington’s Cannabis Market Found Its Balance Between Innovation and Saturation (2021–2025)"
+subtitle: "How Washington’s Cannabis Compliance Fails License Holders and Industry Reporting"
 description: "Using data to fact check WA State Auditor"
 date: "2025-06-05"
 categories: [CCRS, State Auditor, Traceability]

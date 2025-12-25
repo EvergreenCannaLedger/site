@@ -363,13 +363,6 @@ layout(
 )
 
 ```
-
-<br>
-
-```{=html}
-{{< include _includes/ad-survey.html >}}
-```
-
 <br>
 
 [Let TECL know if you have a dashboard request you want posted here](mailto:tecl@evergreencannaledger.org)

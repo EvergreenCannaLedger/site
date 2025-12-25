@@ -1,0 +1,96 @@
+---
+format: html
+---
+
+```{=html}
+
+<section class="insights-fullbleed">
+  <div class="insights-landscape">
+
+    <!-- LEFT: Tiles -->
+<div class="insights-left">
+      <div class="insights-header">
+        <h1 class="insights-headline">
+          INDUSTRY-GRADE <span>DATA INSIGHTS</span>
+        </h1>
+      </div>
+      
+      <div class="insights-tile-grid">
+
+        <div class="insight-tile">
+          <img src="assets/images/insights/category.png" alt="Category">
+          <div class="tile-label">Category</div>
+        </div>
+
+        <div class="insight-tile">
+          <img src="assets/images/insights/product.png" alt="Product">
+          <div class="tile-label">Product</div>
+        </div>
+
+        <div class="insight-tile">
+          <img src="assets/images/insights/consumer.png" alt="Consumer">
+          <div class="tile-label">Consumer</div>
+        </div>
+
+        <div class="insight-tile">
+          <img src="assets/images/insights/ingredient.png" alt="Ingredient">
+          <div class="tile-label">Ingredient</div>
+        </div>
+
+        <div class="insight-tile">
+          <img src="assets/images/insights/packaging.png" alt="Packaging">
+          <div class="tile-label">Packaging</div>
+        </div>
+
+        <div class="insight-tile">
+          <img src="assets/images/insights/flavor.png" alt="Flavor">
+          <div class="tile-label">Flavor</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: Metrics -->
+    <div class="insights-right">
+
+      <div class="metric-card highlight">
+        <div class="metric-value">48</div>
+        <div class="metric-label">Months of Trends<br>and Insights</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">100%</div>
+        <div class="metric-label">of Innovation Captured,<br>State-wide</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">100+M</div>
+        <div class="metric-label">CCRS Records</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">Big Data</div>
+        <div class="metric-label">Specialist</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">HUGE</div>
+        <div class="metric-label">time saver</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">1000+</div>
+        <div class="metric-label">Licensees</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">Dashboard</div>
+        <div class="metric-label">enhanced platform</div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+```
