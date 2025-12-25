@@ -8,7 +8,7 @@ description: |
   that describe how licensees interact with the traceability system over time.
 image: false
 date: "2025-12-12"
-categories: [CCRS, Licensee, Market Structure]
+categories: [CCRS, Licensees, Market Structure]
 project:
   type: website
 format:

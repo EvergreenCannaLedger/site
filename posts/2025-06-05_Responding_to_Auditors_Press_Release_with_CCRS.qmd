@@ -13,7 +13,7 @@ editor:
     wrap: 72
 ---
 
-Exploring how CCRS data addresses (or fails to address) concerns raised by the Washington State Auditor in an October 22, 2024. Check out the [press release](https://sao.wa.gov/the-audit-connection-blog/states-cannabis-tracking-system-falls-short-long-sought-goals-audit-finds).
+Exploring how CCRS data addresses (or fails to address) concerns raised by the Washington State Auditor in an October 22, 2024 [press release](https://sao.wa.gov/the-audit-connection-blog/states-cannabis-tracking-system-falls-short-long-sought-goals-audit-finds).
   
 
 The data covers the entire CCRS program - Dec 2021 to present day.  
