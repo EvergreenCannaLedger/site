@@ -2,7 +2,7 @@
 title: "Behind the Brands: A Look at Wholesalers in Washington's Cannabis Industry"
 subtitle: "How Washington’s Wholesalers Built a Two-Tier System of Scale and Specialization"
 date: "2025-09-21"
-categories: [CCRS, Cannabis, Wholesale, Product Diversity, 4Years]
+categories: [CCRS, Cannabis, Wholesale, Product, 4Years]
 format: html
 fig-width: 8
 fig-height: 5
@@ -31,7 +31,7 @@ The numbers may be quiet, but they reveal a sophisticated balance between scale,
 The wholesale layer is evolving into a modular supply system — one where cultivators, extractors, and distributors collaborate fluidly, rather than vertically integrate.
 
 
-**Understanding the Dataset**
+**Understanding the Dataset**  
 We analyzed 1,388 wholesale licensees, combining production, product registration, and branding data through mid-2025.
 
 Key indicators included:
@@ -47,9 +47,8 @@ Key indicators included:
 + Branding behavior (SelfBranded, PercentSelfBranded, and BrandingCategory)
 
 These variables together reveal whether a wholesaler functions as a **brand owner**, **private-label producer**, or **unbranded raw-material supplier**.
-
 ```{r setup, include=FALSE, message=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
 # Load libraries
 library(tidyverse)
@@ -137,6 +136,7 @@ product_info <- dbGetQuery(con, "
 
 # Join licensee DBA
 product_info <- product_info %>%
+  distinct(ProductId, .keep_all = T) %>%
   left_join(wholesaler_profiles %>% select(LicenseeId, DBA), by = "LicenseeId", relationship = "many-to-many") %>%
   mutate(
     self_branded = str_detect(tolower(ProductName), tolower(DBA)) |
@@ -175,7 +175,7 @@ wholesaler_summary <- wholesaler_summary %>%
 
 ## Flower Only Licenses  
 **Classify Wholesaler SKU Breadth**
-```{r, include=TRUE}
+```{r, include=TRUE, echo=FALSE}
 
 product_diversity <- product_diversity %>%
   mutate(
@@ -188,26 +188,11 @@ kable(product_diversity %>% filter(OnlyFlower == 'TRUE'))
 ```
 
 <br>
-These 29 operations, often new or transitional licensees, are monoculture wholesalers — listing only unbranded flower.
+These 17 operations, often new or transitional licensees, are monoculture wholesalers — listing only unbranded flower.
 
 They rarely report sales activity, suggesting either limited market access or supply-side testing before formal retail engagement.
 
 In short: they grow, not brand.
-
-<br>
-**Market Interpretation**
-
-1. Branding is Concentrated at Retail:  
-Retailers and vertically integrated brands hold the consumer mindshare — wholesalers function as the silent partners.
-
-2. The Long Tail of Micro-Wholesalers:  
-Dozens of licensees operate with ≤10 SKUs, often supplying regional stores or testing new formulations.
-
-3. Commoditization Continues:  
-With “Only Flower” and “Other Material” products still entering the system in 2025, bulk categories remain accessible and price-driven.
-
-4. Innovation Moves Upstream:  
-The ‘Other’ wholesalers — clones, concentrates, edibles, genetics — may represent the next phase of differentiation, focusing on value-added inputs rather than finished goods.
 
 ## Detect Self Branding SKUs by Category
 ```{r, include=FALSE}

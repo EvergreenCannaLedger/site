@@ -1,0 +1,371 @@
+---
+title: "Washington Cannabis Licensee Behavior Typology"
+subtitle: "Classifying CCRS Submission Patterns Across the Retail Ecosystem"
+description: |
+  This report develops a data-driven typology of Washington cannabis licensees
+  based on CCRS submission behavior. Using monthly submission volume, volatility,
+  persistence, and trend direction, we identify three stable behavioral archetypes
+  that describe how licensees interact with the traceability system over time.
+image: false
+date: "2025-12-12"
+categories: [CCRS, Licensee, Market Structure]
+project:
+  type: website
+format:
+  html:
+    toc: true
+    code-fold: false
+    theme: flatly
+editor:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, include = TRUE)
+
+library(ggplot2)
+library(DBI)
+library(dplyr)
+library(magrittr)
+library(lubridate)
+library(plotly)
+library(arrow)
+library(duckdb)
+library(fs)
+library(glue)
+library(kableExtra)
+library(scales)
+library(stringr)
+library(DT)
+library(janitor)
+
+if (exists("con")) 
+  try(DBI::dbDisconnect(con), silent = TRUE)
+
+# Connect to DuckDB (read-only)
+source(here::here("R_scripts", "connect_duckdb_readonly.R"))
+
+```
+## The Bottom Line Up Front  
+Washington cannabis licensees do not interact with CCRS uniformly.
+
+When we examine submission volume, month-to-month volatility, trend direction, and persistence, licensees fall into three stable behavioral archetypes that describe how they operate within the regulated marketplace — independent of vendor branding or tooling.
+
+This typology helps explain:
+
++ why some operators experience chronic compliance stress
+
++ why others appear resilient despite market compression
+
++ why statewide metrics are often dominated by a small number of actors
+
+## Identity and Methodology Note  
+This analysis intentionally avoids vendor or integrator attribution.
+
+Instead, it evaluates licensee behavior directly, using distinct SaleHeader submissions as the atomic unit of CCRS interaction. This avoids inflation from record edits, corrections, or administrative churn and ensures that every submission counted represents a discrete compliance event.
+
+Monthly aggregation is used to normalize seasonal effects and enable behavioral clustering over time.
+
+## How Do Licensees Actually Use CCRS?
+
+This section quantifies how often, how consistently, and how long licensees submit CCRS records — revealing meaningful structural differences across the market.
+```{r, include=FALSE}
+
+licensee_submissions <- DBI::dbGetQuery(con, "
+  SELECT
+    LicenseeId,
+    COUNT(DISTINCT SaleHeaderId) AS n_submissions,
+    MIN(CAST(SaleDate AS DATE)) AS first_submission,
+    MAX(CAST(SaleDate AS DATE)) AS last_submission,
+    DATE_DIFF(
+      'day',
+      MIN(CAST(SaleDate AS DATE)),
+      MAX(CAST(SaleDate AS DATE))
+    ) AS active_days,
+    COUNT(DISTINCT SaleHeaderId) / GREATEST(
+      DATE_DIFF(
+        'day',
+        MIN(CAST(SaleDate AS DATE)),
+        MAX(CAST(SaleDate AS DATE))
+      ) / 30.0,
+      1
+    ) AS submissions_per_month
+  FROM SaleHeader_all
+  WHERE LOWER(IsDeleted) = 'false'
+    AND SaleDate IS NOT NULL
+    AND LicenseeId IS NOT NULL
+  GROUP BY LicenseeId
+  ORDER BY n_submissions DESC
+")
+
+licensees <- DBI::dbGetQuery(con, "
+  SELECT
+    LicenseeId,
+    Name AS BusinessName,
+    DBA
+  FROM Licensee_clean
+  WHERE LOWER(IsDeleted) = 'false'
+")
+
+licensee_submissions <- licensee_submissions %>%
+  left_join(licensees, by = "LicenseeId")
+
+
+```
+
+```{r, include=TRUE}
+
+monthly_submissions <- DBI::dbGetQuery(con, "
+  SELECT
+    LicenseeId,
+    DATE_TRUNC('month', CAST(SaleDate AS DATE)) AS sale_month,
+    COUNT(DISTINCT SaleHeaderId) AS n_submissions
+  FROM SaleHeader_all
+  WHERE LOWER(IsDeleted) = 'false'
+    AND SaleDate IS NOT NULL
+    AND LicenseeId IS NOT NULL
+  GROUP BY LicenseeId, sale_month
+")
+
+monthly_submissions %>% arrange(desc(n_submissions)) %>%
+  distinct(LicenseeId, .keep_all = TRUE) %>%
+  head(20) %>%
+  kable(
+    caption = "Top 20 Licensees by Submission Volume"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    font_size = 12
+  )
+
+```
+## Monthly Submissions by Distinct SaleHeaderId Counts (Top Licensees Only)  
+```{r}
+
+monthly_submissions <- DBI::dbGetQuery(con, "
+  SELECT
+    LicenseeId,
+    DATE_TRUNC(
+      'month',
+      CAST(SaleDate AS DATE)
+    ) AS sale_month,
+    COUNT(DISTINCT SaleHeaderId) AS n_submissions
+  FROM SaleHeader_all
+  WHERE LOWER(IsDeleted) = 'false'
+    AND SaleDate IS NOT NULL
+    AND LicenseeId IS NOT NULL
+    AND CAST(SaleDate AS DATE) >=
+        DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '12 months'
+  GROUP BY
+    LicenseeId,
+    sale_month
+")
+
+licensee_month_counts <- monthly_submissions %>%
+  count(LicenseeId, name = "n_months")
+
+monthly_submissions_filtered <- monthly_submissions %>%
+  filter(sale_month != "2025-10-01") %>%
+  inner_join(
+    licensee_month_counts %>% filter(n_months >= 2),
+    by = "LicenseeId"
+  )
+
+top_licensees <- monthly_submissions_filtered %>%
+  group_by(LicenseeId) %>%
+  summarise(
+    total_submissions_12mo = sum(n_submissions),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(total_submissions_12mo)) %>%
+  slice_head(n = 10)
+
+licensees <- DBI::dbGetQuery(con, "
+  SELECT
+    LicenseeId,
+    Name AS BusinessName,
+    DBA
+  FROM Licensee_clean
+  WHERE LOWER(IsDeleted) = 'false'
+")
+
+plot_data <- monthly_submissions_filtered %>%
+  inner_join(top_licensees, by = "LicenseeId") %>%
+  left_join(licensees, by = "LicenseeId") %>%
+  mutate(
+    display_name = ifelse(
+      !is.na(DBA) & DBA != "",
+      DBA,
+      BusinessName
+    )
+  )
+
+series_counts <- plot_data %>%
+  distinct(display_name, sale_month) %>%
+  count(display_name, name = "n_months")
+
+
+plot_data_filtered <- plot_data %>%
+  inner_join(
+    series_counts %>% filter(n_months >= 2),
+    by = "display_name"
+  )
+
+ggplot(plot_data_filtered,
+       aes(x = as.Date(sale_month),
+           y = n_submissions,
+           color = display_name,
+           group = display_name)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2) +
+  scale_x_date(
+    date_breaks = "1 month",
+    date_labels = "%b %Y"
+  ) +
+  scale_y_continuous(labels = comma) +
+  labs(
+    title = "Monthly CCRS Submissions — Top Licensees",
+    subtitle = "Distinct SaleHeader submissions per month",
+    x = "Month",
+    y = "Number of Submissions",
+    color = "Licensee"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "right"
+  ) 
+```
+
+```{r, include=FALSE}
+
+licensee_features <- monthly_submissions_filtered %>%
+  arrange(LicenseeId, sale_month) %>%
+  group_by(LicenseeId) %>%
+  summarise(
+    months_active        = n_distinct(sale_month),
+    avg_monthly_subs     = mean(n_submissions),
+    sd_monthly_subs      = sd(n_submissions),
+    cv_monthly_subs      = sd_monthly_subs / avg_monthly_subs,
+    min_monthly_subs     = min(n_submissions),
+    max_monthly_subs     = max(n_submissions),
+    trend_slope = {
+      # simple linear trend over time
+      t <- as.numeric(sale_month - min(sale_month))
+      coef(lm(n_submissions ~ t))[2]
+    },
+    .groups = "drop"
+  )
+
+licensee_features_clean <- licensee_features %>%
+  filter(
+    !is.na(cv_monthly_subs),
+    !is.na(trend_slope),
+    months_active >= 2,
+    is.finite(cv_monthly_subs),
+    is.finite(trend_slope)
+  )
+
+cluster_matrix <- licensee_features_clean %>%
+  select(
+    avg_monthly_subs,
+    cv_monthly_subs,
+    trend_slope,
+    months_active
+  ) %>%
+  scale()
+
+set.seed(42)
+kmeans_fit <- kmeans(cluster_matrix, centers = 3, nstart = 25)
+
+```
+## Clustering by Submission Behavior Dynamics
+**Licensee Behavioral Clusters**
+
+After correcting for industry-wide submission gaps in late 2025 and filtering for sufficient observation windows, Washington cannabis licensees fall into three distinct and stable behavioral archetypes.
+
+Clustering inputs:
+
+• Average monthly submissions  
+• Submission volatility (coefficient of variation)  
+• Trend direction over time  
+• Months active in the last 10-month window
+
+```{r, include=FALSE}
+
+licensee_clusters <- licensee_features_clean %>%
+  mutate(cluster = factor(kmeans_fit$cluster))
+
+cluster_summary <- licensee_clusters %>%
+  group_by(cluster) %>%
+  summarise(
+    avg_monthly_subs = mean(avg_monthly_subs),
+    cv_monthly_subs  = mean(cv_monthly_subs),
+    trend_slope      = mean(trend_slope),
+    months_active    = mean(months_active),
+    n_licensees      = n(),
+    .groups = "drop"
+  ) 
+
+cluster_summary <- cluster_summary %>%
+  arrange(desc(avg_monthly_subs))
+
+cluster_summary %>%
+  mutate(
+    cluster_label = case_when(
+      cluster == 1 ~ "Low-volume, high-volatility",
+      cluster == 2 ~ "Mid-volume, persistent",
+      cluster == 3 ~ "Enterprise-scale, stable"
+    )
+  ) %>%
+  select(cluster, n_licensees, cluster_label, avg_monthly_subs, cv_monthly_subs, trend_slope, months_active) %>%
+  arrange(cluster) %>%
+kable()
+
+
+```
+After correcting for industry-wide submission gaps in late 2025, Washington cannabis licensees fall into three stable behavioral archetypes.
+
+## Cluster Definitions
+**Cluster 1 — Low-Volume, High-Volatility**
+**~28% of licensees**
+
++ Low submission volume
+
++ High month-to-month variability
+
++ Shorter observed activity windows
+
+These licensees tend to operate intermittently and are most sensitive to staffing, seasonality, or operational disruptions.
+
+**Cluster 2 — Mid-Volume, Persistent**
+**~60% of licensees**
+
++ Moderate submission volume
+
++ Stable month-to-month behavior
+
++ Long persistence across the year
+
+This cluster represents the operational backbone of Washington’s retail market.
+
+**Cluster 3 — Enterprise-Scale, Stable**
+**~12% of licensees**
+
++ Extremely high submission volume
+
++ Very low volatility
+
++ Long-lived presence in CCRS
+
+Despite negative trend slopes (reflecting market compression), these licensees remain structurally stable and dominate statewide activity.
+
+## Final Summary Table
+| Cluster | Avg Monthly Subs |       CV | Months Active | Interpretation                         |
+| ------: | ---------------: | -------: | ------------: | -------------------------------------- |
+|   **1** |             ~600 | **0.85** |         ~5.46 | Low volume, very volatile, short-lived |
+|   **2** |           ~3,554 |     0.37 |         ~9.53 | Moderate volume, stable, persistent    |
+|   **3** |          ~29,070 | **0.25** |         ~9.01 | Extremely high volume, very stable     |
+**Interpretation note:**
+Lower CV indicates more regular, predictable submission behavior.

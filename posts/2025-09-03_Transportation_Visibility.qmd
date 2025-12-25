@@ -2,7 +2,7 @@
 title: "On the Road Again: Cannabis Product Movement Across the State"
 subtitle: "Analyzing Transportation Patterns & Trading Routes (2023-2025)"
 date: "2025-09-03"
-categories: [CCRS, Transportation, Supply Chain, 3Yrs]
+categories: [CCRS, Transportation, Supply Chain, 3Years]
 project:
   type: website
 format: 

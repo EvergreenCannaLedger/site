@@ -62,18 +62,32 @@ pricing_trends <- dbGetQuery(con, "
   SELECT
     DATE_TRUNC('month', CAST(sd.CreatedDate AS TIMESTAMP)) AS SaleMonth,
     p.InventoryType,
-    AVG(CAST(sd.UnitPrice AS DOUBLE)) AS AvgUnitPrice
+
+    -- Simple average (kept for reference)
+    AVG(CAST(sd.UnitPrice AS DOUBLE)) AS AvgUnitPrice,
+
+    -- Quantity-weighted average (preferred)
+    SUM(CAST(sd.UnitPrice AS DOUBLE) * CAST(sd.Quantity AS DOUBLE))
+      / NULLIF(SUM(CAST(sd.Quantity AS DOUBLE)), 0)
+      AS QtyWeightedAvgUnitPrice
+
   FROM SalesDetail_clean sd
-  JOIN Inventory_clean i ON sd.InventoryId = i.InventoryId
-  JOIN Product_clean p ON i.ProductId = p.ProductId
+  JOIN Inventory_clean i
+    ON sd.InventoryId = i.InventoryId
+  JOIN Product_clean p
+    ON i.ProductId = p.ProductId
   WHERE
-    sd.UnitPrice IS NOT NULL AND
-    sd.CreatedDate IS NOT NULL AND
-    p.InventoryType IS NOT NULL AND
-    DATE_TRUNC('month', CAST(sd.CreatedDate AS TIMESTAMP)) 
+    sd.UnitPrice IS NOT NULL
+    AND sd.Quantity IS NOT NULL
+    AND sd.CreatedDate IS NOT NULL
+    AND p.InventoryType IS NOT NULL
+    AND DATE_TRUNC('month', CAST(sd.CreatedDate AS TIMESTAMP))
       BETWEEN DATE '2021-12-01' AND CURRENT_DATE
-  GROUP BY SaleMonth, p.InventoryType
-  ORDER BY SaleMonth
+  GROUP BY
+    SaleMonth,
+    p.InventoryType
+  ORDER BY
+    SaleMonth
 ")
 
 pricing_trends <- pricing_trends %>%
@@ -105,6 +119,13 @@ plot_ly(
   )
 
 ```
+A quanity-weighted average was used to normalize sales of a $1 sku vs $100 sku, to remove bias. This metric is economically correct and used commonly as the measure in price studies. 
+
++ A $5 single-unit promo no longer distorts a month dominated by $25 bulk sales.
+
++ Reflects what consumers actually paid
+
++ Smooths noise in volatile categories (flower, hydrocarbon extracts)
 
 ## 1. Flower Pricing: Volatile but Stabilizing
 

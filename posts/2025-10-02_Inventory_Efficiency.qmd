@@ -2,7 +2,7 @@
 title: "Inventory Efficiency in Washington’s Cannabis Supply Chain"
 subtitle: "An analysis of cannabis product inventory levels across Washington state"
 date: "2025-10-02"
-categories: [CCRS, Inventory, Products]
+categories: [CCRS, Inventory, Product]
 format: 
   html: 
     fig-height: 4.5

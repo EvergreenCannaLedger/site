@@ -2,7 +2,7 @@
 title: "The Expiring Market: Who’s at Risk of Losing a License in Washington?"
 subtitle: "A Prelude to Business Activity in Washington Cannabis Industry"
 date: "2025-11-28"
-categories: [CCRS, Expiration, Licenses]
+categories: [CCRS, Expiration, Licensees]
 project:
   type: website
 format: 
