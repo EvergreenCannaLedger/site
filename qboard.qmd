@@ -11,8 +11,8 @@ format: html
 <div class="insights-left">
       <div class="insights-header">
         <h1 class="insights-headline">
-          INDUSTRY-GRADE <span>DATA INSIGHTS</span>
-        </h1>
+          WA Cannabis Market Coverage
+          </h1>
       </div>
       
       <div class="insights-tile-grid">
@@ -46,6 +46,16 @@ format: html
           <img src="assets/images/insights/flavor.png" alt="Flavor">
           <div class="tile-label">Flavor</div>
         </div>
+         
+         <div class="insight-tile">
+          <img src="assets/images/insights/labresults.png" alt="LabResults">
+          <div class="tile-label">Lab Results</div>
+        </div>
+        
+        <div class="insight-tile">
+          <img src="assets/images/insights/seedtosale.png" alt="Seed-To-Sale">
+          <div class="tile-label">Seed-To-Sale Tracking</div>
+        </div>
 
       </div>
     </div>
@@ -53,24 +63,24 @@ format: html
     <!-- RIGHT: Metrics -->
     <div class="insights-right">
 
-      <div class="metric-card highlight">
+      <div class="metric-card">
         <div class="metric-value">48</div>
-        <div class="metric-label">Months of Trends<br>and Insights</div>
+        <div class="metric-label">months of trends<br>& insights</div>
       </div>
 
       <div class="metric-card">
         <div class="metric-value">100%</div>
-        <div class="metric-label">of Innovation Captured,<br>State-wide</div>
+        <div class="metric-label">innovation captured<br>state-wide</div>
       </div>
 
       <div class="metric-card">
-        <div class="metric-value">100+M</div>
-        <div class="metric-label">CCRS Records</div>
+        <div class="metric-value">150+M</div>
+        <div class="metric-label">CCRS records</div>
       </div>
 
       <div class="metric-card">
         <div class="metric-value">Big Data</div>
-        <div class="metric-label">Specialist</div>
+        <div class="metric-label">cannabis reporting</div>
       </div>
 
       <div class="metric-card">
@@ -79,8 +89,9 @@ format: html
       </div>
 
       <div class="metric-card">
-        <div class="metric-value">1000+</div>
-        <div class="metric-label">Licensees</div>
+        <div class="metric-value">1500+</div>
+        <div class="metric-label">license holders<br>(past & present)</br>
+        </div>
       </div>
 
       <div class="metric-card">
@@ -94,3 +105,10 @@ format: html
 </section>
 
 ```
+<br>
+
+::: {.text-center .lead}
+From category and product to consumer behavior, packaging, and regulatory-scale datasets TECL is your trusted go-to organization.
+:::
+
+</br>

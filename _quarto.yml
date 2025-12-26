@@ -22,7 +22,7 @@ website:
         href: dashboard.qmd
       - text: "About"
         href: about.qmd
-      - text: "Insights"
+      - text: "Coverage"
         href: qboard.qmd
       - icon: github
         href: https://github.com/EvergreenCannaLedger
