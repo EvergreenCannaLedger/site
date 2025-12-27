@@ -28,6 +28,7 @@ library(fs)
 library(glue)
 library(kableExtra)
 library(scales)
+library(DT)
 
 #Clean Slate Function
 unregister_all_arrow <- function(con) {
@@ -187,7 +188,7 @@ dbExecute(con, "
 
 ```
 
-```{r}
+```{r, include=FALSE}
 
 # Monthly Sales
 monthly_sales <- dbGetQuery(con, "
@@ -291,7 +292,7 @@ legend = list(orientation = 'h', x = 0.1, y = -0.2)
 
 ## Total Revenue
 
-```{r}
+```{r, include=FALSE}
 
 retail_wholesale <- dbGetQuery(con, "
   SELECT 
@@ -326,7 +327,7 @@ plot_ly(retail_wholesale, x = ~Month, y = ~Revenue, color = ~SaleType, type = "b
 
 ## Regional or Business-Level Insights (City Location)
 
-```{r}
+```{r, include=FALSE}
 
 regional_sales <- dbGetQuery(con, "
 SELECT
@@ -363,6 +364,91 @@ layout(
 )
 
 ```
+## Product Category Trends (2021–2024)
+```{r, warning=FALSE}
+
+unregister_all_arrow(con)
+
+if (exists("con")) 
+  try(DBI::dbDisconnect(conn = con), silent = TRUE)
+
+source("R_scripts/connect_duckdb_readonly.R")
+
+# Query category-level trends
+category_summary <- dbGetQuery(con, "
+  WITH sales_base AS (
+    SELECT 
+      sd.SaleDetailId,
+      sh.SaleDate,
+      pr.InventoryType,
+      CAST(sd.Quantity AS DOUBLE) AS Quantity,
+      CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+      CAST(sd.Discount AS DOUBLE) AS Discount
+    FROM SalesDetail_all sd
+    JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+    JOIN Inventory_all inv ON sd.InventoryId = inv.InventoryId
+    JOIN Product_all pr ON inv.ProductId = pr.ProductId
+    WHERE (sd.IsDeleted IS NULL OR sd.IsDeleted NOT IN ('TRUE', 'true'))
+      AND (sh.IsDeleted IS NULL OR sh.IsDeleted NOT IN ('TRUE', 'true'))
+      AND (inv.IsDeleted IS NULL OR inv.IsDeleted NOT IN ('TRUE', 'true'))
+      AND (pr.IsDeleted IS NULL OR pr.IsDeleted NOT IN ('TRUE', 'true'))
+      AND CAST(sd.UnitPrice AS DOUBLE) < 200
+  )
+
+  SELECT 
+    EXTRACT(YEAR FROM DATE(SaleDate)) AS Year,
+    InventoryType,
+    SUM(Quantity) AS UnitsSold,
+    ROUND(SUM(Quantity * UnitPrice), 2) AS Revenue,
+    ROUND(AVG(UnitPrice), 2) AS AvgUnitPrice,
+    ROUND(MEDIAN(UnitPrice), 2) AS MedianUnitPrice
+  FROM sales_base
+  GROUP BY 1, 2
+  ORDER BY Year, Revenue DESC
+")
+
+# Format for publication
+category_summary %>%
+  filter(
+    !InventoryType %in% c(
+      "Flower Unlotted", "Other Material Lot", "Other Material Unlotted",
+      "Plant", "Sample Jar", "Seed", "Waste"
+    )
+  ) %>%
+  mutate(
+    Revenue = dollar(Revenue),
+    AvgUnitPrice = dollar(AvgUnitPrice),
+    MedianUnitPrice = dollar(MedianUnitPrice),
+    UnitsSold = comma(UnitsSold)
+  ) %>%
+  rename(
+    Year = Year,
+    Category = InventoryType,
+    `Units Sold` = UnitsSold,
+    `Total Revenue` = Revenue,
+    `Avg. Unit Price` = AvgUnitPrice,
+    `Median Unit Price` = MedianUnitPrice
+  ) %>%
+  arrange(Category, Year) %>%
+  datatable(
+    caption = htmltools::tags$caption(
+      style = 'caption-side: bottom; text-align: left;',
+      'Product Category Trends (2021–2024)'
+    ),
+    filter = "top",          # 👈 adds column filters
+    rownames = FALSE,
+    options = list(
+      pageLength = 20,       # 👈 show 20 rows at a time
+      lengthMenu = c(10, 20, 50, 100),
+      autoWidth = TRUE,
+      dom = "lfrtip"         # length, filter, table, pagination
+    )
+  )
+```
+
+
 <br>
 
-[Let TECL know if you have a dashboard request you want posted here](mailto:tecl@evergreencannaledger.org)
+:::{.text-center}
+[Make a dashboard request you want to see live in this Dashboard page.](mailto:tecl@evergreencannaledger.org)
+:::

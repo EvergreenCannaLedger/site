@@ -14,22 +14,23 @@ website:
     right:
       - text: "Home"
         href: index.qmd
-      - text: "Blog"
-        href: blog.qmd
-      - text: "Contact"
-        href: contact.qmd
-      - text: "Dashboard"
-        href: dashboard.qmd
-      - text: "About"
-        href: about.qmd
       - text: "Coverage"
         href: qboard.qmd
+      - text: "Contact"
+        href: contact.qmd
+      - text: "Blog"
+        href: blog.qmd
+        target: _blank
+      - text: "Dashboard"
+        href: dashboard.qmd
       - icon: github
         href: https://github.com/EvergreenCannaLedger
         target: _blank
       - text: Bluesky
         href: https://bsky.app/profile/thewacannaledger.bsky.social
         target: _blank
+      - text: "About"
+        href: about.qmd  
       
   page-footer:
     left: "The Evergreen Canna Ledger"
