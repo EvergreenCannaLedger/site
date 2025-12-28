@@ -1,0 +1,859 @@
+---
+title: "Encapsulated Flow: Mapping Transport Flows in Washington’s Capsule Market"
+subtitle: "Production Cycles and Distribution Patterns (2021–2025)"
+description: |
+  This analysis examines the movement of cannabis capsule products within 
+  Washington’s regulated supply chain. Capsule-specific trends reveal where losses,
+  bottlenecks, and high-volume transfer hubs emerge among licensees, offering
+  actionable insight into capsule operations and regulatory oversight.
+date: "2025-12-28"
+image: true
+categories: [Capsule, Supply Chain, Transportation, 4Years]
+project:
+  type: website
+format: 
+  html: 
+    toc: true
+    code-fold: false
+    theme: flatly
+editor:
+  markdown:
+    wrap: 72
+---
+```{r, echo=FALSE}
+library(htmltools)
+
+tags$style(HTML("
+/* Make DT tables fit content area better */
+.dataTables_wrapper {
+font-size: 0.9rem;
+}
+
+/* Reduce row height */
+table.dataTable tbody td {
+padding: 6px 8px;
+vertical-align: middle;
+}
+
+/* Improve header contrast */
+table.dataTable thead th {
+background-color: #f8f9fa;
+border-bottom: 2px solid #dee2e6;
+font-weight: 600;
+white-space: nowrap;
+}
+
+/* Keep IDs readable */
+td.dt-nowrap {
+white-space: nowrap;
+font-family: monospace;
+}
+
+/* Sticky filter row spacing */
+.dataTables_filter {
+margin-bottom: 0.5rem;
+}
+
+/* Caption styling */
+caption {
+font-size: 0.85rem;
+color: #6c757d;
+}
+"))
+```
+
+## The Bottom Line Up Front  
+The Market Is Concentrated but Stable - a small number of origin licensees anchor capsule distribution statewide. This concentration introduces dependency risk, but also suggests operational maturity. Capsule distribution favors localized production-to-retail loops, likely driven by predictable demand, shelf stability, limited wholesale arbitrage, and higher regulatory scrutiny relative to inhaler products.
+
+## Overview  
+Capsules occupy a unique position in Washington’s cannabis market. They are non-inhalable, dosage-controlled, medically adjacent, and operationally conservative compared to flower or concentrates. Yet, despite their relatively modest market share, capsule products generate a rich and revealing transportation footprint inside the state’s seed-to-sale system.
+
+Using CCRS transport manifests, inventory records, and adjustment logs, this analysis traces how capsule products move across Washington, from origin licensees through distribution corridors to retail destinations. The result is a detailed look at logistics behavior, regional hubs, and supply chain concentration for one of the market’s most compliance-sensitive product types.
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+
+library(tidyverse)
+library(DBI)
+library(dplyr)
+library(lubridate)
+library(plotly)
+library(arrow)
+library(duckdb)
+library(fs)
+library(glue)
+library(kableExtra)
+library(scales)
+library(sf)
+library(tigris)
+library(ggrepel)
+library(osrm)
+library(DT)
+
+options(tigris_use_cache = TRUE)
+
+if (exists("con")) 
+  try(DBI::dbDisconnect(con), silent = TRUE)
+
+source("../R_scripts/connect_duckdb_readonly.R")
+
+## ---------------------------------------------------------
+## Licensee Table
+## ---------------------------------------------------------
+
+licensee_ref <- dbGetQuery(
+  con,
+  "
+  SELECT
+    LicenseeId,
+    Name  AS BusinessName,
+    DBA   AS DoingBusinessAs
+  FROM licensee_clean
+  WHERE LOWER(IsDeleted) = 'false'
+  "
+)
+
+## ---------------------------------------------------------
+## Capsule Inventory Investigation Pipeline
+## ---------------------------------------------------------
+
+## 1. Pull capsule products --------------------------------
+capsule_products <- dbGetQuery(
+  con,
+  "
+  SELECT
+    ProductId,
+    LicenseeId,
+    InventoryType,
+    Name AS ProductName,
+    UnitWeightGrams,
+    IsDeleted
+  FROM product_clean
+  WHERE LOWER(InventoryType) = 'capsule'
+   AND LOWER(IsDeleted) = 'false'
+  "
+)
+
+## 2. Inventory tied to capsule products -------------------
+capsule_inventory <- dbGetQuery(
+  con,
+  "
+  SELECT
+    InventoryId,
+    LicenseeId,
+    ProductId,
+    AreaId,
+    InitialQuantity,
+    QuantityOnHand,
+    TotalCost,
+    IsMedical,
+    CreatedDate,
+    IsDeleted
+  FROM inventory_clean
+  WHERE LOWER(IsDeleted) = 'false'
+  "
+)
+
+capsule_inventory <- capsule_inventory %>%
+  left_join(
+    licensee_ref,
+    by = "LicenseeId"
+  )
+
+capsule_inventory <- 
+  capsule_inventory %>%
+  inner_join(capsule_products, by = "ProductId", suffix = c(".inv", ".prod"))
+
+## 3. Area context -----------------------------------------
+areas <- dbGetQuery(
+  con,
+  "
+  SELECT
+    AreaId,
+    LicenseeId,
+    Name AS AreaName,
+    IsQuarantine
+  FROM areas_all
+  WHERE LOWER(IsDeleted) = 'false'
+  "
+)
+
+capsule_inventory <- capsule_inventory %>%
+  left_join(areas, by = c(
+  "AreaId" = "AreaId",
+  "LicenseeId.inv" = "LicenseeId"))
+
+## 4. Inventory adjustments --------------------------------
+inventory_adjustments <- dbGetQuery(
+  con,
+  "
+  SELECT
+    InventoryId,
+    InventoryAdjustmentReason,
+    Quantity,
+    AdjustmentDate
+  FROM InventoryAdjustment_all
+  WHERE LOWER(IsDeleted) = 'false'
+  "
+)
+
+capsule_adjustments <- capsule_inventory %>%
+  left_join(inventory_adjustments, by = "InventoryId")
+
+# ## 5. Lab results ------------------------------------------
+# lab_results <- dbGetQuery(
+#   con,
+#   "
+#   SELECT
+#     InventoryId,
+#     TestName,
+#     TestValue,
+#     TestDate,
+#     LabTestStatus
+#   FROM LabResult_all
+#    WHERE LOWER(IsDeleted) = 'false'
+#   "
+# ) 
+# 
+# capsule_labs <- capsule_inventory %>%
+#   left_join(lab_results, by = "InventoryId")
+
+## 6. Sales activity ---------------------------------------
+sales_detail <- dbGetQuery(
+  con,
+  "
+  SELECT
+    SaleDetailId,
+    SaleHeaderId,
+    InventoryId,
+    Quantity,
+    UnitPrice,
+    Discount,
+    SalesTax
+  FROM SalesDetail_all
+  WHERE LOWER(IsDeleted) = 'false'
+  "
+) 
+
+capsule_sales <- capsule_inventory %>%
+  left_join(sales_detail, by = "InventoryId") %>%
+  mutate(
+    GrossRevenue = as.numeric(Quantity, na.rm = TRUE) * as.numeric(UnitPrice, na.rm = TRUE),
+    NetRevenue = as.numeric(GrossRevenue, na.rm = TRUE) - as.numeric(Discount, na.rm = TRUE)
+  )
+
+## 7. Transportation (capsule manifests) -------------------
+transported_capsules <- dbGetQuery(
+  con,
+  "
+  SELECT
+    ExternalManifestIdentifier,
+    InventoryExternalIdentifier,
+    InventoryType,
+    Quantity,
+    UOM,
+    CreatedDate
+  FROM TransportedItems_all
+  WHERE LOWER(InventoryType) = 'capsule'
+    AND LOWER(IsDeleted) = 'false'
+  "
+)
+
+## Inventory health summary -----------------------------
+capsule_inventory_summary <- capsule_inventory %>%
+  group_by(LicenseeId.inv, ProductName) %>%
+  summarise(
+    InventoryRecords = n(),
+    TotalInitialQty = sum(as.numeric(InitialQuantity), na.rm = TRUE),
+    TotalOnHand = sum(as.numeric(QuantityOnHand), na.rm = TRUE),
+    .groups = "drop"
+  )
+
+## Adjustment reason breakdown --------------------------
+capsule_adjustment_summary <- capsule_adjustments %>%
+  group_by(InventoryAdjustmentReason) %>%
+  summarise(
+    TotalAdjustedQty = sum(as.numeric(Quantity), na.rm = TRUE),
+    Adjustments = n(),
+    .groups = "drop"
+  )
+
+manifest_headers <- dbGetQuery(
+  con,
+  "
+  SELECT
+    ExternalManifestIdentifier,
+    OriginLicenseNumber,
+    OriginLicenseName,
+    DestinationLicenseNumber,
+    DestinationLicenseName,
+    DepartureDateTime,
+    ArrivalDateTime
+  FROM ManifestHeader_all
+  WHERE LOWER(IsDeleted) = 'false'
+    AND LOWER(OrderCancelled) = 'false'
+  "
+) 
+
+licensees <- dbGetQuery(
+  con,
+  "
+  SELECT
+    LicenseeId,
+    LicenseNumber,
+    Name AS LicenseeName,
+    City,
+    County,
+    State,
+    ZipCode
+  FROM licensee_all
+  WHERE LOWER(IsDeleted) = 'false'
+  "
+)
+
+capsule_movements <- transported_capsules %>%
+  inner_join(
+    manifest_headers,
+    by = "ExternalManifestIdentifier"
+  ) %>%
+  mutate(
+    DepartureDate = as_date(DepartureDateTime),
+    ArrivalDate   = as_date(ArrivalDateTime)
+  )
+
+```
+```{r, include=FALSE}
+
+capsule_flows <- capsule_movements %>%
+  left_join(
+    licensees,
+    by = c("OriginLicenseNumber" = "LicenseNumber"),
+    relationship = "many-to-many"
+  ) %>%
+  rename_with(~ paste0("Origin_", .),
+              c(LicenseeId, LicenseeName, City, County, State, ZipCode)) %>%
+  left_join(
+    licensees,
+    by = c("DestinationLicenseNumber" = "LicenseNumber"),
+    relationship = "many-to-many"
+  ) %>%
+  rename_with(~ paste0("Destination_", .),
+              c(LicenseeId, LicenseeName, City, County, State, ZipCode))
+
+capsule_flows <- capsule_flows %>% 
+  distinct(ExternalManifestIdentifier, InventoryExternalIdentifier, .keep_all = TRUE)
+
+# Licensee-Level Capsule Flow Aggregation
+capsule_flow_summary <- capsule_flows %>% 
+    group_by(
+    Origin_LicenseeId,
+    Origin_LicenseeName,
+    Origin_County,
+    Destination_LicenseeId,
+    Destination_LicenseeName,
+    Destination_County
+  ) %>%
+  summarise(
+    Shipments = n_distinct(ExternalManifestIdentifier),
+    TotalUnits = sum(as.numeric(Quantity), na.rm = TRUE),
+    AvgUnitsPerShipment = mean(as.numeric(Quantity), na.rm = TRUE),
+    FirstShipment = min(DepartureDate, na.rm = TRUE),
+    LastShipment  = max(DepartureDate, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(Origin_LicenseeId != Destination_LicenseeId)
+
+# County-to-County Flow Map Table
+capsule_county_flows <- capsule_flow_summary %>%
+  group_by(
+    Origin_County,
+    Destination_County
+  ) %>%
+  summarise(
+    Shipments = sum(Shipments),
+    TotalUnits = sum(TotalUnits),
+    .groups = "drop"
+  ) %>%
+  filter(!is.na(Origin_County), !is.na(Destination_County))
+
+# High-Volume Capsule Hubs
+capsule_hubs <- capsule_flow_summary %>%
+  group_by(Origin_LicenseeId, Origin_LicenseeName) %>%
+  summarise(
+    OutboundShipments = sum(Shipments),
+    OutboundUnits = sum(TotalUnits),
+    TradingPartners = n_distinct(Destination_LicenseeId),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(OutboundUnits))
+
+```
+## Licensee-Level Capsule Flow Summary
+*Who ships capsules to whom, and how much?*
+
+::: {.column-page}
+```{r capsule-flow-table, message=FALSE, warning=FALSE, echo=FALSE, include=TRUE}
+
+datatable(
+  capsule_flow_summary %>%
+    mutate(
+      FirstShipment = as.character(FirstShipment),
+      LastShipment  = as.character(LastShipment)
+    ),
+  extensions = c("Buttons", "FixedHeader"),
+  options = list(
+    pageLength = 15,
+    autoWidth = TRUE,
+    fixedHeader = TRUE,
+    dom = "Bfrtip",
+    buttons = c("copy", "csv", "excel"),
+    order = list(list(6, "desc")), # TotalUnits
+    columnDefs = list(
+      list(className = "dt-right", targets = c(6, 7))
+    )
+  ),
+  rownames = FALSE,
+  filter = "top",
+  caption = htmltools::tags$caption(
+    style = "caption-side: bottom; text-align: left;",
+    "Licensee-level capsule trading relationships. ",
+    htmltools::em("Sorted and filterable.")
+  )
+) %>%
+  formatRound(
+    columns = c("Shipments", "TotalUnits", "AvgUnitsPerShipment"),
+    digits = 0,
+    mark = ","
+  )
+
+```
+:::  
+
+## Who Ships Capsules at Scale
+```{r, include=TRUE, echo=FALSE}
+
+top_hubs_n <- 15
+
+capsule_hubs %>%
+  slice_max(OutboundUnits, n = top_hubs_n) %>%
+  mutate(Origin_LicenseeName = fct_reorder(Origin_LicenseeName, OutboundUnits)) %>%
+  ggplot(aes(x = OutboundUnits, y = Origin_LicenseeName)) +
+  geom_col(fill = "#1f78b4") +
+  scale_x_continuous(labels = comma) +
+  labs(
+    title = "Top Capsule Shipping Hubs",
+    subtitle = paste0("Top ", top_hubs_n, " licensees by outbound units"),
+    x = "Outbound Units",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 12)
+
+```
+
+## High-Volume Capsule Hubs  
+
+::: {.column-page}
+```{r capsule-hubs-table, message=FALSE, warning=FALSE, echo=FALSE, include=TRUE}
+
+datatable(
+  capsule_hubs,
+  extensions = c("Buttons", "FixedHeader"),
+  options = list(
+    pageLength = 15,
+    autoWidth = TRUE,
+    fixedHeader = TRUE,
+    dom = "Bfrtip",
+    buttons = c("copy", "csv", "excel"),
+    order = list(list(3, "desc")) # OutboundUnits
+  ),
+  rownames = FALSE,
+  filter = "top",
+  caption = htmltools::tags$caption(
+    style = "caption-side: bottom; text-align: left;",
+    "Top capsule distribution hubs ranked by outbound volume."
+  )
+) %>%
+  formatRound(
+    columns = c("OutboundShipments", "OutboundUnits"),
+    digits = 0,
+    mark = ","
+  )
+
+```
+:::
+
+## Licensee Hubs: Few Origins, Many Destinations  
+Outbound shipment data reveals a hub-and-spoke structure:
+
++ Just 32 origin licensees function as major capsule hubs  
++ Some hubs ship to nearly 200 trading partners
++ Others operate as vertically aligned loops, shipping primarily to themselves or affiliates  
+
+The largest hubs are not necessarily the largest producers by volume, but rather those with:
+
++ stable SKUs,  
++ repeatable packaging formats,  
++ and consistent compliance performance.
+
+This structure reduces transport complexity but increases **network dependency** on a small set of operators.
+
+**What These Tables Tell Us About the Capsule Market** - capsules are a logistics-conservative product  
+Capsule supply chains favor:
+
++ short distances,
+
++ known partners,
+
++ predictable demand,
+
++ and compliance stability.
+
+They behave more like **regulated consumer health products** than traditional cannabis SKUs.
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+# WA county geometry
+# Reproject counties to planar CRS before centroid calculation
+wa_counties_sf <- tigris::counties(state = "WA", cb = TRUE, year = 2022) %>%
+  st_as_sf() %>%
+  st_transform(3857) %>%   # Web Mercator (safe for centroids)
+  transmute(
+    County = str_to_upper(NAME),
+    GEOID,
+    geometry
+  )
+
+wa_centroids <- wa_counties_sf %>%
+  mutate(centroid = st_point_on_surface(geometry)) %>%
+  mutate(
+    cx = st_coordinates(centroid)[, 1],
+    cy = st_coordinates(centroid)[, 2]
+  ) %>%
+  st_drop_geometry()
+
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, include=FALSE}
+
+county_out <- capsule_county_flows %>%
+  group_by(Origin_County) %>%
+  summarise(OutboundUnits = sum(TotalUnits, na.rm = TRUE), .groups = "drop") %>%
+  rename(County = Origin_County)
+
+county_in <- capsule_county_flows %>%
+  group_by(Destination_County) %>%
+  summarise(InboundUnits = sum(TotalUnits, na.rm = TRUE), .groups = "drop") %>%
+  rename(County = Destination_County)
+
+county_net <- wa_counties_sf %>%
+  left_join(county_out, by = "County") %>%
+  left_join(county_in, by = "County") %>%
+  mutate(
+    OutboundUnits = replace_na(OutboundUnits, 0),
+    InboundUnits  = replace_na(InboundUnits, 0),
+    NetFlowUnits  = OutboundUnits - InboundUnits
+  )
+
+p_net_interactive <- ggplot(county_net) +
+  geom_sf(aes(
+    fill = NetFlowUnits,
+    text = paste0(
+      "County: ", str_to_title(County),
+      "<br>Outbound Units: ", comma(OutboundUnits),
+      "<br>Inbound Units: ", comma(InboundUnits),
+      "<br>Net Units: ", comma(NetFlowUnits)
+    )
+  ), color = "white", linewidth = 0.2) +
+  scale_fill_gradient2(low = "#2b8cbe", mid = "grey95", high = "#e34a33", midpoint = 0) +
+  labs(title = "Capsule Net Flow by County (Interactive)", fill = "Net Units") +
+  theme_minimal(base_size = 12) +
+  theme(panel.grid = element_blank(), axis.text = element_blank(), axis.title = element_blank())
+
+plotly::ggplotly(p_net_interactive, tooltip = "text")
+
+```
+
+```{r, warning=FALSE, message=FALSE, include=FALSE}
+
+# Pick top N lanes to keep the map readable
+top_n_lanes <- 75
+
+flow_lines <- capsule_county_flows %>%
+  mutate(
+    Origin_County = str_to_upper(Origin_County),
+    Destination_County = str_to_upper(Destination_County)
+  ) %>%
+  inner_join(wa_centroids, by = c("Origin_County" = "County")) %>%
+  rename(ox = cx, oy = cy) %>%
+  inner_join(wa_centroids, by = c("Destination_County" = "County")) %>%
+  rename(dx = cx, dy = cy) %>%
+  arrange(desc(TotalUnits)) %>%
+  slice_head(n = top_n_lanes) %>%
+  mutate(
+    lane_label = paste0(str_to_title(Origin_County), " → ", str_to_title(Destination_County)),
+    w = scales::rescale(log1p(TotalUnits), to = c(0.2, 2.5)) # stroke width
+  )
+
+flow_lines <- flow_lines %>%
+  mutate(
+    tooltip = paste0(
+      "Route: ", lane_label,
+      "<br>Shipments: ", scales::comma(Shipments),
+      "<br>Total Units: ", scales::comma(TotalUnits)
+    ),
+    color_val = log1p(TotalUnits)   # better visual spread
+  )
+
+p_routes <- ggplot() +
+  geom_sf(
+    data = wa_counties_sf,
+    fill = "grey97",
+    color = "grey55",
+    linewidth = 0.6
+  ) +
+  geom_segment(
+    data = flow_lines,
+    aes(
+      x = ox, y = oy,
+      xend = dx, yend = dy,
+      linewidth = w,
+      color = color_val,
+      key = tooltip
+    ),
+    arrow = arrow(type = "closed", length = unit(2, "mm")), 
+    alpha = 0.75,
+    lineend = "round"
+  ) +
+  scale_linewidth_identity() +
+  scale_color_viridis_c(
+    option = "C",
+    labels = scales::comma,
+    name = "Capsule Units\n(log scale)"
+  ) +
+  labs(
+    title = "Top Capsule Trading Lanes (County-to-County)",
+    subtitle = paste0("Top ", top_n_lanes, " lanes by total units"),
+    caption = "Line width and color scaled by shipment volume"
+  ) +
+  theme_void(base_size = 12) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(face = "bold")
+  )
+
+plotly::ggplotly(p_routes, tooltip = "key")
+
+```
+## "Lane Drilldown" tables (for compliance traceability)  
+
+::: {.column-page}
+```{r, echo=FALSE, include=TRUE}
+
+# A drilldown table: top manifest lines by quantity, includes External IDs
+capsule_top_manifest_lines <- capsule_flows %>%
+  transmute(
+    ExternalManifestIdentifier,
+    InventoryExternalIdentifier,
+    Origin_LicenseeName,
+    Destination_LicenseeName,
+    Origin_County,
+    Destination_County,
+    Quantity = as.numeric(Quantity),
+    UOM,
+    DepartureDate
+  ) %>%
+  arrange(desc(Quantity)) %>%
+  slice_head(n = 50)
+
+datatable(
+  capsule_top_manifest_lines %>%
+    mutate(across(where(is.character), ~ replace_na(.x, ""))),
+  extensions = c("Buttons", "FixedHeader"),
+  options = list(
+    pageLength = 15,
+    autoWidth = TRUE,
+    fixedHeader = TRUE,
+    dom = "Bfrtip",
+    buttons = c("copy", "csv", "excel"),
+    order = list(list(6, "desc")), 
+    columnDefs = list(
+      list(className = "dt-right", targets = c(6)) # numeric alignment
+    )
+  ),
+  rownames = FALSE,
+  filter = "top",
+  caption = htmltools::tags$caption(
+    style = "caption-side: bottom; text-align: left;",
+    "Top Capsule Manifest Lines (with External Identifiers)"
+  )
+) %>%
+  formatRound(
+    columns = c("Quantity"),
+    digits = 0
+  ) %>%
+  formatStyle(
+  "Quantity",
+  background = DT::styleColorBar(
+    capsule_top_manifest_lines$Quantity,
+    "#2c7fb8"
+  ),
+  backgroundSize = "98% 88%",
+  backgroundRepeat = "no-repeat",
+  backgroundPosition = "center"
+) %>%
+formatStyle(
+  c("ExternalManifestIdentifier", "InventoryExternalIdentifier"),
+  fontWeight = "bold",
+  color = "#1f78b4"
+)
+
+```
+:::
+
+## Mapping Capsule Transport Routes  
+
+::: {.column-page}
+```{r, warning=FALSE, message=FALSE, echo=FALSE, include=FALSE}
+
+wa_centroids_ll <- wa_centroids %>%
+  st_as_sf(coords = c("cx", "cy"), crs = 3857) %>%
+  st_transform(4326)
+
+route_pairs <- flow_lines %>%
+  select(
+    Origin_County,
+    Destination_County,
+    tooltip,
+    color_val,
+    w
+  ) %>%
+  left_join(wa_centroids_ll, by = c("Origin_County" = "County")) %>%
+  rename(orig_pt = geometry) %>%
+  left_join(wa_centroids_ll, by = c("Destination_County" = "County")) %>%
+  rename(dest_pt = geometry)
+
+route_pairs <- route_pairs %>%
+  mutate(route_id = row_number())
+
+routes_list <- purrr::pmap(
+  list(route_pairs$route_id,
+       route_pairs$orig_pt,
+       route_pairs$dest_pt),
+  function(id, orig, dest) {
+    tryCatch(
+      {
+        r <- osrmRoute(
+          src = st_as_sf(st_sfc(orig, crs = 4326)),
+          dst = st_as_sf(st_sfc(dest, crs = 4326)),
+          overview = "full"
+        )
+        r$route_id <- id
+        r
+      },
+      error = function(e) NULL
+    )
+  }
+)
+
+routes_sf <- routes_list %>%
+  purrr::compact() %>%
+  bind_rows() %>%
+  left_join(
+    route_pairs %>%
+      select(route_id, w, color_val, tooltip),
+    by = "route_id"
+  )
+
+p <- ggplot() +
+  geom_sf(
+    data = wa_counties_sf,
+    fill = "grey97",
+    color = "grey55",
+    linewidth = 0.6
+  ) +
+  geom_sf(
+    data = routes_sf,
+    aes(
+      linewidth = w,
+      color = color_val,
+      key = tooltip
+    ),
+    alpha = 0.8
+  ) +
+  scale_linewidth_identity() +
+  scale_color_viridis_c(option = "C",
+                        name = "Capsule Units\n(log\u2081\u2080)") +
+  theme_void()
+
+```
+:::  
+
+Transport Data Reveals Strategy, Not Just Movement - even without pricing or margin data, transport flows expose:
+
++ vertical integration strategies,
++ geographic retail footprints,
++ and regional demand consistency.
+
+## Interactive Capsule Transport Map (with tooltips) 
+
+::: {.column-page}
+```{r, message=FALSE, warning=FALSE, echo=FALSE, include=TRUE}
+
+p_interactive <- plotly::ggplotly(p, tooltip = "key")
+
+p_interactive
+```
+:::
+
+## County-to-County Capsule Flows
+```{r capsule-county-table, message=FALSE, warning=FALSE, echo=FALSE, include=TRUE}
+
+datatable(
+  capsule_county_flows,
+  extensions = c("Buttons", "FixedHeader"),
+  options = list(
+    pageLength = 10,
+    autoWidth = TRUE,
+    fixedHeader = TRUE,
+    dom = "Bfrtip",
+    buttons = c("copy", "csv", "excel"),
+    order = list(list(3, "desc")) # TotalUnits
+  ),
+  rownames = FALSE,
+  filter = "top",
+  caption = htmltools::tags$caption(
+    style = "caption-side: bottom; text-align: left;",
+    "Aggregated capsule movement between Washington counties."
+  )
+) %>%
+  formatRound(
+    columns = c("Shipments", "TotalUnits"),
+    digits = 0,
+    mark = ","
+  )
+
+```
+
+## County Corridors: The Spine of Capsule Logistics
+
+While capsule movements are widespread, a small number of county corridors account for a disproportionate share of volume.
+
+High-volume corridors include:
+
++ Whatcom → Whatcom
+
++ Whatcom → King
+
++ Skagit → Snohomish
+
++ Pacific → King
+
++ Thurston → Pierce
+
+These routes combine short distance, established operators, and reliable retail endpoints, reinforcing the idea that capsule logistics prioritize operational certainty over expansion.
+
+## Why This Matters  
+For operators, capsule logistics show where predictable revenue lives.  
+For regulators, they highlight low-risk compliance corridors.  
+For analysts, they offer a clean contrast to the volatility seen in flower and concentrate markets.
+
+Most importantly, this analysis demonstrates the power of open CCRS data: even routine manifest records can reveal how the cannabis economy actually functions — product by product, route by route.
+
+This is one of a continuing series of transport and supply-chain analyses published by The Evergreen Canna Ledger. All findings are derived from anonymized, aggregated CCRS data and are intended for transparency, research, and public understanding.

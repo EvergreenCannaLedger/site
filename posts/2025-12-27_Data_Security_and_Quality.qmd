@@ -35,16 +35,15 @@ For cannabis businesses, data security isn’t just a technical concern — it�
 
 **Regular Security Audits:** The platform undergoes continuous security monitoring, with automated alerts for any suspicious activity. We also have operating procedures for internal data review and verification.
 
-**From Raw to Reliable: The Data Cleaning Process** Raw data can be hot mess — duplicates, missing values, and fat-fingered entries are common. For TECL, accuracy is a non-negotiable standard. The data cleaning process ensures that only high-quality, reliable information reaches users:
+**From Raw to Reliable** Raw data can be hot mess — duplicates, missing values, and fat-fingered entries are common. For TECL, accuracy is a non-negotiable standard. The data cleaning process ensures that only high-quality, reliable information reaches users.
 
-**Data Extraction:** TECL combines hundreds of traceability files directly from Washington’s state cannabis system every month.
-Automated Data Cleaning: The TECL platform uses advanced SQL algorithms to identify and remove duplicates, correct errors, and normalize and aggregate data for consistency.
+**Data Extraction:** TECL combines hundreds of traceability files directly from Washington’s state cannabis system every month. 
 
 **Data Validation:** Data points are cross-referenced for accuracy against the producer’s or retailer’s website, ensuring that users can trust the insights they receive.
 
 **Proprietary Scoring Logic:** Beyond basic cleaning, TECL enhances the data with proprietary scoring and ranking, making it even more insightful to know who to do business with.
 
-**Real-Time Data Updates: Keeping Insights Fresh** In an industry as dynamic as cannabis in any US state, stale data is useless. TECL is designed for continuous data updates and refreshes, ensuring users always have access to the latest market insights:
+**Keeping Insights Fresh** In an industry as dynamic as cannabis in any US state, stale data is useless. TECL is designed for continuous data updates and refreshes, ensuring users always have access to the latest market insights.
 
 **Monthly Data Refresh:** New data files are imported every month, maintaining an up-to-date view of the cannabis market.
 
