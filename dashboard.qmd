@@ -446,7 +446,6 @@ category_summary %>%
   )
 ```
 
-
 <br>
 
 :::{.text-center}

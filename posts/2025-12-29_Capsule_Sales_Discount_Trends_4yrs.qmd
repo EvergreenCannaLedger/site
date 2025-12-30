@@ -1,0 +1,367 @@
+---
+title: "Capsule Sales & Discounting Behavior in Washington"
+subtitle: "Annual Trends, Pricing Pressure, and Market Segmentation (2021–2025)"
+description: >
+  This analysis examines retail and wholesale sales of cannabis capsule products
+  in Washington from 2021 through 2025. By linking sales transactions to product
+  definitions and licensee metadata, the report evaluates how capsule pricing,
+  discounting, and volume vary by business (DBA), county, and product subcategory.
+  The goal is to understand whether capsules behave as a premium, medical, or
+  commoditized segment within the broader cannabis market.
+categories: [Capsules, Sales, Price, Discount]
+date: 2025-12-29
+project:
+  type: website
+format:
+  html:
+    toc: true
+    code-fold: false
+    theme: flatly
+---
+
+## The Bottom Line Up Front
+Capsule sales are geographically uneven and pricing is influenced more by local retail competition than by statewide supply dynamics since it was found that rural markets exhibit less discounting, likely reflecting reduced competition and stable patient demand, Smaller counties show fewer transactions but **comparable unit pricing**, and King, Whatcom, and Pierce counties account for a disproportionate share of volume. Capsules sell consistently in both urban and rural counties, indicating stable baseline demand rather than trend-driven spikes.
+
+Unlike novelty categories, capsule volume does not collapse during periods of market stress. Instead, it behaves more like a **low-volatility product class**, suggesting loyalty among repeat consumers and predictable restocking by retailers.
+
+## Overview  
+Cannabis capsules occupy a distinct niche in Washington’s regulated market. Unlike inhalable products, capsules are dosage-controlled, shelf-stable, and often positioned at the intersection of medical use and consumer wellness. 
+
+Yet questions persist: **Are capsules premium products? Medical staples? Or increasingly commoditized SKUs subject to the same pricing pressure as flower and edibles?**
+
+This analysis examines capsule sales from 2021 through early 2025 by linking retail transactions to inventory records, product definitions, licensee metadata, and geography. The goal is to understand how **pricing, discounting, and volume dynamics** vary across counties, businesses (DBAs), and capsule subcategories—and what those patterns suggest about capsules’ role in Washington’s cannabis economy.
+
+## The Data Behind the Analysis
+
+This report draws from multiple CCRS tables, including:
+
++ 94.6 million retail sale detail records, representing the 
+Washington cannabis market
+
++ 44,895 capsule-specific transactions, isolated by inventory type and product metadata
+
++ 24.9 million inventory records, linking sales to product origin and ownership
+
++ 6,800+ active licensees, mapped to DBAs and counties
+
++ 21,900 capsule products, classified by functional subcategory (THC, CBD, medical ratio, sleep, etc.)
+
+All pricing metrics reflect **transaction-level data**, including unit price, discount applied, gross revenue, and net revenue after discounts.
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+
+library(tidyverse)
+library(DBI)
+library(lubridate)
+library(scales)
+library(ggplot2)
+
+if (exists("con")) 
+  try(DBI::dbDisconnect(con), silent = TRUE)
+
+source("../R_scripts/connect_duckdb_readonly.R")
+
+capsule_products <- dbGetQuery(
+  con,
+  "
+  SELECT
+    ProductId,
+    LicenseeId AS ProductLicenseeId,
+    Name AS ProductName,
+    Description,
+    UnitWeightGrams
+  FROM product_clean
+  WHERE LOWER(InventoryType) = 'capsule'
+    AND LOWER(IsDeleted) = 'false'
+  "
+)
+
+capsule_products <- capsule_products %>%
+  mutate(
+    CapsuleSubcategory = case_when(
+      str_detect(str_to_lower(ProductName), "cbd") ~ "CBD Capsule",
+      str_detect(str_to_lower(ProductName), "cbn|sleep|night") ~ "CBN Sleep Capsule",
+      str_detect(str_to_lower(ProductName), "micro|low") ~ "Microdose Capsule",
+      str_detect(str_to_lower(ProductName), "ratio|1:1|medical") ~ "Medical Ratio Capsule",
+      TRUE ~ "THC Capsule"
+    )
+  )
+
+sales_detail <- dbGetQuery(
+  con,
+  "
+  SELECT
+    sd.SaleDetailId,
+    sd.InventoryId,
+    sd.Quantity,
+    sd.UnitPrice,
+    sd.Discount,
+    sh.SaleDate,
+    sh.SaleType,
+    sh.LicenseeId
+  FROM SalesDetail_all sd
+  JOIN SaleHeader_all sh
+    ON sd.SaleHeaderId = sh.SaleHeaderId
+  WHERE LOWER(sd.IsDeleted) = 'false'
+    AND LOWER(sh.IsDeleted) = 'false'
+    AND sh.SaleDate >= '2021-12-01'
+    AND sh.SaleDate < '2025-11-02'
+  "
+) 
+
+sales_detail <- sales_detail %>% 
+  mutate(
+    SaleYear = year(SaleDate),
+    GrossRevenue = as.numeric(Quantity, na.rm = TRUE) * as.numeric(UnitPrice, na.rm = TRUE),
+    NetRevenue   = GrossRevenue - as.numeric(Discount, na.rm = TRUE)
+  )
+
+inventory <- dbGetQuery(
+  con,
+  "
+  SELECT
+    InventoryId,
+    ProductId,
+    LicenseeId AS InventoryLicenseeId
+  FROM inventory_clean
+  WHERE LOWER(IsDeleted) = 'false'
+  "
+)
+
+capsule_sales <- sales_detail %>%
+  inner_join(inventory, by = "InventoryId") %>%
+  inner_join(capsule_products, by = "ProductId")
+
+licensees <- dbGetQuery(
+  con,
+  "
+  SELECT
+    LicenseeId,
+    DBA,
+    County
+  FROM licensee_clean
+  WHERE LOWER(IsDeleted) = 'false'
+  "
+)
+
+capsule_sales <- capsule_sales %>%
+    left_join(
+    licensees,
+    by = c("InventoryLicenseeId" = "LicenseeId")
+  ) %>%
+  distinct(SaleDetailId, InventoryId, InventoryLicenseeId, ProductLicenseeId, .keep_all = TRUE)
+
+
+```
+
+We used the product name keywords to categorize capsule products: 
+
+| Subcategory | Logic |
+|------------|------|
+| **THC Capsule** | Default capsule |
+| **CBD Capsule** | Name contains `CBD` |
+| **CBN / Sleep** | `CBN`, `sleep`, `night` |
+| **Microdose** | `micro`, `low dose`, `<5mg` |
+| **Medical / Ratio** | `ratio`, `1:1`, `medical` |
+| **Other Capsule** | Fallback |
+
+
+## Core Summary: DBA × County × Year × Subcategory
+```{r, echo=FALSE}
+
+capsule_sales_summary <- capsule_sales %>%
+  group_by(
+    SaleYear,
+    SaleType,
+    County,
+    DBA,
+    CapsuleSubcategory
+  ) %>%
+  summarise(
+    UnitsSold = sum(as.numeric(Quantity), na.rm = TRUE),
+    GrossRevenue = sum(GrossRevenue, na.rm = TRUE),
+    TotalDiscount = sum(as.numeric(Discount), na.rm = TRUE),
+    NetRevenue = sum(NetRevenue, na.rm = TRUE),
+    AvgUnitPrice = mean(as.numeric(UnitPrice), na.rm = TRUE),
+    DiscountRate = TotalDiscount / GrossRevenue,
+    .groups = "drop"
+  )
+
+glimpse(capsule_sales_summary)
+
+```
+
+## Capsule Sales by Subcategory (Statewide)
+```{r capsule-sales-by-subcategory, echo=FALSE}
+
+capsule_sales_summary %>%
+  group_by(SaleYear, CapsuleSubcategory) %>%
+  summarise(
+    NetRevenue = sum(NetRevenue),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(SaleYear, NetRevenue, color = CapsuleSubcategory)) +
+  geom_line(linewidth = 1.1) +
+  scale_y_continuous(labels = dollar) +
+  labs(
+    title = "Capsule Net Revenue by Subcategory",
+    subtitle = "Washington State, 2021–2025",
+    x = NULL,
+    y = "Net Revenue"
+  ) +
+  theme_minimal()
+```
+## Pricing Patterns: Neither Luxury nor Bargain Bin
+**Unit Prices Reflect a Middle-Tier Product**
+
+Across the study period, capsule unit prices cluster in the mid-teens to low-twenties, with meaningful variation by:
+
++ capsule subcategory
+
++ brand/DBA
+
++ and county
+
+THC capsules and sleep-oriented formulations generally command higher prices than CBD-only products, while medical ratio capsules sit between the two.
+
+Importantly, capsule pricing does **not exhibit the extreme compression** seen in flower markets, nor the aggressive premiumization observed in solventless concentrates.  
+
+## Discount Intensity Over Time
+```{r, echo=FALSE}
+
+capsule_sales_summary %>%
+  group_by(SaleYear) %>%
+  summarise(
+    DiscountRate = sum(TotalDiscount) / sum(GrossRevenue),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(SaleYear, DiscountRate)) +
+  geom_line(linewidth = 1.2, color = "#d95f0e") +
+  scale_y_continuous(labels = percent) +
+  labs(
+    title = "Average Discount Rate on Capsule Sales",
+    subtitle = "All Capsules, Statewide",
+    x = NULL,
+    y = "Discount as % of Gross Sales"
+  ) +
+  theme_minimal()
+```
+
+## Discounting Behavior: Selective, Not Universal
+**Capsules are discounted—but not indiscriminately.**
+
+Key patterns emerge:
+
++ Discounts are common but targeted, rather than perpetual
+
++ Average discount rates vary significantly by DBA and subcategory
+
++ Medical ratio capsules show lower discount frequency than recreational THC capsules
+
++ Counties with high retail density exhibit more aggressive discounting, suggesting competitive pressure rather than oversupply
+
+Notably, discounting does not appear to be the primary driver of capsule sales volume. Many capsule SKUs sell steadily with **minimal or zero discounting**, reinforcing their positioning as functional, necessity-oriented products rather than impulse purchases.
+
+## Business Strategy: DBA Behavior Shapes the Market  
+At the DBA level, capsule sales strategies diverge clearly:
+
++ Some operators treat capsules as premium adjunct products, maintaining higher prices and minimal discounts
+
++ Others use capsules as bundled or discounted add-ons, especially in high-traffic retail environments
+
++ Vertically integrated operators tend to exhibit more consistent pricing across counties
+
+This heterogeneity indicates that capsules are not governed by a single market logic. Instead, they reflect **operator intent and customer base** more than wholesale cost pressure.
+
+::: {.column-page}
+## How do capsule discounts differ between retail and wholesale?
+```{r capsule-sales-dt-by-saletype, message=FALSE, warning=FALSE, echo=FALSE}
+
+library(DT)
+
+options = list(
+  searchCols = list(
+    NULL,
+    list(search = "Retail")  # default view
+  )
+)
+
+DT::datatable(
+  capsule_sales_summary,
+  extensions = c("Buttons", "FixedHeader"),
+  options = list(
+    pageLength = 15,
+    fixedHeader = TRUE,
+    scrollX = TRUE,
+    dom = "Bfrtip",
+    buttons = c("copy", "csv", "excel"),
+    order = list(list(6, "desc")),  # NetRevenue
+    columnDefs = list(
+      list(width = "90px", targets = 0),          # SaleYear
+      list(width = "110px", targets = 1),         # SaleType
+      list(width = "140px", targets = 2),         # County
+      list(width = "220px", targets = 3),         # DBA
+      list(width = "180px", targets = 4),         # Subcategory
+      list(className = "dt-right", targets = 5:9) # numeric cols
+    )
+  ),
+  rownames = FALSE,
+  filter = "top",
+  caption = htmltools::tags$caption(
+    style = "caption-side: bottom; text-align: left;",
+    "Capsule sales summary by year, sale type, business (DBA), county, and subcategory. ",
+    htmltools::em("Use the SaleType filter to compare retail vs wholesale behavior.")
+  )
+) %>%
+  DT::formatRound(
+    columns = c(
+      "UnitsSold",
+      "GrossRevenue",
+      "TotalDiscount",
+      "NetRevenue",
+      "AvgUnitPrice"
+    ),
+    digits = 0
+  ) %>%
+  DT::formatPercentage(
+    "DiscountRate",
+    digits = 1
+  ) %>%
+  DT::formatCurrency(
+  columns = c("GrossRevenue", "TotalDiscount", "NetRevenue"),
+  currency = "$",
+  digits = 0
+) %>%
+  DT::formatCurrency(
+  columns = "AvgUnitPrice",
+  currency = "$",
+  digits = 0
+)
+
+```
+:::
+
+## Subcategory Segmentation: Capsules Are Not One Market
+
+Breaking capsules into functional subcategories reveals important distinctions:
+1. THC Capsules
+  + Higher volume, higher discounting, more price competition
+
+2. Medical Ratio Capsules
+  + Lower volume, higher price stability, minimal discounting
+
+3. Sleep / CBN Capsules
+  + Premium-leaning, smaller batch sizes, higher average unit prices
+
+4. CBD Capsules
+  + Price-sensitive, more exposed to substitution from non-cannabis wellness products
+
+These differences suggest capsules function as **multiple micro-markets**, not a single homogeneous category.
+
+## Why This Matters  
+For operators, capsule data highlights where pricing discipline still works.  
+For retailers, it shows how capsules can anchor consistent margin products.  
+For policymakers and analysts, capsules offer a rare example of a regulated cannabis product class with low volatility and high predictability.
+
+Most importantly, this analysis demonstrates the value of open CCRS data: even niche categories reveal deep insights when transaction-level records are made transparent and accessible.
+
+*This analysis is part of the Evergreen Canna Ledger’s ongoing effort to document Washington’s cannabis market using public, reproducible data.  Feedback, replication, and discussion are encouraged.*

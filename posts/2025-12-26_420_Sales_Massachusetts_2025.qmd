@@ -2,7 +2,7 @@
 title: "What Massachusetts' 4/20 Cannabis Sales Reveal About Consumer Behavior in 2025"
 subtitle: "A view of cannabis holiday sales activity in an east coast state"
 date: "2025-12-26"
-categories: [CCRS, Holiday, Massachusetts]
+categories: [Metrc, Holiday, Massachusetts]
 project:
   type: website
 format: 

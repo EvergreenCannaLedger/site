@@ -708,8 +708,6 @@ formatStyle(
 :::
 
 ## Mapping Capsule Transport Routes  
-
-::: {.column-page}
 ```{r, warning=FALSE, message=FALSE, echo=FALSE, include=FALSE}
 
 wa_centroids_ll <- wa_centroids %>%
@@ -783,7 +781,6 @@ p <- ggplot() +
   theme_void()
 
 ```
-:::  
 
 Transport Data Reveals Strategy, Not Just Movement - even without pricing or margin data, transport flows expose:
 
@@ -793,14 +790,12 @@ Transport Data Reveals Strategy, Not Just Movement - even without pricing or mar
 
 ## Interactive Capsule Transport Map (with tooltips) 
 
-::: {.column-page}
 ```{r, message=FALSE, warning=FALSE, echo=FALSE, include=TRUE}
 
 p_interactive <- plotly::ggplotly(p, tooltip = "key")
 
 p_interactive
 ```
-:::
 
 ## County-to-County Capsule Flows
 ```{r capsule-county-table, message=FALSE, warning=FALSE, echo=FALSE, include=TRUE}
