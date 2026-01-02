@@ -8,7 +8,7 @@ description: >
   discounting, and volume vary by business (DBA), county, and product subcategory.
   The goal is to understand whether capsules behave as a premium, medical, or
   commoditized segment within the broader cannabis market.
-categories: [Capsules, Sales, Price, Discount]
+categories: [Capsule, Sales, Price, Discount]
 date: 2025-12-29
 project:
   type: website
@@ -29,7 +29,7 @@ Cannabis capsules occupy a distinct niche in Washington’s regulated market. Un
 
 Yet questions persist: **Are capsules premium products? Medical staples? Or increasingly commoditized SKUs subject to the same pricing pressure as flower and edibles?**
 
-This analysis examines capsule sales from 2021 through early 2025 by linking retail transactions to inventory records, product definitions, licensee metadata, and geography. The goal is to understand how **pricing, discounting, and volume dynamics** vary across counties, businesses (DBAs), and capsule subcategories—and what those patterns suggest about capsules’ role in Washington’s cannabis economy.
+The goal is to understand how **pricing, discounting, and volume dynamics** vary across counties, businesses (DBAs), and capsule subcategories—and what those patterns suggest about capsules’ role in Washington’s cannabis economy.
 
 ## The Data Behind the Analysis
 
@@ -342,7 +342,7 @@ DT::datatable(
 
 ## Subcategory Segmentation: Capsules Are Not One Market
 
-Breaking capsules into functional subcategories reveals important distinctions:
+Breaking capsules into functional subcategories reveals important distinctions:  
 1. THC Capsules
   + Higher volume, higher discounting, more price competition
 

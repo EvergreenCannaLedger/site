@@ -1,0 +1,523 @@
+---
+title: "What CCRS Lab Data Really Tells Us About Cannabis Strains, Potency, and Product Form"
+subtitle: "Using Washington CCRS data to separate genetics, marketing labels, and market reality"
+description: >
+  This analysis uses Washington’s CCRS lab testing data to examine how reported strain labels and product form align with observed cannabinoid potency and chemotype outcomes. By separating genetic intent from marketing conventions, the report highlights where laboratory results reinforce—or contradict—commonly used strain classifications. The findings clarify what CCRS data can reliably tell us about cannabis genetics, potency, and real-world market behavior.
+categories: [Lab Results, Strains, THC, CBD]
+date: 2026-01-01
+format: html
+editor: source
+---
+
+## The Bottom Line Up Front  
+The data suggest that strain identity, potency, and product form are distinct dimensions of the market — and should be analyzed as such. 
+
+Analysis of Washington’s Cannabis Central Reporting System (CCRS) lab data shows three clear and important findings for the cannabis industry:
+
++ Most strains in the regulated market are THC-dominant, regardless of whether they are labeled Indica, Sativa, or Hybrid.
+
++ Reported strain type does not meaningfully predict THC potency, especially once concentrates are included.
+
++ Within the same strain name, observed THC potency can vary dramatically, often spanning flower-level to concentrate-level ranges.
+
+## Overview  
+Strain names and strain types are deeply embedded in cannabis commerce. They shape consumer expectations, retail menus, and even regulatory conversations. At the same time, lab-tested potency is often treated as a proxy for “strength,” “quality,” or “intensity.”
+
+But CCRS data allows us to ask a more rigorous question:
+
+How well do strain labels actually correspond to observed chemistry in the regulated market?
+CCRS lab results do not include terpene panels, which are required for effect-based classification.
+
+Strain names correspond reasonably well to strain-type labels, but not to a unique or narrow THC potency class across products and inventories.
+
+Strain names in CCRS generally align with reported strain-type labels (Indica, Sativa, Hybrid), reflecting shared genetic and cultural understanding. 
+
+Tested THC potency varies widely within the same strain name, driven primarily by product form and processing rather than genetics alone. As a result, strain names are not associated with a single, consistent potency class.
+
+For each strain name with sufficient coverage, we summarized:
+
+- Minimum observed Total THC
+
+- Mean observed Total THC
+
+- Median observed Total THC
+
+- Maximum observed Total THC
+
+No terpene data was used in this analysis; this is a potency-only view of the market.
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, include=TRUE)
+
+library(tidyverse)
+library(DBI)
+library(lubridate)
+library(scales)
+library(ggplot2)
+
+if (exists("con")) 
+  try(DBI::dbDisconnect(con), silent = TRUE)
+
+source("../R_scripts/connect_duckdb_readonly.R")
+
+sql <- "
+SELECT
+  -- Lab result
+  lr.LabResultId,
+  lr.LabLicenseeId,
+  lr.LicenseeId AS TestedForLicenseeId,
+  lr.LabTestStatus,
+  lr.InventoryId,
+  lr.TestName,
+  lr.CreatedDate AS LabCreatedDate,
+  lr.TestDate,
+  lr.TestValue,
+  lr.ExternalIdentifier AS LabResultExternalIdentifier,
+
+  -- Inventory
+  inv.InventoryId,
+  inv.ExternalIdentifier AS InventoryExternalIdentifier,
+  inv.ProductId,
+  inv.StrainId,
+  inv.LicenseeId AS InventoryLicenseeId,
+  inv.CreatedDate AS InventoryCreatedDate,
+  inv.IsMedical,
+  inv.QuantityOnHand,
+  inv.TotalCost,
+
+  -- Product
+  p.ProductId,
+  p.ExternalIdentifier AS ProductExternalIdentifier,
+  p.Name AS ProductName,
+  p.InventoryType AS ProductInventoryType,
+  p.CreatedDate AS ProductCreatedDate,
+  p.Description,
+  p.UnitWeightGrams,
+  p.LicenseeId AS ProductLicenseeId,
+
+  -- Strain
+  s.StrainId,
+  s.CreatedDate AS StrainCreatedDate,
+  s.Name AS StrainName,
+  s.StrainType AS StrainTypeLabel,
+  s.LicenseeId AS StrainLicenseeId,
+  s.StrainType AS StrainType
+
+FROM LabResult_all lr
+LEFT JOIN Inventory_clean inv
+  ON inv.InventoryId = lr.InventoryId
+LEFT JOIN Product_clean p
+  ON p.ProductId = inv.ProductId
+LEFT JOIN Strains_clean s
+  ON s.StrainId = inv.StrainId
+WHERE LOWER(lr.IsDeleted) = 'false'
+  AND (LOWER(inv.IsDeleted) = 'false' OR inv.IsDeleted IS NULL)
+  AND (LOWER(p.IsDeleted) = 'false' OR p.IsDeleted IS NULL)
+  AND (LOWER(s.IsDeleted) = 'false' OR s.IsDeleted IS NULL)
+"
+
+types <- DBI::dbGetQuery(con, sql)
+
+types <- types %>%
+  as_tibble(.name_repair = "unique")
+
+```
+
+```{r}
+
+parse_numeric <- function(x) {
+  x_chr <- as.character(x)
+  ifelse(
+    str_detect(str_to_lower(x_chr), "<|nd|non"),
+    NA_real_,
+    suppressWarnings(readr::parse_number(x_chr))
+  )
+}
+
+types_clean <- types %>%
+  as_tibble(.name_repair = "unique") %>%
+  mutate(
+    test_name_norm = TestName %>%
+      str_to_lower() %>%
+      str_squish(),
+    raw_value = parse_numeric(TestValue)
+  )
+
+
+potency_clean <- types_clean %>%
+  mutate(
+    analyte = case_when(
+      str_detect(test_name_norm, "total\\s*thc") ~ "thc_total",
+      str_detect(test_name_norm, "delta[- ]?9[- ]?thc|\\bd9thc\\b") ~ "thc_d9",
+      str_detect(test_name_norm, "\\bthca\\b") ~ "thca",
+      str_detect(test_name_norm, "thca") ~ "thca",
+      str_detect(test_name_norm, "total\\s*cbd") ~ "cbd_total",
+      str_detect(test_name_norm, "\\bcbd\\b") & !str_detect(test_name_norm, "cbda") ~ "cbd",
+      str_detect(test_name_norm, "\\bcbda\\b") ~ "cbda",
+      str_detect(test_name_norm, "d8-?thc") ~ "thc_d8",
+      TRUE ~ NA_character_
+    ),
+    unit = case_when(
+      str_detect(test_name_norm, "mg/serving") ~ "mg_serving",
+      str_detect(test_name_norm, "mg/g") ~ "mg_g",
+      str_detect(test_name_norm, "%") ~ "pct",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  filter(
+    !is.na(analyte),
+    unit != "mg_serving"   # exclude mg/serving here
+  )
+
+potency_clean <- potency_clean %>%
+  mutate(
+    value_pct = case_when(
+      unit == "pct"  ~ raw_value,
+      unit == "mg_g" ~ raw_value * 0.1,
+      TRUE           ~ NA_real_
+    )
+  )
+
+potency_inventory <- potency_clean %>%
+  arrange(InventoryId...5, analyte, desc(TestDate)) %>%
+  group_by(InventoryId...5, analyte) %>%
+  slice(1) %>%
+  ungroup() %>%
+  select(
+    InventoryId = InventoryId...5,
+    ProductId   = ProductId...13,
+    StrainId    = StrainId...14,
+    analyte,
+    value_pct
+  ) %>%
+  pivot_wider(names_from = analyte, values_from = value_pct)
+
+potency_inventory <- potency_inventory %>%
+  mutate(
+    thc_total_final = if_else(
+      is.na(thc_total) & (!is.na(thc_d9) | !is.na(thca)),
+      coalesce(thc_d9, 0) + coalesce(thca, 0) * 0.877,
+      thc_total
+    )
+  )
+
+potency_inventory <- potency_inventory %>%
+  mutate(
+    cbd_total_final = if_else(
+      is.na(cbd_total) & (!is.na(cbd) | !is.na(cbda)),
+      coalesce(cbd, 0) + coalesce(cbda, 0) * 0.877,
+      cbd_total
+    )
+  )
+
+```
+
+```{r}
+# Cannabinoid Chemotype Classification
+
+chemotype_inventory <- potency_inventory %>%
+  mutate(
+    thc = thc_total_final,
+    cbd = cbd_total_final,
+    ratio_thc_cbd = if_else(
+      !is.na(thc) & !is.na(cbd) & cbd > 0,
+      thc / cbd,
+      NA_real_
+    ),
+    chemotype = case_when(
+      !is.na(thc) & thc >= 5 & (is.na(cbd) | cbd < 1) ~ "Type I – THC-dominant",
+      !is.na(thc) & !is.na(cbd) & cbd >= 1 & thc >= 1 & ratio_thc_cbd < 10 & ratio_thc_cbd > 0.2 ~ "Type II – Balanced THC/CBD",
+      !is.na(cbd) & cbd >= 5 & (is.na(thc) | thc < 1) ~ "Type III – CBD-dominant",
+      TRUE ~ "Other / Mixed"
+    )
+  )
+
+
+chemotype_inventory <- chemotype_inventory %>%
+  mutate(
+    potency_class = case_when(
+      thc < 5 ~ "Ultra-low THC",
+      thc >= 5  & thc < 10 ~ "Low THC",
+      thc >= 10 & thc < 18 ~ "Moderate THC",
+      thc >= 18 & thc < 25 ~ "High THC",
+      thc >= 25 & thc < 35 ~ "Very High THC",
+      thc >= 35 ~ "Extreme THC",
+      TRUE ~ "Unknown"
+    )
+  )
+
+strain_summary <- chemotype_inventory %>%
+  filter(!is.na(StrainId)) %>%
+  group_by(StrainId) %>%
+  summarise(
+    n_inventories = n(),
+    median_thc = median(thc, na.rm = TRUE),
+    median_cbd = median(cbd, na.rm = TRUE),
+    chemotype_mode = names(which.max(table(chemotype))),
+    potency_mode = names(which.max(table(potency_class))),
+    .groups = "drop"
+  )
+
+
+strain_meta <- types %>%
+  as_tibble(.name_repair = "unique") %>%
+  distinct(
+    StrainId = StrainId...14,
+    StrainName,
+    StrainTypeLabel
+  )
+
+strain_summary_final <- strain_summary %>%
+  left_join(strain_meta, by = "StrainId")
+
+strain_summary_final <- strain_summary_final %>%
+  mutate(
+    coverage_class = case_when(
+      n_inventories >= 20 ~ "High coverage",
+      n_inventories >= 5  ~ "Moderate coverage",
+      n_inventories >= 2  ~ "Low coverage",
+      TRUE                ~ "Single observation"
+    )
+  )
+
+strain_summary_final <- strain_summary_final %>%
+  mutate(
+    likely_product_bias = if_else(median_thc > 40, "Extract-dominated", "Flower-dominated")
+  ) %>%
+  filter(!is.na(StrainName))
+
+```
+## Chemotype Distribution
+```{r}
+
+strain_summary_final %>%
+  count(chemotype_mode) %>%
+  mutate(pct = n / sum(n)) %>%
+  ggplot(aes(reorder(chemotype_mode, -pct), pct)) +
+  geom_col(fill = "#2c7fb8") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Distribution of Cannabinoid Chemotypes Across Strains",
+    x = NULL,
+    y = "Share of Strains"
+  ) +
+  theme_minimal()
+
+```
+<br>
+
+Among all reported strain types, Type I (THC-dominant) chemotypes dominate.  
+
+| Strain Type | Type I – THC-dominant |
+| ----------- | --------------------- |
+| Hybrid      | 93.6%                 |
+| Indica      | 95.5%                 |
+| Sativa      | 90.2%                 |
+
+Balanced (Type II) and CBD-dominant (Type III) strains exist — but they represent a small minority of what is actually being produced and tested.
+
+**Implication:**
+From a chemistry standpoint, most of the regulated market is competing within a relatively narrow THC-dominant space, regardless of branding.
+
+## Potency vs Marketing Label (Audit/Regulatory Prep)
+```{r, warning=FALSE}
+
+strain_summary_final %>%
+  filter(!is.na(StrainTypeLabel)) %>%
+  ggplot(aes(StrainTypeLabel, median_thc, fill = StrainTypeLabel)) +
+  geom_boxplot(outlier.alpha = 0.2) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  labs(
+    title = "Reported Strain Type vs Observed THC Potency",
+    subtitle = "No terpene data; potency-only comparison",
+    x = "Reported Strain Type",
+    y = "Median Total THC (%)"
+  ) +
+  theme_minimal()
+
+```
+## Reported Strain Type Does Not Predict Potency
+
+When we compare reported strain type (Indica / Sativa / Hybrid) to observed median THC, the distributions largely overlap.
+
+In other words:
+
+- High-THC products appear across all strain types
+
+- Low-to-moderate THC products appear across all strain types
+
+- No strain type consistently occupies a distinct potency band
+
+This does not mean strain types are meaningless — but it does mean they are **not reliable indicators of THC intensity**, especially in a market where concentrates are common.
+
+
+```{r, include=FALSE}
+
+# ## Does Strain Name Align With Strain Type?
+
+strain_summary_final %>%
+  count(StrainTypeLabel, chemotype_mode) %>%
+  group_by(StrainTypeLabel) %>%
+  mutate(pct = n / sum(n))
+
+```
+
+## Does Strain Name Imply Narrow Potency?
+
+**Within-Strain THC Variability Is Large**
+
+The most striking result comes from looking **within individual strain names**.
+
+For well-sampled strains (five or more inventories), we observe:
+
+- Strains with minimum THC near typical flower levels (15–25%)
+
+- The same strain names reaching 70–90% THC at the high end
+
+- Median values that often sit somewhere in between
+
+In practical terms, this means:
+
+*The same strain name can represent very different consumer experiences, depending on product form.*
+
+A strain like Blue Dream, Ice Cream Cake, or Grape Gas may appear as:
+
+- A mid-20% flower
+
+- A 50%+ infused product
+
+- An 80%+ concentrate
+
+## How does THC spread in Washington
+```{r, warning=FALSE}
+
+strain_bias_lookup <- strain_summary_final %>%
+  filter(!is.na(StrainName)) %>%
+  distinct(StrainName, likely_product_bias)
+
+strain_spread <- strain_summary_final %>%
+  filter(!is.na(StrainName)) %>%
+  group_by(StrainName) %>%
+  summarise(
+    min_thc = min(median_thc, na.rm = TRUE),
+    max_thc = max(median_thc, na.rm = TRUE),
+    mid_thc = (min_thc + max_thc) / 2,
+    median_thc = median(median_thc, na.rm = TRUE),
+    spread = max_thc - min_thc,
+    n = n(),
+    .groups = "drop"
+  ) %>%
+  filter(n >= 5) %>%
+  slice_max(spread, n = 20) %>%
+  arrange(spread)
+
+strain_points <- strain_spread %>%
+  select(StrainName, min_thc, mid_thc, median_thc, max_thc) %>%
+  pivot_longer(
+    cols = c(min_thc, mid_thc, median_thc, max_thc),
+    names_to = "stat",
+    values_to = "thc"
+  ) %>%
+  mutate(
+    stat = recode(
+      stat,
+      min_thc = "Min",
+      mid_thc = "Mean", 
+      median_thc = "Median",
+      max_thc = "Max"
+    )
+  ) %>%
+  left_join(strain_bias_lookup, by = "StrainName")
+
+strain_points_fixed <- strain_points %>%
+  mutate(
+    shape_group = case_when(
+      stat == "Median" & likely_product_bias == "Flower-dominated"  ~ "Median – Flower",
+      stat == "Median" & likely_product_bias == "Extract-dominated" ~ "Median – Extract",
+      TRUE ~ "Min / Max"
+    )
+  )
+
+strain_order <- strain_points %>%
+  filter(stat == "Median") %>%
+  arrange(desc(thc)) %>%
+  distinct(StrainName) %>%
+  mutate(StrainName = factor(StrainName, levels = StrainName))
+
+ggplot(
+  strain_points,
+  aes(
+    x = thc,
+    y = fct_reorder(
+      StrainName,
+      if_else(stat == "Median", thc, NA_real_),
+      .fun = median,
+      .desc = FALSE
+    ),
+    color = stat
+  )
+) +
+  geom_point(
+    size = 3,
+    alpha = 0.9
+  ) +
+  geom_point(
+  data = strain_points %>% filter(stat == "Median"),
+  aes(x = thc, y = StrainName),
+  size = 3.8
+) +
+  scale_color_manual(
+    values = c(
+      "Min"    = "#9ecae1",
+      "Mean"    = "#2171b5", 
+      "Median" = "#cb181d",
+      "Max"    = "#1c1c1c"
+    ),
+    name = "Statistic"
+  ) +
+  scale_x_continuous(
+    limits = c(0, 100),
+    labels = scales::percent_format(scale = 1)
+  ) +
+  labs(
+    title = "Within-Strain THC Potency Points",
+    subtitle = "Minimum, median, and maximum observed THC across inventories",
+    x = "Total THC (%)",
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "right"
+  )
+
+
+```
+## Flower vs. Concentrate Bias
+
+While maximum THC reflects what is technically possible through extraction, the median THC tells a more useful story:
+
+What does this strain usually represent in the market?
+
+Using median THC as a proxy:
+
++ Below ~30% THC → Flower-dominated presence
+
++ 30–45% THC → Mixed flower and concentrate presence
+
++ Above ~45% THC → Concentrate-dominated presence
+
+**This is not a genetic classification — it is a market representation signal.**
+
+The same cultivar can be grown as flower or processed into concentrate and so median THC captured which form dominates real-world inventory.
+
+## What This Means for Industry Stakeholders
+For Producers and Processors - Strain names alone do not define potency positioning Product form and processing decisions matter more than genetics for THC outcomes. The same strain can serve multiple market segments depending on how it is used
+
+For Retailers - Educating consumers on product form may matter more than strain type. THC ranges associated with a strain name can be much wider than menus suggest.
+
+For Regulators and Analysts - Potency-based policy discussions should distinguish between flower and concentrates. Strain-level aggregation can obscure meaningful variation unless carefully summarized. 
+
+Aligning state cannabis policy with market realities requires treating strain identity, potency, and product form as related but independent factors, rather than collapsing strain names into a single measure of THC intensity, particularly in transactions toward medical cannabis compliance.
+
+*CCRS lab results include cannabinoid potency but do not consistently include 
+terpene profiles. As a result, classifications in this analysis reflect cannabinoid 
+chemotypes and potency intensity rather than effect-based indica/sativa distinctions.*
