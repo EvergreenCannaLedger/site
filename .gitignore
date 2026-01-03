@@ -22,6 +22,28 @@ _drafts/**
 .netlify/
 
 # ================================
+# PARQUET BUILD FOLDER
+# ================================
+parquet_cannabis_master
+parquet_cannabis_master/
+parquet_cannabis_master/**
+parquet_cannabis_master/arrow/**
+parquet_cannabis_master/arrow/*.Rmd
+parquet_cannabis_master/arrow/parquet_cannabis_Rcode.Rmd
+parquet_cannabis_master/arrow/parquet_cannabis_Rcode_2.Rmd
+parquet_cannabis_master/arrow/*.parquet
+parquet_cannabis_master/arrow/*.duckdb
+parquet_cannabis_master/arrow/arrow_*
+parquet_cannabis_master/arrow/arrow_*/**
+parquet_cannabis_master/arrow/unzipped_*
+parquet_cannabis_master/arrow/unzipped_*/**
+parquet_cannabis_master/arrow/duckdb_master.duckdb
+parquet_cannabis_master/duckdb_master.duckdb
+parquet_cannabis_master/.RData
+parquet_cannabis_master/.Rhistory
+parquet_cannabis_master/parquet_cannabis_master.Rproj
+
+# ================================
 # DUCKDB / LARGE DATA FILES
 # ================================
 duckdb_combined.duckdb

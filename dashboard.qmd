@@ -31,164 +31,10 @@ library(scales)
 library(DT)
 
 #Clean Slate Function
-unregister_all_arrow <- function(con) {
-  walk(duckdb_list_arrow(con), ~ {
-    duckdb_unregister_arrow(con, .x)
-    message("🧹 Unregistered: ", .x)
-  })
-}
+if (exists("con")) 
+  try(DBI::dbDisconnect(con), silent = TRUE)
 
-#unregister_all_arrow(con)
-
-# Header cleaner helper function
-to_snake <- function(x) {
-  x %>%
-    tools::file_path_sans_ext() %>%
-    str_replace_all("([a-z])([A-Z])", "\\1_\\2") %>%
-    str_replace_all("[^[:alnum:]_]", "_") %>%
-    str_to_lower()
-}
-
-# set paths
-base_dir <- "C:/Users/theob/OneDrive/Documents/evergreen-canna-ledger/arrow"
-duckdb_path <- file.path(dirname(base_dir), "duckdb_master.duckdb")
-
-# Connect to DuckDB
-con <- dbConnect(duckdb::duckdb(), dbdir = duckdb_path, read_only = FALSE)
-
-# Register base files (historical master data)
-register_master_parquet <- function(con, base_dir) {
-  master_files <- list.files(base_dir, pattern = "\\.parquet$", full.names = TRUE)
-
-  table_names <- tools::file_path_sans_ext(basename(master_files)) %>%
-    str_replace_all("([a-z])([A-Z])", "\\1_\\2") %>%
-    str_replace_all("[^[:alnum:]_]", "_") %>%
-    str_to_lower()
-
-  walk2(table_names, master_files, ~ {
-    table_name <- paste0(.x, "_master")
-    if (table_name %in% duckdb_list_arrow(con)) {
-      duckdb_unregister_arrow(con, table_name)
-      message("🧹 Unregistered master: ", table_name)
-    }
-
-    dataset <- arrow::open_dataset(.y)
-    duckdb_register_arrow(con, table_name, dataset)
-    message("📦 Registered master: ", table_name)
-  })
-}
-
-# Register master files safely
-register_master_parquet(con, base_dir)
-
-#duckdb::duckdb_list_arrow(con)
-
-#Register new monthly folders (already done before, but include here for completeness)
-register_monthly_parquet_to_duckdb <- function(db_path, parquet_folders) {
-  con <- dbConnect(duckdb::duckdb(), dbdir = db_path, read_only = FALSE)
-
-  for (folder in parquet_folders) {
-    month_label <- basename(folder)
-    parquet_files <- list.files(folder, pattern = "\\.parquet$", full.names = TRUE)
-
-    table_names <- tools::file_path_sans_ext(basename(parquet_files)) %>%
-      str_replace_all("([a-z])([A-Z])", "\\1_\\2") %>%
-      str_replace_all("[^[:alnum:]_]", "_") %>%
-      str_to_lower()
-
-    walk2(table_names, parquet_files, ~ {
-      table_name <- paste0(.x, "_", month_label)
-      if (table_name %in% duckdb_list_arrow(con)) {
-        duckdb_unregister_arrow(con, table_name)
-        message("🧹 Unregistered: ", table_name)
-      }
-
-      dataset <- arrow::open_dataset(.y)
-      duckdb_register_arrow(con, table_name, dataset)
-      message("📌 Registered monthly: ", table_name)
-    })
-  }
-
-  return(con)
-}
-
-#Register monthly files safely
-monthly_dirs <- dir_ls(base_dir, recurse = FALSE, type = "directory")
-monthly_arrow_dirs <- monthly_dirs[str_detect(monthly_dirs, "arrow_[a-z]+2025")]
-register_monthly_parquet_to_duckdb(duckdb_path, monthly_arrow_dirs)
-
-# Create unified views (master + monthly)
-create_combined_view <- function(con, base_name) {
-  tables <- duckdb_list_arrow(con)
-  relevant_tables <- tables[str_detect(tables, paste0("^", base_name, "_(master|arrow_.*2025)"))]
-
-  if (length(relevant_tables) == 0) {
-    message("⚠️ No tables found for ", base_name)
-    return(invisible(NULL))
-  }
-
-  # Get Arrow schema columns for each table
-  column_lists <- map(relevant_tables, ~ {
-  cols <- names(dbGetQuery(con, glue::glue("SELECT * FROM \"{.x}\" LIMIT 0")))
-  tibble(table = .x, column = cols)
-}) %>% bind_rows()
-
-  # Keep only columns common to all tables
-  common_columns <- column_lists %>%
-    group_by(column) %>%
-    summarise(n_tables = n_distinct(table), .groups = "drop") %>%
-    filter(n_tables == length(relevant_tables)) %>%
-    pull(column)
-
-  if (length(common_columns) == 0) {
-    message("❌ No common columns found across tables for ", base_name)
-    return(invisible(NULL))
-  }
-
-  # (Optional) Log any dropped columns
-  all_cols <- column_lists %>% distinct(column)
-  dropped_cols <- setdiff(all_cols$column, common_columns)
-  if (length(dropped_cols)) {
-    message("⚠️ Dropping columns not in all tables for ", base_name, ": ", paste(dropped_cols, collapse = ", "))
-  }
-
-  # Build UNION ALL
-  union_parts <- map_chr(relevant_tables, ~ {
-    cols <- paste(common_columns, collapse = ", ")
-    glue::glue("SELECT {cols} FROM \"{.x}\"")  # quote in case of special chars
-  })
-
-  union_sql <- glue::glue("
-    CREATE OR REPLACE VIEW {base_name}_all AS
-    {paste(union_parts, collapse = '\nUNION ALL\n')}
-  ")
-
-  dbExecute(con, union_sql)
-  message("✅ Created view: ", base_name, "_all with ", length(relevant_tables), " parts.")
-}
-
-views_to_create <- c(
-  "sales_detail", "sale_header", "inventory", "product", "lab_result",
-  "areas", "licensee", "plant", "strains", "contacts"
-)
-
-walk(views_to_create, ~ create_combined_view(con, .x))
-
-# Materialize the table for downstream visualization
-dbExecute(con, "
-  CREATE OR REPLACE TEMP TABLE sale_header_temp AS
-  SELECT * FROM sale_header_all
-")
-
-dbExecute(con, "
-  CREATE OR REPLACE TEMP TABLE sales_detail_temp AS
-  SELECT * FROM sales_detail_all
-")
-
-
-```
-
-```{r, include=FALSE}
+source("R_scripts/connect_duckdb_readonly.R")
 
 # Monthly Sales
 monthly_sales <- dbGetQuery(con, "
@@ -198,9 +44,9 @@ sh.LicenseeId,
 DATE_TRUNC('month', CAST(sh.SaleDate AS DATE)) AS Month,
 CAST(sd.Quantity AS DOUBLE) * CAST(sd.UnitPrice AS DOUBLE) +
 CAST(sd.SalesTax AS DOUBLE) + CAST(sd.OtherTax AS DOUBLE) AS Revenue
-FROM sales_detail_all sd
-JOIN sale_header_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
-WHERE DATE(CAST(sh.SaleDate AS DATE)) BETWEEN '2021-12-01' AND '2025-11-03'
+FROM SalesDetail_all sd
+JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+WHERE DATE(CAST(sh.SaleDate AS DATE)) BETWEEN '2021-12-01' AND '2025-12-03'
 AND CAST(sd.UnitPrice AS DOUBLE) < 200
 ),
 grouped AS (
@@ -241,7 +87,7 @@ type = "bar",
 marker = list(color = "#2C7BB6")
 ) %>%
 layout(
-title = "Number of Licensees Reporting Monthly (Dec 2021 - Nov 2025)",
+title = "Number of Licensees Reporting Monthly (Dec 2021 - DEC 2025)",
 xaxis = list(title = "Month"),
 yaxis = list(title = "Licensee Count"),
 hovermode = "x unified"
@@ -259,10 +105,10 @@ SELECT
 DATE_TRUNC('month', CAST(sh.SaleDate AS DATE)) AS Month,
 p.InventoryType,
 SUM(CAST(sd.Quantity AS DOUBLE)) AS UnitsSold
-FROM sales_detail_all sd
-JOIN sale_header_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
-JOIN inventory_all i ON sd.InventoryId = i.InventoryId
-JOIN product_all p ON i.ProductId = p.ProductId
+FROM SalesDetail_all sd
+JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+JOIN Inventory_all i ON sd.InventoryId = i.InventoryId
+JOIN Product_all p ON i.ProductId = p.ProductId
 WHERE sh.SaleDate IS NOT NULL
 GROUP BY Month, p.InventoryType
 ORDER BY Month
@@ -299,8 +145,8 @@ retail_wholesale <- dbGetQuery(con, "
     DATE_TRUNC('month', CAST(sh.SaleDate AS DATE)) AS Month,
     sh.SaleType,
     SUM(CAST(sd.Quantity AS DOUBLE) * CAST(sd.UnitPrice AS DOUBLE)) AS Revenue
-  FROM sales_detail_temp sd
-  JOIN sale_header_temp sh ON sd.SaleHeaderId = sh.SaleHeaderId
+  FROM SalesDetail_all sd
+  JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
   WHERE sh.SaleType IN ('Retail', 'Wholesale')
   GROUP BY Month, sh.SaleType
   ORDER BY Month
@@ -333,9 +179,9 @@ regional_sales <- dbGetQuery(con, "
 SELECT
 l.City,
 SUM(CAST(sd.Quantity AS DOUBLE) * CAST(sd.UnitPrice AS DOUBLE)) AS Revenue
-FROM sales_detail_all sd
-JOIN sale_header_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
-JOIN licensee_all l ON sh.LicenseeId = l.LicenseeId
+FROM SalesDetail_all sd
+JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+JOIN Licensee_all l ON sh.LicenseeId = l.LicenseeId
 WHERE sh.SaleDate IS NOT NULL AND l.City IS NOT NULL
 GROUP BY l.City
 ORDER BY Revenue DESC
@@ -366,13 +212,6 @@ layout(
 ```
 ## Product Category Trends (2021–2024)
 ```{r, warning=FALSE}
-
-unregister_all_arrow(con)
-
-if (exists("con")) 
-  try(DBI::dbDisconnect(conn = con), silent = TRUE)
-
-source("R_scripts/connect_duckdb_readonly.R")
 
 # Query category-level trends
 category_summary <- dbGetQuery(con, "
