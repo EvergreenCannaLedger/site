@@ -1,0 +1,102 @@
+---
+title: "Washington Cannabis Is Selling Less With More Participants"
+subtitle: "What the Second Half of 2025 Transaction Data Reveals About a Market Under Structural Stress"
+categories: [Market Structure, Retail, Wholesale, Supply Chain]
+date: 2026-01-04
+format: html
+editor: source
+---
+
+## The Bottom Line Up Front  
+CCRS transaction data indicates Washington cannabis is transitioning from a growth-oriented market to a zero-sum, margin-constrained market. The defining feature of this phase is not falling participation — **it is falling revenue per participant**.
+
+Taken together, declining CCRS-reported revenues, fixed compliance costs, and tightening access to capital create a systemic risk in which financially stressed operators exit abruptly rather than gradually, increasing market instability, supply disruptions, and tax revenue volatility beyond the level **implied by license counts alone**.
+
+## Overview  
+Since July 2025, the number of reporting cannabis licenses in Washington increased 5.54%, yet total industry revenue declined 24.44% over the same period. More strikingly, a November-to-November comparison (2024 vs. 2025) shows reporting licenses down 11.84% while total revenue fell 52.54%.
+
+At face value, these figures appear contradictory. CCRS transaction data, however, shows this is not a reporting anomaly—it is a signal of a market undergoing structural contraction, not merely seasonal volatility.
+
+This analysis contextualizes those headline figures using state sales, pricing, and participation patterns to explain what is happening beneath the hood of Washington’s regulated cannabis economy.
+
+## CCRS Confirms a Decoupling Between Participation and Revenue  
+CCRS sales records allow us to track two independent dimensions of market health:
+
+  1. **Who is still participating** (reporting licensees)
+
+  2. **How much economic value is being generated** (transaction revenue)
+
+Historically, these two measures moved together. In 2025, they diverged sharply.
+
+  - **More licenses are reporting transactions**, yet
+
+  - **Those transactions are generating significantly less revenue per license**
+
+This indicates that **market participation is no longer a proxy for market strength**. Instead, CCRS data suggests Washington cannabis has entered a phase where **as pricing and demand deteriorate, overcapacity persists**.
+
+## Price Compression, Not Volume Collapse, Is Doing the Damage  
+Transaction detail shows:  
+
+- Falling average unit prices across multiple product categories
+
+- Increased discounting and promotional intensity
+
+- A shift in sales mix toward lower-priced SKUs
+
+In practical terms, **operators are selling product—but at rapidly eroding margin**s.
+Revenue is collapsing faster than participation because price competition is absorbing the shock instead of immediate exits.
+
+This is consistent with late-stage regulated markets where:
+
+- Fixed costs are high
+
+- Exit barriers are substantial
+
+- Operators discount to maintain cash flow rather than shut down
+
+## Why the November Year-Over-Year Decline Is Especially Alarming  
+The November 2024 vs. November 2025 comparison is the clearest warning signal in the dataset.
+
+Reporting licenses: –11.84%
+
+Total revenue: –52.54%
+
+This ratio matters. It tells us that:
+
+Revenue per reporting license declined dramatically
+
+Remaining operators are earning far less per business than a year ago
+
+Market exits are occurring **after** revenue has already collapsed, not before
+
+In other words, **financial distress is leading participation decline, not following it**.
+
+## Implications for Policymakers
+
+This divergence carries important regulatory implications:
+
+  1. **License counts overstate market health**
+Stable or growing participation can mask severe economic stress. CCRS transaction data shows that economic output per license is falling rapidly, meaning participation metrics alone no longer reflect the financial viability of the regulated market.
+
+  2. **Tax revenue volatility is increasing**
+A 52% revenue decline implies material downside risk to excise tax collections even if license counts remain high.This creates fiscal exposure for state and local governments that rely on cannabis revenue assumptions tied to participation rather than transaction value.
+
+  3. **Compliance burdens are becoming regressive**
+Fixed regulatory costs consume a larger share of shrinking revenues, accelerating consolidation without explicit policy intent. As margins compress, these costs disproportionately impact smaller and mid-scale operators, accelerating consolidation without an explicit policy decision to favor scale.
+
+  4. **Access to financing is deteriorating in parallel with CCRS performance**  
+Declining CCRS-reported revenue weakens operators’ financial statements, making it harder to secure or refinance private debt, vendor terms, or equity investment. Lenders and investors increasingly rely on transaction-level performance metrics, and sustained revenue contraction elevates perceived credit risk across the sector. This restricts capital access precisely when operators need liquidity to adapt, increasing the likelihood of distressed exits rather than orderly transitions.
+
+CCRS data suggests the market is not self-correcting smoothly; it is compressing until exit becomes unavoidable.
+
+## Why This Analysis Matters
+
+**For operators:** survival now depends on operational efficiency, not expansion
+
+**For producer/processors:** cost per unit and sell-through reliability define viability
+
+**For policymakers:** transaction-level data is essential to understanding real market health
+
+CCRS does not merely record transactions—it documents the economic reality of Washington’s cannabis system. Right now, that reality is clear: more actors are competing for fewer dollars, and the adjustment process is still underway.
+
+*The Evergreen Canna Ledger will continue to use CCRS transaction data to monitor pricing, participation, and structural risk as Washington’s cannabis market further evolves.*
