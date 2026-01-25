@@ -1,0 +1,567 @@
+---
+title: "Gathering Strain Data from Leafly"
+subtitle: "What consumer strain databases reveal — and obscure — about cannabis chemistry and perceived quality"
+description: >
+  Using several thousand strain records from Leafly, this analysis examines how THC and CBD
+  percentile measures, product form, and labeled effects relate to consumer ratings.
+  Results show that potency dominates perceived quality, while strain names and effect labels
+  explain relatively little variation — highlighting the limits of consumer-facing strain taxonomies
+  for market analysis and policy design.
+date: "2026-01-24"
+categories: [Leafly, Strains, Cannabinoids, Ratings]
+tags: [THC, CBD, Chemotype, Consumer Ratings, Labeling, Data Methods]
+audience: [Policymakers, Regulators, Industry Analysts]
+methodology: [Web Scraping, Descriptive Statistics, Machine Learning]
+project:
+  type: website
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: true
+execute:
+  freeze: auto
+draft: false
+---
+
+## The Bottom Line Up Front  
+Public strain databases such as Leafly provide a useful, consumer-facing lens into how cannabis products are described and perceived, but they should not be confused with laboratory-verified or market-representative datasets. In this analysis, we compiled several thousand strain records across product types and examined relationships between reported cannabinoid percentiles, labeled effects, and user ratings.
+
+
+## Overview  
+Leafly is widely used by consumers to research strains, compare effects, and assess perceived product quality through user ratings. While the platform does not represent a controlled laboratory environment or regulated transaction system like Washington’s CCRS, it does offer a large, structured corpus of strain-level metadata:
+
+- Strain names
+
+- Product types (flower, preroll, concentrate, edible)
+
+- Top reported effects
+
+- THC and CBD percentile rankings
+
+- Average user ratings
+
+This approach allows us to explore **how Leafly’s own ecosystem links chemistry, effects, and consumer sentiment,** while being explicit that these relationships may differ materially from regulated retail sales behavior.
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, include=TRUE)
+
+library(tidyverse)
+
+# Define path to the folder with strain files
+leafly_dir <- file.path(here::here(), "Leafly_202408")
+
+# List and load strain name files
+# List all strain_name files in that subfolder
+strain_name_files <- list.files(
+  path = leafly_dir,
+  pattern = "strain_name_.*\\.txt",
+  full.names = TRUE
+)
+
+# Read and combine strain_name data
+strain_name_df <- map_df(strain_name_files, ~{
+  read_delim(.x, delim = "~", col_names = c("row_nm", "strain_name"), show_col_types = FALSE) %>%
+    mutate(product_type = str_extract(.x, "(flower|concentrate|edible|preroll|accessory)"))
+})
+
+# Helper function to load a type of file
+load_strain_file <- function(pattern, value_col_name) {
+  files <- list.files(
+    path = leafly_dir,
+    pattern = pattern,
+    full.names = TRUE
+  )
+  
+  map_df(files, ~{
+    read_delim(.x, delim = "~", col_names = c("row_nm", value_col_name), show_col_types = FALSE) %>%
+      mutate(product_type = str_extract(.x, "(flower|concentrate|edible|preroll|accessory)"))
+  })
+}
+
+# Load key files
+effect_df <- load_strain_file("strain_topEffect_.*\\.txt", "top_effect")
+thc_df <- load_strain_file("strain_cannabinoids_thc_percentile50_.*\\.txt", "thc_pct50")
+cbd_df <- load_strain_file("strain_cannabinoids_cbd_percentile50_.*\\.txt", "cbd_pct50")
+rating_df <- load_strain_file("strain_averageRating_.*\\.txt", "average_rating")
+
+# Join all files together
+strain_master <- strain_name_df %>%
+  left_join(effect_df, by = c("row_nm", "product_type")) %>%
+  left_join(thc_df, by = c("row_nm", "product_type")) %>%
+  left_join(cbd_df, by = c("row_nm", "product_type")) %>%
+  left_join(rating_df, by = c("row_nm", "product_type"))
+
+# Clean up strain names, parse numbers
+strain_master_clean <- strain_master %>%
+  slice(-1) %>%
+  mutate(
+    top_effect = na_if(top_effect, "NA"),
+    thc_pct50 = as.numeric(thc_pct50),
+    cbd_pct50 = as.numeric(cbd_pct50),
+    average_rating = as.numeric(average_rating)
+  ) %>%
+  filter(!is.na(strain_name)) %>%  # Remove rows without strain name
+ select(-row_nm)
+
+# Save to RDS for efficient future use
+#saveRDS(strain_master_clean, file = "strain_master_leafly.rds") #saved to evergreencannaledger/data
+
+# Preview
+#glimpse(strain_master_clean)
+
+```
+
+```{r, include=FALSE, echo=FALSE}
+
+# Average rating by product type
+strain_master_clean %>%
+  group_by(product_type) %>%
+  summarise(avg_rating = mean(average_rating, na.rm = TRUE),
+            n = n()) %>%
+  arrange(desc(avg_rating)) %>%
+  ggplot(aes(x = reorder(product_type, avg_rating), y = avg_rating, fill = product_type)) +
+  geom_col() +
+  labs(title = "Average Rating by Product Type", x = "Product Type", y = "Average Rating") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+
+```{r, echo=FALSE, include=FALSE}
+
+# Average rating by top effect
+strain_master_clean %>%
+  filter(!is.na(top_effect)) %>%
+  group_by(top_effect) %>%
+  summarise(avg_rating = mean(average_rating, na.rm = TRUE),
+            count = n()) %>%
+  filter(count > 10) %>%  # filter low-frequency effects
+  ggplot(aes(x = reorder(top_effect, avg_rating), y = avg_rating)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Average Rating by Top Effect", x = "Top Effect", y = "Avg Rating") +
+  theme_minimal()
+
+```
+## Analyze Average Rating by Product Type & Top Effect
+# Average rating by product type  
+
+Across product categories, average ratings cluster tightly between roughly 4.3 and 4.6 stars. Flower and prerolls appear slightly higher on average, but the differences are modest.
+
+This suggests that delivery format alone does not strongly influence perceived product quality once consumers have self-selected into products that meet their potency expectations.
+
+For operators, this reinforces a familiar dynamic:
+format innovation may influence convenience and merchandising, but it does not substitute for potency expectations in shaping consumer satisfaction.
+
+# Average rating by top effect
+
+When grouping by labeled “top effect,” several categories trend slightly higher, including:
+
+- Energetic
+
+- Creative
+
+- Tingly
+
+However, effect categories explain relatively little total variance in ratings. Moreover, strains lacking an assigned top effect tend to perform worse, suggesting that **metadata completeness itself may influence consumer perception,** independent of chemistry.
+
+This is a critical limitation for analysts:
+effect labels on platforms like Leafly are not purely pharmacological descriptors—they are also part of the product’s marketing narrative and information design.
+
+## Average rating by product type  
+Boxplot comparisons reinforce two structural features of the dataset:
+
+- Ratings are heavily right-skewed (most strains are rated favorably).
+
+- Variability within categories is much larger than variability between categories.
+
+From a statistical standpoint, this implies that **most predictive power exists at the individual product or chemistry level,** not at the level of broad categories like product type or effect label.
+
+This matters when policymakers or public health researchers attempt to draw behavioral conclusions from product classes alone.
+```{r, echo=FALSE, include=TRUE}
+
+library(ggplot2)
+library(dplyr)
+
+# Filter to remove missing ratings
+strain_master_clean %>%
+  filter(!is.na(average_rating)) %>%
+  ggplot(aes(x = product_type, y = average_rating, fill = product_type)) +
+  geom_boxplot(outlier.alpha = 0.2) +
+  stat_summary(fun = mean, geom = "point", shape = 20, color = "black", size = 3) +
+  labs(
+    title = "Distribution of Average Ratings by Product Type",
+    x = "Product Type",
+    y = "Average Rating"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+## Average rating by top effect
+
+```{r, echo=FALSE, include=TRUE}
+
+strain_master_clean %>%
+  filter(!is.na(average_rating), !is.na(top_effect)) %>%
+  group_by(top_effect) %>%
+  filter(n() >= 15) %>%  # Only include common effects
+  ungroup() %>%
+  ggplot(aes(x = reorder(top_effect, average_rating, FUN = median), y = average_rating)) +
+  geom_boxplot(fill = "skyblue", outlier.alpha = 0.2) +
+  stat_summary(fun = mean, geom = "point", shape = 20, color = "red", size = 2.5) +
+  labs(
+    title = "Distribution of Ratings by Top Effect (15+ Strains)",
+    x = "Top Effect",
+    y = "Average Rating"
+  ) +
+  coord_flip() +  # Flip for readability
+  theme_minimal()
+
+```
+## Deep dive into Aroused Effect  
+To illustrate how chemistry and product form interact within a specific experiential category, we examined strains labeled with “Aroused” as their primary effect.
+
+Within this subset:
+
+- Average THC percentile centers around ~20
+
+- CBD percentile remains near zero for most products
+
+- Average ratings remain high across product types
+
+Flower products exhibit slightly higher THC dispersion, while edibles show greater CBD variance, likely reflecting formulation rather than strain genetics.
+
+The key takeaway is that even within narrowly defined effect categories, **chemical profiles remain largely THC-centric,** and differences in perceived effects are unlikely to be driven by cannabinoid balance alone.
+
+```{r, echo=FALSE, include=FALSE}
+
+aroused_strains <- strain_master_clean %>%
+  filter(
+    top_effect == "Aroused",
+    product_type != "accessory"
+  )
+
+# Summary stats for THC, CBD, and Rating
+aroused_strains %>%
+  summarise(
+    avg_thc   = mean(thc_pct50, na.rm = TRUE),
+    avg_cbd   = mean(cbd_pct50, na.rm = TRUE),
+    avg_rating = mean(average_rating, na.rm = TRUE),
+    n_strains = n()
+  )
+
+
+```
+
+# THC Distribution by product type with aroused as the top effect
+```{r, warning=FALSE, include=FALSE, echo=FALSE}
+
+aroused_strains %>%
+  ggplot(aes(x = product_type, y = thc_pct50, fill = product_type)) +
+  geom_boxplot() +
+  labs(
+    title = "THC Content by Product Type (Aroused Effect)",
+    y = "THC Percentile 50",
+    x = "Product Type"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+
+```{r, warning=FALSE, echo=FALSE, include=FALSE}
+# CBD 
+aroused_strains %>%
+  ggplot(aes(x = product_type, y = cbd_pct50, fill = product_type)) +
+  geom_boxplot() +
+  labs(
+    title = "CBD Content by Product Type (Aroused Effect)",
+    y = "CBD Percentile 50",
+    x = "Product Type"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+
+
+```{r, echo=FALSE, include=TRUE}
+# Average Rating 
+# Rating by product type
+aroused_strains %>%
+  ggplot(aes(x = product_type, y = average_rating, fill = product_type)) +
+  geom_boxplot() +
+  labs(
+    title = "Average Rating by Product Type (Aroused Effect)",
+    y = "Average Rating",
+    x = "Product Type"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+# Strains Rated by Decending THC Percentage (50% quartile)
+```{r, echo=FALSE, include=TRUE}
+
+aroused_strains %>%
+  arrange(desc(thc_pct50)) %>%
+  distinct(strain_name) 
+
+```
+There are 225 strain names associated with arousal effect as the main effect (source: Leafly.com)
+
+# Strains by Product Type Arranged by Average Rating
+```{r}
+
+aroused_strains %>%
+  filter(!is.na(average_rating)) %>%
+  arrange(desc(average_rating)) %>%
+  select(strain_name, product_type, average_rating, thc_pct50, cbd_pct50) %>%
+  distinct() %>%
+  head(20)
+
+```
+Among all product types (concentrate, flower, preroll, and edible) there were 339 strain-product form combinations.
+
+
+## Aroused strains by THC and CBD  
+Scatterplots of THC versus CBD percentiles further illustrate how rare balanced-chemotype products are within this consumer dataset.
+
+Most points cluster near the CBD baseline regardless of product type.
+Instances of higher CBD percentiles appear primarily in edible products, consistent with the prevalence of formulated cannabinoid blends rather than naturally CBD-rich cultivars.
+
+For medical program design and consumer education, this highlights a persistent structural gap:
+**balanced chemotype availability remains limited even when platforms offer extensive strain catalogs.**
+
+```{r, warning=FALSE}
+
+ggplot(aroused_strains, aes(x = thc_pct50, y = cbd_pct50, color = product_type)) +
+  geom_point(alpha = 0.7, size = 3) +
+  labs(
+    title = "THC vs CBD for 'Aroused' Strains (by Product Type)",
+    x = "THC Percentile 50",
+    y = "CBD Percentile 50"
+  ) +
+  facet_grid(~product_type) +
+  theme_minimal()
+
+
+```
+
+# What Strain Names Emphasize  
+Word cloud analysis of strain names associated with the “Aroused” effect reveals heavy emphasis on:
+
+- Dessert and confectionery themes
+
+- Cream, berry, and candy descriptors
+
+- Branded cultivar families (e.g., Gelato, Runtz, Cereal Milk)
+
+These naming conventions reinforce that strain branding is driven more by **flavor and lifestyle imagery than by pharmacological signaling**.
+
+This has implications for regulators evaluating marketing practices and for operators seeking differentiation in saturated markets.
+```{r, message=FALSE, warning=FALSE}
+
+library(wordcloud)
+
+wordcloud(words = aroused_strains$strain_name,
+          scale = c(3, 0.6),
+          max.words = 100,
+          random.order = FALSE,
+          colors = brewer.pal(8, "Dark2"))
+
+```
+## Clustering Strain Names by THC and CBD  
+To assess whether strains naturally group into meaningful chemotype clusters using Leafly’s percentile metrics, we applied k-means clustering to standardized THC and CBD values.
+
+While six clusters were used for visualization, the practical result is straightforward:
+most strains collapse into high-THC / near-zero-CBD groupings, with only a small fraction exhibiting elevated CBD percentiles.
+
+This mirrors what we consistently observe in CCRS lab data in Washington State:
+Type I (THC-dominant) chemotypes dominate both product development and shelf space, even when product marketing implies broad experiential differentiation.
+
+In other words, despite thousands of distinct strain names, the chemical diversity reflected in consumer-facing datasets remains narrow.
+
+```{r, include=FALSE, echo=FALSE}
+
+library(cluster)
+library(factoextra)
+
+# NOTE: try different centers = values and compare silhouette scores if desired
+
+# Filter data for clustering (remove NAs)
+strain_cluster_data <- strain_master_clean %>%
+  filter(!is.na(thc_pct50), !is.na(cbd_pct50)) %>%
+  select(strain_name, product_type, thc_pct50, cbd_pct50)
+
+# Scale the THC and CBD values
+scaled_data <- strain_cluster_data %>%
+  select(thc_pct50, cbd_pct50) %>%
+  scale()
+
+# Run k-means clustering (try 3 clusters as a starting point)
+set.seed(8325) #TECL on the phone pad
+kmeans_result <- kmeans(scaled_data, centers = 6, nstart = 25)
+
+# Add cluster info to original data
+strain_clustered <- strain_cluster_data %>%
+  mutate(cluster = as.factor(kmeans_result$cluster))
+
+```
+
+```{r, include=TRUE, echo=FALSE}
+
+# Visualize
+fviz_cluster(kmeans_result, data = scaled_data,
+             geom = "point", ellipse.type = "convex",
+             main = "THC vs CBD Clustering",
+             labelsize = 10)
+
+```
+## Can We Predict Ratings from Chemistry and Effects?  
+To test whether ratings can be reasonably predicted from available strain attributes, we compared linear regression and random forest models using:
+
+- THC percentile
+
+- CBD percentile
+
+- Product type
+
+- Top effect category
+
+Both models achieve only modest explanatory power, with random forests outperforming linear regression but still leaving substantial unexplained variance.
+
+Variable importance from the random forest is unequivocal:
+
+1. THC percentile is the dominant predictor by a wide margin.
+
+2. Effect labels contribute modestly.
+
+3. Product type contributes very little.
+
+In practical terms, **Leafly ratings function primarily as a potency proxy,** not as a multidimensional evaluation of product experience.
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE, include=FALSE}
+
+library(tidymodels)
+
+# Basic preprocessing: remove NAs and select predictors
+rating_model_df <- strain_master_clean %>%
+  filter(!is.na(average_rating), !is.na(thc_pct50), !is.na(cbd_pct50), !is.na(top_effect)) %>%
+  select(average_rating, strain_name, product_type, top_effect, thc_pct50, cbd_pct50)
+
+# Split train/test
+set.seed(8325)
+rating_split <- initial_split(rating_model_df, prop = 0.8)
+train_data <- training(rating_split)
+test_data  <- testing(rating_split)
+
+# Model Specification (Linear & Random Forest)
+# Linear regression
+lm_model <- linear_reg() %>%
+  set_engine("lm")
+
+# Random forest
+rf_model <- rand_forest(mtry = 3, trees = 500, min_n = 5) %>%
+  set_engine("ranger", importance = "impurity") %>%
+  set_mode("regression")
+
+# Workflow and Recipe
+# Recipe: one-hot encode, normalize numerics
+# rating_recipe <- recipe(average_rating ~ ., data = train_data) %>%
+#   step_novel(all_nominal_predictors()) %>%   # handle unseen factor levels
+#   step_dummy(all_nominal_predictors()) %>%
+#   step_normalize(all_numeric_predictors())
+
+# Drop Strain Name
+rating_recipe <- recipe(average_rating ~ ., data = train_data) %>%
+  update_role(strain_name, new_role = "ID") %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_normalize(all_numeric_predictors())
+
+# Workflow
+lm_wf <- workflow() %>%
+  add_model(lm_model) %>%
+  add_recipe(rating_recipe)
+
+rf_wf <- workflow() %>%
+  add_model(rf_model) %>%
+  add_recipe(rating_recipe)
+
+# Fit models
+lm_fit <- lm_wf %>% fit(data = train_data)
+rf_fit <- rf_wf %>% fit(data = train_data)
+
+
+```
+
+```{r, echo=FALSE, include=TRUE}
+
+# Linear Model Results
+
+# Predict and assess
+lm_results <- lm_fit %>% predict(test_data) %>% bind_cols(test_data)
+rf_results <- rf_fit %>% predict(test_data) %>% bind_cols(test_data)
+
+# Metrics
+metrics(lm_results, truth = average_rating, estimate = .pred)
+metrics(rf_results, truth = average_rating, estimate = .pred)
+
+```
+The first table contains the model performance for the linear model fit.  The second table contains the performance for the random forest model fit. By comparison, the random forest performed better than the linear model. 
+
+In the graph below, THC percent (q50) and strain effects such as energetic, creative, tingly, and relaxed were the top 5 contributors to rating a strain. 
+
+# Feature Importance from Random Forest
+```{r}
+
+# Feature Importance from Random Forest
+
+library(vip)
+theme_set(theme_minimal())
+rf_fit %>% 
+  extract_fit_parsnip() %>% 
+  vip(num_features = 20) 
+
+```
+
+
+## Implications for Market Analysis and Policy
+
+While Leafly data cannot substitute for regulated transaction or laboratory systems, it offers insight into how consumers interpret and prioritize product attributes.
+
+Three implications are particularly relevant for Washington’s regulated market:
+
+- Strain names and effect labels overstate experiential differentiation.
+
+- THC remains the primary consumer signal despite expanding product diversity.
+
+- Chemotype-driven classification would likely align more closely with actual consumer behavior than traditional strain taxonomy.
+
+For policymakers, this supports ongoing discussions around whether product labeling frameworks should evolve toward chemistry-based classifications rather than legacy cultivar narratives.
+
+For operators, it underscores that branding strategies detached from cannabinoid reality may struggle to sustain competitive advantage in data-transparent markets.
+
+
+## Where CCRS and Leafly Should Be Read Together  
+Leafly shows us how products are described and perceived.
+CCRS shows us what is actually produced, sold, and tested.
+
+When the two are analyzed together—as TECL continues to do, the gap between marketing language and market structure becomes measurable, not anecdotal. 
+
+That gap is where many of today’s regulatory, economic, and public-health challenges are quietly taking shape.
+
+Next steps is to combine the strain effects data with the CCRS strains data to determine the strain-effect consumer trends ongoing in Washington.
+
+## Summary   
+Three conclusions stand out:
+
+1. THC dominates perceived quality. Across models and descriptive statistics, THC percentile is by far the strongest predictor of higher user ratings.
+
+2. Effect labels explain relatively little variation. While some effects (e.g., “Energetic,” “Creative”) are modestly associated with higher ratings, their explanatory power is small compared to cannabinoid content.
+
+3. Product form matters less than chemistry. Average ratings are broadly similar across flower, prerolls, concentrates, and edibles once THC levels are considered.
+
+For regulators, operators, and analysts, this reinforces an important point: marketing labels and experiential descriptors remain weak proxies for underlying chemistry and consumer satisfaction.

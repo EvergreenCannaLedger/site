@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-01-24">
+<meta name="description" content="Using several thousand strain records from Leafly, this analysis examines how THC and CBD percentile measures, product form, and labeled effects relate to consumer ratings. Results show that potency dominates perceived quality, while strain names and effect labels explain relatively little variation — highlighting the limits of consumer-facing strain taxonomies for market analysis and policy design.">
+
+<title>Gathering Strain Data from Leafly – The Evergreen Canna Ledger</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../assets/favicon/favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-089474e4536f4ae99f5de9845056add1.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="../assets/js/external-posts.js" defer=""></script>
+
+
+<link rel="stylesheet" href="../assets/css/custom.css">
+<link rel="stylesheet" href="../assets/css/ads.css">
+<link rel="stylesheet" href="../assets/css/insights-tiles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">The Evergreen Canna Ledger</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../qboard.html"> 
+<span class="menu-text">Coverage</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contact.html"> 
+<span class="menu-text">Contact</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../blog.html" target="_blank"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../dashboard.html"> 
+<span class="menu-text">Dashboard</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/EvergreenCannaLedger" target="_blank"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://bsky.app/profile/thewacannaledger.bsky.social" target="_blank"> 
+<span class="menu-text">Bluesky</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-bottom-line-up-front" id="toc-the-bottom-line-up-front" class="nav-link active" data-scroll-target="#the-bottom-line-up-front">The Bottom Line Up Front</a></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#analyze-average-rating-by-product-type-top-effect" id="toc-analyze-average-rating-by-product-type-top-effect" class="nav-link" data-scroll-target="#analyze-average-rating-by-product-type-top-effect">Analyze Average Rating by Product Type &amp; Top Effect</a></li>
+  <li><a href="#average-rating-by-product-type" id="toc-average-rating-by-product-type" class="nav-link" data-scroll-target="#average-rating-by-product-type">Average rating by product type</a></li>
+  <li><a href="#average-rating-by-top-effect" id="toc-average-rating-by-top-effect" class="nav-link" data-scroll-target="#average-rating-by-top-effect">Average rating by top effect</a>
+  <ul class="collapse">
+  <li><a href="#average-rating-by-product-type-1" id="toc-average-rating-by-product-type-1" class="nav-link" data-scroll-target="#average-rating-by-product-type-1">Average rating by product type</a></li>
+  <li><a href="#average-rating-by-top-effect-1" id="toc-average-rating-by-top-effect-1" class="nav-link" data-scroll-target="#average-rating-by-top-effect-1">Average rating by top effect</a></li>
+  <li><a href="#deep-dive-into-aroused-effect" id="toc-deep-dive-into-aroused-effect" class="nav-link" data-scroll-target="#deep-dive-into-aroused-effect">Deep dive into Aroused Effect</a></li>
+  </ul></li>
+  <li><a href="#thc-distribution-by-product-type-with-aroused-as-the-top-effect" id="toc-thc-distribution-by-product-type-with-aroused-as-the-top-effect" class="nav-link" data-scroll-target="#thc-distribution-by-product-type-with-aroused-as-the-top-effect">THC Distribution by product type with aroused as the top effect</a></li>
+  <li><a href="#strains-rated-by-decending-thc-percentage-50-quartile" id="toc-strains-rated-by-decending-thc-percentage-50-quartile" class="nav-link" data-scroll-target="#strains-rated-by-decending-thc-percentage-50-quartile">Strains Rated by Decending THC Percentage (50% quartile)</a></li>
+  <li><a href="#strains-by-product-type-arranged-by-average-rating" id="toc-strains-by-product-type-arranged-by-average-rating" class="nav-link" data-scroll-target="#strains-by-product-type-arranged-by-average-rating">Strains by Product Type Arranged by Average Rating</a>
+  <ul class="collapse">
+  <li><a href="#aroused-strains-by-thc-and-cbd" id="toc-aroused-strains-by-thc-and-cbd" class="nav-link" data-scroll-target="#aroused-strains-by-thc-and-cbd">Aroused strains by THC and CBD</a></li>
+  </ul></li>
+  <li><a href="#what-strain-names-emphasize" id="toc-what-strain-names-emphasize" class="nav-link" data-scroll-target="#what-strain-names-emphasize">What Strain Names Emphasize</a>
+  <ul class="collapse">
+  <li><a href="#clustering-strain-names-by-thc-and-cbd" id="toc-clustering-strain-names-by-thc-and-cbd" class="nav-link" data-scroll-target="#clustering-strain-names-by-thc-and-cbd">Clustering Strain Names by THC and CBD</a></li>
+  <li><a href="#can-we-predict-ratings-from-chemistry-and-effects" id="toc-can-we-predict-ratings-from-chemistry-and-effects" class="nav-link" data-scroll-target="#can-we-predict-ratings-from-chemistry-and-effects">Can We Predict Ratings from Chemistry and Effects?</a></li>
+  </ul></li>
+  <li><a href="#feature-importance-from-random-forest" id="toc-feature-importance-from-random-forest" class="nav-link" data-scroll-target="#feature-importance-from-random-forest">Feature Importance from Random Forest</a>
+  <ul class="collapse">
+  <li><a href="#implications-for-market-analysis-and-policy" id="toc-implications-for-market-analysis-and-policy" class="nav-link" data-scroll-target="#implications-for-market-analysis-and-policy">Implications for Market Analysis and Policy</a></li>
+  <li><a href="#where-ccrs-and-leafly-should-be-read-together" id="toc-where-ccrs-and-leafly-should-be-read-together" class="nav-link" data-scroll-target="#where-ccrs-and-leafly-should-be-read-together">Where CCRS and Leafly Should Be Read Together</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Gathering Strain Data from Leafly</h1>
+<p class="subtitle lead">What consumer strain databases reveal — and obscure — about cannabis chemistry and perceived quality</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">Leafly</div>
+    <div class="quarto-category">Strains</div>
+    <div class="quarto-category">Cannabinoids</div>
+    <div class="quarto-category">Ratings</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    <p>Using several thousand strain records from Leafly, this analysis examines how THC and CBD percentile measures, product form, and labeled effects relate to consumer ratings. Results show that potency dominates perceived quality, while strain names and effect labels explain relatively little variation — highlighting the limits of consumer-facing strain taxonomies for market analysis and policy design.</p>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 24, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="the-bottom-line-up-front" class="level2">
+<h2 class="anchored" data-anchor-id="the-bottom-line-up-front">The Bottom Line Up Front</h2>
+<p>Public strain databases such as Leafly provide a useful, consumer-facing lens into how cannabis products are described and perceived, but they should not be confused with laboratory-verified or market-representative datasets. In this analysis, we compiled several thousand strain records across product types and examined relationships between reported cannabinoid percentiles, labeled effects, and user ratings.</p>
+</section>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>Leafly is widely used by consumers to research strains, compare effects, and assess perceived product quality through user ratings. While the platform does not represent a controlled laboratory environment or regulated transaction system like Washington’s CCRS, it does offer a large, structured corpus of strain-level metadata:</p>
+<ul>
+<li><p>Strain names</p></li>
+<li><p>Product types (flower, preroll, concentrate, edible)</p></li>
+<li><p>Top reported effects</p></li>
+<li><p>THC and CBD percentile rankings</p></li>
+<li><p>Average user ratings</p></li>
+</ul>
+<p>This approach allows us to explore <strong>how Leafly’s own ecosystem links chemistry, effects, and consumer sentiment,</strong> while being explicit that these relationships may differ materially from regulated retail sales behavior.</p>
+</section>
+<section id="analyze-average-rating-by-product-type-top-effect" class="level2">
+<h2 class="anchored" data-anchor-id="analyze-average-rating-by-product-type-top-effect">Analyze Average Rating by Product Type &amp; Top Effect</h2>
+</section>
+<section id="average-rating-by-product-type" class="level1">
+<h1>Average rating by product type</h1>
+<p>Across product categories, average ratings cluster tightly between roughly 4.3 and 4.6 stars. Flower and prerolls appear slightly higher on average, but the differences are modest.</p>
+<p>This suggests that delivery format alone does not strongly influence perceived product quality once consumers have self-selected into products that meet their potency expectations.</p>
+<p>For operators, this reinforces a familiar dynamic: format innovation may influence convenience and merchandising, but it does not substitute for potency expectations in shaping consumer satisfaction.</p>
+</section>
+<section id="average-rating-by-top-effect" class="level1">
+<h1>Average rating by top effect</h1>
+<p>When grouping by labeled “top effect,” several categories trend slightly higher, including:</p>
+<ul>
+<li><p>Energetic</p></li>
+<li><p>Creative</p></li>
+<li><p>Tingly</p></li>
+</ul>
+<p>However, effect categories explain relatively little total variance in ratings. Moreover, strains lacking an assigned top effect tend to perform worse, suggesting that <strong>metadata completeness itself may influence consumer perception,</strong> independent of chemistry.</p>
+<p>This is a critical limitation for analysts: effect labels on platforms like Leafly are not purely pharmacological descriptors—they are also part of the product’s marketing narrative and information design.</p>
+<section id="average-rating-by-product-type-1" class="level2">
+<h2 class="anchored" data-anchor-id="average-rating-by-product-type-1">Average rating by product type</h2>
+<p>Boxplot comparisons reinforce two structural features of the dataset:</p>
+<ul>
+<li><p>Ratings are heavily right-skewed (most strains are rated favorably).</p></li>
+<li><p>Variability within categories is much larger than variability between categories.</p></li>
+</ul>
+<p>From a statistical standpoint, this implies that <strong>most predictive power exists at the individual product or chemistry level,</strong> not at the level of broad categories like product type or effect label.</p>
+<p>This matters when policymakers or public health researchers attempt to draw behavioral conclusions from product classes alone.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2026-01-24_leafly_webscrape_strain_cannabinoids_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="average-rating-by-top-effect-1" class="level2">
+<h2 class="anchored" data-anchor-id="average-rating-by-top-effect-1">Average rating by top effect</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2026-01-24_leafly_webscrape_strain_cannabinoids_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="deep-dive-into-aroused-effect" class="level2">
+<h2 class="anchored" data-anchor-id="deep-dive-into-aroused-effect">Deep dive into Aroused Effect</h2>
+<p>To illustrate how chemistry and product form interact within a specific experiential category, we examined strains labeled with “Aroused” as their primary effect.</p>
+<p>Within this subset:</p>
+<ul>
+<li><p>Average THC percentile centers around ~20</p></li>
+<li><p>CBD percentile remains near zero for most products</p></li>
+<li><p>Average ratings remain high across product types</p></li>
+</ul>
+<p>Flower products exhibit slightly higher THC dispersion, while edibles show greater CBD variance, likely reflecting formulation rather than strain genetics.</p>
+<p>The key takeaway is that even within narrowly defined effect categories, <strong>chemical profiles remain largely THC-centric,</strong> and differences in perceived effects are unlikely to be driven by cannabinoid balance alone.</p>
+</section>
+</section>
+<section id="thc-distribution-by-product-type-with-aroused-as-the-top-effect" class="level1">
+<h1>THC Distribution by product type with aroused as the top effect</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2026-01-24_leafly_webscrape_strain_cannabinoids_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="strains-rated-by-decending-thc-percentage-50-quartile" class="level1">
+<h1>Strains Rated by Decending THC Percentage (50% quartile)</h1>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 225 × 1
+   strain_name  
+   &lt;chr&gt;        
+ 1 Spritzer     
+ 2 Pure Michigan
+ 3 Banana Runtz 
+ 4 Apple Mac    
+ 5 Golden Gas   
+ 6 Dawg Breath  
+ 7 Donny Burger 
+ 8 Garlic Drip  
+ 9 Party Animal 
+10 Gastro Pop   
+# ℹ 215 more rows</code></pre>
+</div>
+</div>
+<p>There are 225 strain names associated with arousal effect as the main effect (source: Leafly.com)</p>
+</section>
+<section id="strains-by-product-type-arranged-by-average-rating" class="level1">
+<h1>Strains by Product Type Arranged by Average Rating</h1>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 20 × 5
+   strain_name          product_type average_rating thc_pct50 cbd_pct50
+   &lt;chr&gt;                &lt;chr&gt;                 &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+ 1 Pacman               concentrate               5        NA        NA
+ 2 Lime Tart            concentrate               5        NA        NA
+ 3 Banana Bliss         concentrate               5        20         0
+ 4 Blue Cherry Gelato   flower                    5        NA        NA
+ 5 Orange Malt          flower                    5        24         0
+ 6 Peach Maraschino     flower                    5        NA        NA
+ 7 Grape Fritter        flower                    5        23         0
+ 8 Pacman               flower                    5        NA        NA
+ 9 Velvet Cookies       preroll                   5        21         0
+10 The Cat's Pajamas    preroll                   5        NA        NA
+11 Peach Maraschino     preroll                   5        NA        NA
+12 Gasolina             preroll                   5        NA        NA
+13 Lime Tart            preroll                   5        NA        NA
+14 Gorilla Goo          preroll                   5        18         0
+15 Angelica             preroll                   5        21         0
+16 Party Animal         preroll                   5        27        NA
+17 Peanut Butter Crunch preroll                   5        23         0
+18 Runtz Punch          preroll                   5        NA        NA
+19 Pacman               preroll                   5        NA        NA
+20 Orangutan Titties    preroll                   5        21         0</code></pre>
+</div>
+</div>
+<p>Among all product types (concentrate, flower, preroll, and edible) there were 339 strain-product form combinations.</p>
+<section id="aroused-strains-by-thc-and-cbd" class="level2">
+<h2 class="anchored" data-anchor-id="aroused-strains-by-thc-and-cbd">Aroused strains by THC and CBD</h2>
+<p>Scatterplots of THC versus CBD percentiles further illustrate how rare balanced-chemotype products are within this consumer dataset.</p>
+<p>Most points cluster near the CBD baseline regardless of product type. Instances of higher CBD percentiles appear primarily in edible products, consistent with the prevalence of formulated cannabinoid blends rather than naturally CBD-rich cultivars.</p>
+<p>For medical program design and consumer education, this highlights a persistent structural gap: <strong>balanced chemotype availability remains limited even when platforms offer extensive strain catalogs.</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2026-01-24_leafly_webscrape_strain_cannabinoids_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="what-strain-names-emphasize" class="level1">
+<h1>What Strain Names Emphasize</h1>
+<p>Word cloud analysis of strain names associated with the “Aroused” effect reveals heavy emphasis on:</p>
+<ul>
+<li><p>Dessert and confectionery themes</p></li>
+<li><p>Cream, berry, and candy descriptors</p></li>
+<li><p>Branded cultivar families (e.g., Gelato, Runtz, Cereal Milk)</p></li>
+</ul>
+<p>These naming conventions reinforce that strain branding is driven more by <strong>flavor and lifestyle imagery than by pharmacological signaling</strong>.</p>
+<p>This has implications for regulators evaluating marketing practices and for operators seeking differentiation in saturated markets.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2026-01-24_leafly_webscrape_strain_cannabinoids_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="clustering-strain-names-by-thc-and-cbd" class="level2">
+<h2 class="anchored" data-anchor-id="clustering-strain-names-by-thc-and-cbd">Clustering Strain Names by THC and CBD</h2>
+<p>To assess whether strains naturally group into meaningful chemotype clusters using Leafly’s percentile metrics, we applied k-means clustering to standardized THC and CBD values.</p>
+<p>While six clusters were used for visualization, the practical result is straightforward: most strains collapse into high-THC / near-zero-CBD groupings, with only a small fraction exhibiting elevated CBD percentiles.</p>
+<p>This mirrors what we consistently observe in CCRS lab data in Washington State: Type I (THC-dominant) chemotypes dominate both product development and shelf space, even when product marketing implies broad experiential differentiation.</p>
+<p>In other words, despite thousands of distinct strain names, the chemical diversity reflected in consumer-facing datasets remains narrow.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2026-01-24_leafly_webscrape_strain_cannabinoids_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="can-we-predict-ratings-from-chemistry-and-effects" class="level2">
+<h2 class="anchored" data-anchor-id="can-we-predict-ratings-from-chemistry-and-effects">Can We Predict Ratings from Chemistry and Effects?</h2>
+<p>To test whether ratings can be reasonably predicted from available strain attributes, we compared linear regression and random forest models using:</p>
+<ul>
+<li><p>THC percentile</p></li>
+<li><p>CBD percentile</p></li>
+<li><p>Product type</p></li>
+<li><p>Top effect category</p></li>
+</ul>
+<p>Both models achieve only modest explanatory power, with random forests outperforming linear regression but still leaving substantial unexplained variance.</p>
+<p>Variable importance from the random forest is unequivocal:</p>
+<ol type="1">
+<li><p>THC percentile is the dominant predictor by a wide margin.</p></li>
+<li><p>Effect labels contribute modestly.</p></li>
+<li><p>Product type contributes very little.</p></li>
+</ol>
+<p>In practical terms, <strong>Leafly ratings function primarily as a potency proxy,</strong> not as a multidimensional evaluation of product experience.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 rmse    standard       0.186
+2 rsq     standard       0.145
+3 mae     standard       0.139</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 rmse    standard       0.176
+2 rsq     standard       0.251
+3 mae     standard       0.130</code></pre>
+</div>
+</div>
+<p>The first table contains the model performance for the linear model fit. The second table contains the performance for the random forest model fit. By comparison, the random forest performed better than the linear model.</p>
+<p>In the graph below, THC percent (q50) and strain effects such as energetic, creative, tingly, and relaxed were the top 5 contributors to rating a strain.</p>
+</section>
+</section>
+<section id="feature-importance-from-random-forest" class="level1">
+<h1>Feature Importance from Random Forest</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="2026-01-24_leafly_webscrape_strain_cannabinoids_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="implications-for-market-analysis-and-policy" class="level2">
+<h2 class="anchored" data-anchor-id="implications-for-market-analysis-and-policy">Implications for Market Analysis and Policy</h2>
+<p>While Leafly data cannot substitute for regulated transaction or laboratory systems, it offers insight into how consumers interpret and prioritize product attributes.</p>
+<p>Three implications are particularly relevant for Washington’s regulated market:</p>
+<ul>
+<li><p>Strain names and effect labels overstate experiential differentiation.</p></li>
+<li><p>THC remains the primary consumer signal despite expanding product diversity.</p></li>
+<li><p>Chemotype-driven classification would likely align more closely with actual consumer behavior than traditional strain taxonomy.</p></li>
+</ul>
+<p>For policymakers, this supports ongoing discussions around whether product labeling frameworks should evolve toward chemistry-based classifications rather than legacy cultivar narratives.</p>
+<p>For operators, it underscores that branding strategies detached from cannabinoid reality may struggle to sustain competitive advantage in data-transparent markets.</p>
+</section>
+<section id="where-ccrs-and-leafly-should-be-read-together" class="level2">
+<h2 class="anchored" data-anchor-id="where-ccrs-and-leafly-should-be-read-together">Where CCRS and Leafly Should Be Read Together</h2>
+<p>Leafly shows us how products are described and perceived. CCRS shows us what is actually produced, sold, and tested.</p>
+<p>When the two are analyzed together—as TECL continues to do, the gap between marketing language and market structure becomes measurable, not anecdotal.</p>
+<p>That gap is where many of today’s regulatory, economic, and public-health challenges are quietly taking shape.</p>
+<p>Next steps is to combine the strain effects data with the CCRS strains data to determine the strain-effect consumer trends ongoing in Washington.</p>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>Three conclusions stand out:</p>
+<ol type="1">
+<li><p>THC dominates perceived quality. Across models and descriptive statistics, THC percentile is by far the strongest predictor of higher user ratings.</p></li>
+<li><p>Effect labels explain relatively little variation. While some effects (e.g., “Energetic,” “Creative”) are modestly associated with higher ratings, their explanatory power is small compared to cannabinoid content.</p></li>
+<li><p>Product form matters less than chemistry. Average ratings are broadly similar across flower, prerolls, concentrates, and edibles once THC levels are considered.</p></li>
+</ol>
+<p>For regulators, operators, and analysts, this reinforces an important point: marketing labels and experiential descriptors remain weak proxies for underlying chemistry and consumer satisfaction.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<div id="approved-comments" class="tecl-comments-section">
+
+  <h3 class="tecl-comments-header">Join the Discussion</h3>
+
+  <p class="tecl-comments-subtext">
+
+    Your insights help drive better transparency and smarter policy in Washington’s cannabis industry.
+
+  </p>
+
+
+
+  <!-- Approved comments will appear here once published -->
+
+  <div class="tecl-comments-list"></div>
+
+</div>
+
+<form name="comments" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="tecl-comment-form">
+
+
+
+  <!-- Hidden post URL -->
+
+  <input type="hidden" name="page_url" value="https://evergreencannaledger.org">
+
+
+
+  <!-- Honeypot field -->
+
+  <p class="hidden">
+
+    <label>Don’t fill this out: <input name="bot-field"></label>
+
+  </p>
+
+
+
+  <div class="tecl-form-group">
+
+    <label for="comment-name">Full Name</label>
+
+    <input id="comment-name" type="text" name="name" required="" placeholder="Your name">
+
+  </div>
+
+
+
+  <div class="tecl-form-group">
+
+    <label for="comment-email">Email Address (not published or sold)</label>
+
+    <input id="comment-email" type="email" name="email" required="" placeholder="username@email.com">
+
+  </div>
+
+
+
+  <div class="tecl-form-group">
+
+    <label for="comment-message">Message Box</label>
+
+    <textarea id="comment-message" name="comment" required="" rows="4" placeholder="Share your thoughts ... "></textarea>
+
+  </div>
+
+
+
+  <button type="submit" class="tecl-comment-button">Post Comment</button>
+
+</form>
+
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/www\.evergreencannaledger\.org");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            // default icon
+            link.classList.add("external");
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>The Evergreen Canna Ledger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Open CCRS Data for Washington’s Cannabis Industry</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
