@@ -1,0 +1,333 @@
+---
+title: "Black Friday to New Year’s Day 2026 in Washington’s Mature Cannabis Market"
+subtitle: "Another Look at Year-End Holiday Season: Discounting, Demand, and Market Control"
+description: >
+  This analysis covers 2.412 million cannabis sales transactions recorded in CCRS from Black Friday 2025 through New Year's Day 2026. Using daily transaction aggregates, product-level revenue, unit volumes, discount percentages, and licensee totals, The Evergreen Canna Ledger examined how price, volume, and market power interacted during the holiday period.
+date: "2026-01-31"
+categories: [Sales, Discount, Holiday]
+tags: [CCRS, cannabis, holiday, discount, sales]
+format: html
+toc: true
+editor:
+  markdown:
+    wrap: 72
+---
+
+**The Bottom Line Up Front**  
+The 2025 year-end holiday season confirms what CCRS data has been signaling all year: Washington’s cannabis market is no longer adjusting — it has settled into a high-competition, low-margin equilibrium followed a familiar pattern — but with sharper edges as sales fall after major holidays. From Black Friday 2025 through New Year’s Day 2026, CCRS transaction data shows a three-phase cycle of demand concentration, discount escalation, and post-holiday retrenchment. Revenue was heavily concentrated in inhalable products, discounts were unevenly distributed across product types, and a small group of licensees captured an outsized share of total sales.
+
+**Overview**  
+The goal is not to evaluate promotional success at the SKU level, but to understand market behavior under stress and how operators responded to seasonal demand, inventory pressure, and competitive pricing signals.
+
+The CCRS data has revealed three key themes or market behaviors from Black Friday to New Year's Day:  
+Daily revenue patterns reveal a consistent **three-phase holiday structure:**
+
+**1. Pre-Holiday Ramp (late November):**  
+Revenue spikes driven by advance purchasing and early promotions.
+
+**2. Holiday Compression (mid-December):**  
+High volatility across product types, with pronounced discounting in specific categories.
+
+**3. Post-Holiday Drop-Off (late December into New Year’s):**  
+Sharp declines in both revenue and units sold, indicating demand pull-forward rather than sustained growth.
+
+This cycle mirrors prior years, but with **greater amplitude in discount-sensitive categories in 2025**.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, error = FALSE)
+
+library(DBI)
+library(duckdb)
+library(tidyverse)
+library(plotly)
+library(lubridate)
+library(scales)
+library(kableExtra)
+
+# Connect to DuckDB
+source("../R_scripts/connect_duckdb_readonly.R")
+
+start_date <- "2025-11-25"
+end_date <- "2026-01-02"
+
+holiday_sales <- dbGetQuery(con, glue::glue("
+  SELECT
+    sh.LicenseeId,
+    li.DBA AS BusinessName,
+    CAST(sh.SaleDate AS DATE) AS SaleDate,
+    p.InventoryType,
+    CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice,
+    CAST(sd.Discount AS DOUBLE) AS Discount,
+    CAST(sd.Quantity AS DOUBLE) AS Quantity,
+    CAST(NULLIF(p.UnitWeightGrams, '') AS DOUBLE) AS UnitWeightGrams
+  FROM SalesDetail_all sd
+  JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+  LEFT JOIN Licensee_all li ON li.LicenseeId = sh.LicenseeId
+  LEFT JOIN Inventory_all inv ON sd.InventoryId = inv.InventoryId
+  LEFT JOIN Product_all p ON inv.ProductId = p.ProductId
+  WHERE DATE(sh.SaleDate) BETWEEN '{start_date}' AND '{end_date}'
+    AND CAST(sd.UnitPrice AS DOUBLE) < 200
+"))
+
+holiday_sales <- holiday_sales %>%
+mutate(
+revenue = UnitPrice * Quantity,
+revenue_per_gram = ifelse(UnitWeightGrams > 0, revenue / (Quantity * UnitWeightGrams), NA_real_),
+net_revenue = revenue - Discount
+) %>%
+distinct(.keep_all = TRUE)
+
+
+
+```
+## Plotting daily totals shows a three-phase cycle:  
+
+**Revenue by Product Type**  
+Holiday revenue remained concentrated in a narrow set of inventory types:
+
+- **Usable Cannabis (flower):** ~$17.5M
+
+- **Concentrate for Inhalation:** ~$11M
+
+- **Solid Edibles:** ~$6.4M
+
+- **Liquid Edibles:** ~$2.4M
+
+Together, inhalable and edible products dominated holiday sales. Lower-revenue categories — plants, clones, seeds, transdermals — remained marginal despite aggressive markdowns.
+
+The holiday market did not meaningfully expand demand into peripheral product categories. Instead, it intensified competition within already saturated segments.  
+
+**Top Inventory Types (Revenue > $500K)**
+```{r}
+
+holiday_sales %>%
+filter(!is.na(InventoryType)) %>%
+group_by(InventoryType) %>%
+summarise(TotalRevenue = sum(revenue, na.rm = TRUE)) %>%
+arrange(desc(TotalRevenue)) %>%
+filter(TotalRevenue > 500000L) %>%
+mutate(TotalRevenue = dollar(TotalRevenue)) %>%
+kable(caption = "Total Revenue by Product Type") %>%
+kable_styling(full_width = FALSE)
+
+
+```
+<br>
+
+**Revenue vs. Units Sold by Product Type**  
+
+Plotting total revenue against units sold (log-scale) highlights a critical distinction:
+
+- **High-volume, Low-value products** (cannabis mix, wet flower) drive throughput but dilute per-unit value.
+
+- **Lower-volume, higher-value products** (capsules, tinctures, topical, and few concentrate types) generate outsized revenue per gram despite smaller unit counts.
+
+This divergence explains why discounting pressure was not evenly applied across the market.
+```{r, warning=FALSE, message=FALSE}
+
+library(scales)
+library(ggrepel)
+
+holiday_sales %>%
+  group_by(InventoryType) %>%
+  summarise(
+    total_revenue = sum(revenue, na.rm = TRUE),
+    total_units = sum(Quantity, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  # mutate(
+  #   total_revenue = pmin(total_revenue, 200000000)
+  # ) %>%
+  filter(!is.na(InventoryType), total_units > 0, total_revenue > 0) %>%
+  ggplot(aes(x = total_units, y = total_revenue, label = InventoryType)) +
+  geom_point(color = "forestgreen", size = 3, alpha = 0.8) +
+  ggrepel::geom_text_repel(size = 3.5, max.overlaps = 30) +
+  scale_x_log10(labels = comma_format()) +
+  scale_y_log10(labels = dollar_format()) +
+  labs(
+    title = "Revenue vs. Units Sold by Product Type (Log Scale)",
+    x = "Units Sold (log10)",
+    y = "Total Revenue (log10)"
+  ) +
+  theme_minimal()
+
+```
+<br>
+
+**Daily Sales Trends by Product Type**  
+Daily revenue lines show:
+
+- Concentrates and inhalables maintaining relatively stable daily revenue until late December.
+
+- Edibles exhibiting sharper peaks and steeper post-holiday declines.
+
+- Marginal categories collapsing almost immediately after peak promotional windows.
+
+Holiday promotions largely **reallocated timing,** not total demand. Once promotional windows closed, demand reverted quickly.
+
+Click/double click on a product type in the legend to remove/isolate the trend. 
+```{r, warning=FALSE, message=FALSE}
+
+daily_trends <- holiday_sales %>%
+group_by(SaleDate, InventoryType) %>%
+summarise(total_revenue = sum(revenue, na.rm = TRUE), .groups = "drop") %>%
+  #mutate(total_revenue = pmin(total_revenue, 200000000)) %>%
+  filter(!is.na(InventoryType))
+
+plot_ly(daily_trends,
+x = ~SaleDate,
+y = ~total_revenue,
+color = ~InventoryType,
+type = 'scatter',
+mode = 'lines+markers') %>%
+layout(
+title = "Daily Revenue Trends by Product Type",
+xaxis = list(title = "Date"),
+yaxis = list(title = "Revenue (USD)")
+)
+
+
+```
+
+**Revenue by Business + Product Type**  
+Stacked revenue by licensee shows that large operators dominated in useable cannabis, while smaller firms were confined to concentrates with limited pricing flexibility.
+
+This reinforces a broader structural pattern: product diversity and vertical integration provide resilience during promotional cycles.
+```{r, fig.width=10}
+
+holiday_sales %>%
+  filter(!is.na(InventoryType)) %>%
+group_by(BusinessName, InventoryType) %>%
+summarise(total_revenue = sum(revenue, na.rm = TRUE), .groups = "drop") %>%
+arrange(desc(total_revenue)) %>%
+slice_head(n = 20) %>%
+ggplot(aes(x = reorder(BusinessName, total_revenue), y = total_revenue, fill = InventoryType)) +
+geom_col() +
+coord_flip() +
+scale_y_continuous(labels = dollar) +
+labs(
+title = "Top Licensees by Revenue and Product Type",
+x = "Business Name",
+y = "Total Revenue"
+) +
+theme_minimal()
+
+```
+<br>
+
+**Price and Value: How Much Was a Gram Worth?**  
+Average revenue per gram varied dramatically by product type:
+
+- Non-solvent concentrates: $35.89/gram
+
+- Ethanol concentrates: $26.90/gram
+
+- CO₂ concentrates: $21.73/gram
+
+- Concentrate for Inhalation: $19.94/gram
+
+- Hydrocarbon Concentrate: $16.28/gram
+
+- Usable cannabis: $5.94/gram
+
+- Wet flower: ~$0.07/gram
+
+This dispersion underscores a central reality: **price competition is fiercest where differentiation is weakest.** High-value concentrates maintained pricing power; bulk flower did not.
+
+```{r}
+
+holiday_sales %>%
+filter(!is.na(revenue_per_gram)) %>%
+group_by(InventoryType) %>%
+summarise(
+avg_revenue_per_gram = mean(revenue_per_gram, na.rm = TRUE)
+) %>%
+arrange(desc(avg_revenue_per_gram)) %>%
+mutate(avg_revenue_per_gram = dollar(avg_revenue_per_gram)) %>%
+dplyr::rename("Revenue Per Gram (Mean)" = avg_revenue_per_gram, "Inventory Type" = InventoryType) %>%
+kable(caption = "Average Revenue per Gram by Product Type") %>%
+kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+
+```
+<br>
+
+**Discount Behavior by Product Type**  
+Discounting was not uniform:
+
+- Transdermals: 36.5% average discount
+
+- Tincture: 26.4%
+
+- Useable Cannabis: 24.3%
+
+- Hydrocarbon, non-solvent and ethanol concentrates, and liquid edible: ~23%
+
+In contrast, topicals, cannabis mix infused, and concentrate for inhalation showed **discounting below 20 percent**.
+
+Discounts were deployed strategically, not universally. Operators discounted where they could still clear volume without destroying brand positioning.
+```{r}
+
+holiday_sales %>%
+group_by(InventoryType) %>%
+summarise(
+avg_discount_pct = sum(Discount, na.rm = TRUE) / sum(revenue, na.rm = TRUE) * 100
+) %>%
+filter(avg_discount_pct > 0.2) %>%
+arrange(desc(avg_discount_pct)) %>%
+mutate(avg_discount_pct = percent(avg_discount_pct / 100, accuracy = 0.1)) %>%
+dplyr::rename("Discount Percent (Mean)" = avg_discount_pct, "Inventory Type" = InventoryType) %>%
+kable(caption = "Average Discount % by Product Type") %>%
+kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+
+```
+<br>
+
+**Discount Behavior: Who Marked Down for the Holidays**  
+Licensees with the highest total holiday revenue were also among the most active discounters—but selectively. Rather than across-the-board markdowns, discounts were concentrated in specific product lines designed to protect core margins.
+
+Smaller operators, by contrast, showed either minimal discounting or unsustainably deep cuts.
+
+**Who Drove the Market: Top Holiday Licensees**  
+Total holiday revenue was highly concentrated:
+
+- **UNCLE IKES:** $1.65M
+
+- **TTL HOLDINGS LLC:** $1.38M
+
+- **CANNAZONE:** $1.15M
+
+The top tier of licensees accounted for a disproportionate share of holiday sales, reinforcing consolidation dynamics already visible throughout 2025.  
+
+**Total Revenue per Licensee**
+```{r}
+
+
+holiday_sales %>%
+group_by(BusinessName) %>%
+summarise(total_revenue = sum(revenue, na.rm = TRUE)) %>%
+arrange(desc(total_revenue)) %>%
+filter(total_revenue > 350000) %>%
+mutate(total_revenue = dollar(total_revenue)) %>%
+dplyr::rename("Total Revenue" = total_revenue, "Business Name" = BusinessName) %>%
+kable(caption = "Total Revenue per Licensee – Holiday Season 2025") %>%
+kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+
+```
+
+
+## Strategic Takeaways  
+**1. Holiday discounting is now structural, not opportunistic.**  
+It no longer signals surplus alone—it reflects competitive equilibrium in saturated categories.
+
+**2. Pricing power remains chemistry- and format-dependent.**  
+Concentrates retained value where flower did not.
+
+**3. Market share, not margin, drove holiday strategy.**  
+Larger operators used discounts to defend volume and visibility.
+
+**4. Demand was pulled forward, not expanded.**  
+Post-holiday declines were swift and broad-based.
+
+**5. Policy risk is increasing.**  
+Revenue volatility combined with concentrated market power raises questions about tax stability, small-operator viability, and long-term market health.
+

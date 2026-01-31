@@ -46,7 +46,7 @@ CAST(sd.Quantity AS DOUBLE) * CAST(sd.UnitPrice AS DOUBLE) +
 CAST(sd.SalesTax AS DOUBLE) + CAST(sd.OtherTax AS DOUBLE) AS Revenue
 FROM SalesDetail_all sd
 JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
-WHERE DATE(CAST(sh.SaleDate AS DATE)) BETWEEN '2021-12-01' AND '2025-12-03'
+WHERE DATE(CAST(sh.SaleDate AS DATE)) BETWEEN '2021-12-01' AND '2026-01-02'
 AND CAST(sd.UnitPrice AS DOUBLE) < 200
 ),
 grouped AS (
@@ -87,7 +87,7 @@ type = "bar",
 marker = list(color = "#2C7BB6")
 ) %>%
 layout(
-title = "Number of Licensees Reporting Monthly (Dec 2021 - DEC 2025)",
+title = "Number of Licensees Reporting Monthly (Dec 2021 - Jan 2026)",
 xaxis = list(title = "Month"),
 yaxis = list(title = "Licensee Count"),
 hovermode = "x unified"
@@ -200,7 +200,7 @@ plot_ly(
   marker = list(color = "darkgreen")
 ) %>%
 layout(
-  title = "Top Business Licensee Cities by Revenue",
+  title = "Top 10 Business Licensee Cities by Revenue",
   xaxis = list(title = "City"),
   yaxis = list(
     title = "Revenue",
@@ -210,7 +210,7 @@ layout(
 )
 
 ```
-## Product Category Trends (2021–2024)
+## Product Category Trends (2021–2025)
 ```{r, warning=FALSE}
 
 # Query category-level trends
@@ -272,7 +272,7 @@ category_summary %>%
   datatable(
     caption = htmltools::tags$caption(
       style = 'caption-side: bottom; text-align: left;',
-      'Product Category Trends (2021–2024)'
+      'Product Category Trends (2021–2025)'
     ),
     filter = "top",          # 👈 adds column filters
     rownames = FALSE,
