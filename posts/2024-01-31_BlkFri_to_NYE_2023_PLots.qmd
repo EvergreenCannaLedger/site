@@ -1,5 +1,5 @@
 ---
-title: "Black Friday to New Year’s 2023 in Washington’s CCRS Era"
+title: "Black Friday 2023 to New Year’s Day in Washington’s CCRS Era"
 subtitle: "Another Look at Year-End Holiday Season: Broader Mix, Deeper Discounts, Same Heavy Hitters"
 date: "2024-01-31"
 categories: [CCRS, Cannabis, Sales, Holiday]
@@ -60,7 +60,8 @@ mutate(
 revenue = UnitPrice * Quantity,
 revenue_per_gram = ifelse(UnitWeightGrams > 0, revenue / (Quantity * UnitWeightGrams), NA_real_),
 net_revenue = revenue - Discount
-)
+) %>%
+distinct(.keep_all = TRUE)
 
 ```
 **Plotting daily totals shows a three-phase cycle:**
@@ -77,11 +78,11 @@ net_revenue = revenue - Discount
 | Metric                            | Value                                     |
 | :-------------------------------- | :---------------------------------------- |
 | **Period**                        | Nov 25, 2023 – Jan 1, 2024                |
-| **Total Revenue**                 | ≈ $120 million                            | 
-| **Top Product Category**          | Concentrates for Inhalation ($23.4M, 22%) |
+| **Total Revenue**                 | ≈ $1.62 million                            | 
+| **Top Product Category**          | Useable Cannabis (Flower) ($550K, 10%) |
 | **Number of Reporting Licensees** | ~42                                       |
-| **Peak Sales Day**                | December 22, 2022                         |
-| **Peak Category Share**           | Concentrates: 29.5% of total sales          |
+| **Peak Sales Day**                | December 15, 2022                         |
+| **Peak Category Share**           | Concentrates: 46% of total sales          |
 
 
 <br>
@@ -112,10 +113,13 @@ How efficient was each product in terms of revenue per gram?
 
 holiday_sales %>%
 group_by(InventoryType) %>%
+filter(!is.na(InventoryType)) %>%
 summarise(total_revenue = sum(revenue, na.rm = TRUE)) %>%
+filter(total_revenue > 200) %>%
 arrange(desc(total_revenue)) %>%
 mutate(total_revenue = dollar(total_revenue)) %>%
-kable(caption = "Total Revenue by Product Type") %>%
+rename('Total Revenue' = total_revenue) %>%
+kable(caption = "Total Revenue by Product Type (Black Friday to New Year's Day)") %>%
 kable_styling(full_width = FALSE)
 
 
@@ -135,15 +139,15 @@ holiday_sales %>%
     total_units = sum(Quantity, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  mutate(
-    total_revenue = pmin(total_revenue, 60000000)
-  ) %>%
+  # mutate(
+  #   total_revenue = pmin(total_revenue, 60000000)
+  # ) %>%
   filter(!is.na(InventoryType), total_units > 0, total_revenue > 0) %>%
   ggplot(aes(x = total_units, y = total_revenue, label = InventoryType)) +
   geom_point(color = "forestgreen", size = 3, alpha = 0.8) +
   ggrepel::geom_text_repel(size = 3.5, max.overlaps = 20) +
-  scale_x_log10(labels = comma_format()) +
-  scale_y_log10(labels = dollar_format()) +
+  scale_x_log10(labels = comma_format(), breaks = c(0, 100, 1000, 10000, 100000, 1000000, 10000000), limits = c(100, 10000000)) +
+  scale_y_log10(labels = dollar_format(), breaks = c(100, 1000, 10000, 100000, 1000000, 10000000), limits = c(100, 10000000)) +
   labs(
     title = "Revenue vs. Units Sold by Product Type (Log Scale)",
     x = "Units Sold (log10)",
@@ -160,8 +164,8 @@ holiday_sales %>%
 daily_trends <- holiday_sales %>%
 group_by(SaleDate, InventoryType) %>%
 summarise(total_revenue = sum(revenue, na.rm = TRUE), .groups = "drop") %>%
-  mutate(total_revenue = pmin(total_revenue, 60000000)) %>%
-  filter(!is.na(InventoryType))
+# mutate(total_revenue = pmin(total_revenue, 60000000)) %>%
+filter(!is.na(InventoryType))
 
 plot_ly(daily_trends,
 x = ~SaleDate,
@@ -180,13 +184,12 @@ yaxis = list(title = "Revenue (USD)")
 <br>
 
 **Observation:**  
-The top-grossing day, December 15, 2023, surpassed $3 million statewide, largely from inhalable concentrates and edible purchases.
+The top-grossing days, December 15, 2023, climbed to $40 thousand statewide, largely from concentrates for inhalation and flower purchases.
 
-The same core producers from 2022 retained their lead, but HM Extracts distinguished itself by nearly hitting $10 million in Food Grade Solvent Concentrate revenue alone — effectively reshaping the wholesale concentrate landscape.
+The same core producers from 2022 retained their lead, but HM Extracts distinguished itself by surpassing $375 thousand dollars in Food Grade Solvent Concentrate revenue alone — effectively reshaping the wholesale concentrate landscape.
 
 **What Consumers Bought**  
-While concentrates remain central to Washington’s holiday market, edibles and infused goods surged — a sign that edible sharing, gift giving, and product exploration based consumption broadened the state’s holiday sales base.
-
+While concentrates remain central to Washington’s holiday market, edibles and inhalables goods surged — a sign that edible sharing and personal consumption broadened the state’s holiday sales base.
 
 <br>
 
@@ -195,6 +198,7 @@ While concentrates remain central to Washington’s holiday market, edibles and 
 
 holiday_sales %>%
 group_by(BusinessName, InventoryType) %>%
+filter(!is.na(InventoryType)) %>%
 summarise(total_revenue = sum(revenue, na.rm = TRUE), .groups = "drop") %>%
 arrange(desc(total_revenue)) %>%
 slice_head(n = 20) %>%
@@ -221,6 +225,7 @@ group_by(InventoryType) %>%
 summarise(
 avg_revenue_per_gram = mean(revenue_per_gram, na.rm = TRUE)
 ) %>%
+filter(avg_revenue_per_gram > 1) %>%
 arrange(desc(avg_revenue_per_gram)) %>%
 mutate(avg_revenue_per_gram = dollar(avg_revenue_per_gram)) %>%
 dplyr::rename("Revenue Per Gram (Mean)" = avg_revenue_per_gram, "Inventory Type" = InventoryType) %>%
@@ -231,8 +236,7 @@ kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
 <br>
 
 **Price and Value: How Much Was a Gram Worth?**  
-The tincture segment led in per-gram value, a reflection of niche, high-margin sales to loyal customers despite limited volume.
-Meanwhile, non-solvent and CO₂ concentrates maintained premium pricing, underscoring continued demand for “clean extract” branding in the upper tiers.
+The tincture segment was second to non-solvent concentrates in per-gram value, a reflection of niche, high-margin sales to loyal customers despite limited volume. Meanwhile, non-solvent based concentrates maintained premium pricing. Together, this underscores continued demand for “clean extract” branding in the upper tiers.
 
 <br>
 
@@ -244,10 +248,11 @@ group_by(InventoryType) %>%
 summarise(
 avg_discount_pct = sum(Discount, na.rm = TRUE) / sum(revenue, na.rm = TRUE) * 100
 ) %>%
+filter(avg_discount_pct > 5) %>%
 arrange(desc(avg_discount_pct)) %>%
 mutate(avg_discount_pct = percent(avg_discount_pct / 100, accuracy = 0.1)) %>%
 dplyr::rename("Discount Percent (Mean)" = avg_discount_pct, "Inventory Type" = InventoryType) %>%
-kable(caption = "Average Discount % by Product Type") %>%
+kable(caption = "Average Discount % by Product Type (Discount > 5.0%)") %>%
 kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
 
 ```
@@ -268,10 +273,11 @@ While average markdowns grew across the board, usable cannabis and inhalable con
 holiday_sales %>%
 group_by(BusinessName) %>%
 summarise(total_revenue = sum(revenue, na.rm = TRUE)) %>%
+filter(total_revenue > 10000) %>%
 arrange(desc(total_revenue)) %>%
 mutate(total_revenue = dollar(total_revenue)) %>%
 dplyr::rename("Total Revenue" = total_revenue, "Business Name" = BusinessName) %>%
-kable(caption = "Total Revenue per Licensee – Holiday Season 2022") %>%
+kable(caption = "Total Revenue per Licensee – Holiday Season 2023 (Revenue > $10,000) ") %>%
 kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
 
 ```
@@ -279,7 +285,7 @@ kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
 
 + Licensee Concentration Remains High: The top ten brands captured over two-thirds of total holiday revenue.
 
-+ Concentrate Markets Matured: Solvent and solventless producers increased competition — reflected in discount levels approaching 25%.
++ Concentrate Markets Matured: Solvent and solventless producers increased competition — reflected in markdown levels approaching 25%.
 
 + Edibles and Infused Goods Are Gaining Share: Growth in packaged and infused categories points to mainstream consumer adoption and gifting appeal.
 

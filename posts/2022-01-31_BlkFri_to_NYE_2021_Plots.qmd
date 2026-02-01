@@ -1,8 +1,9 @@
 ---
-title: "Black Friday to New Year’s 2021 in Washington’s CCRS Era"
+title: "Black Friday 2021 to New Year’s 2022 in Washington’s CCRS Era"
 subtitle: "A First Look at Sales Behavior at Year-End Holiday Season"
 date: 2022-01-31
 categories: [CCRS, Cannabis, Sales, Holiday]
+tags: [CCRS, WSLCB, Cannabis, Sales, Holiday, Traceability, Market, Analysis]
 format: html
 editor: 
   markdown: 
@@ -162,7 +163,7 @@ sales_blackfriday_xmas_nye_2021 %>%
   coord_flip() +
   scale_y_continuous(labels = dollar_format()) +
   labs(
-    title = "💰 Revenue by Product Type (Black Friday - NYE 2021)",
+    title = "Revenue by Product Type (Black Friday - NYE 2021)",
     x = "Product Type",
     y = "Total Revenue"
   ) +
@@ -171,9 +172,10 @@ sales_blackfriday_xmas_nye_2021 %>%
 
 ```
 
-Revenue vs Units Sold by Type See if some product types sell lots of units but earn less (or vice versa):
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+## Revenue vs Units Sold by Type  
+#See if which product types sell lots of units but earn less (or vice versa):
 
 sales_blackfriday_xmas_nye_2021 %>%
   group_by(InventoryType) %>%
@@ -187,7 +189,7 @@ sales_blackfriday_xmas_nye_2021 %>%
   geom_text(nudge_y = 5, check_overlap = TRUE) +
   scale_y_continuous(labels = dollar_format()) +
   labs(
-    title = "📦 Units Sold vs Revenue by Product Type",
+    title = "Units Sold vs Revenue by Product Type",
     x = "Units Sold",
     y = "Revenue"
   ) +
@@ -196,7 +198,7 @@ sales_blackfriday_xmas_nye_2021 %>%
 
 ```
 
-Daily Sales Trend by Product Type
+## Daily Sales Trend by Product Type
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -209,7 +211,7 @@ sales_blackfriday_xmas_nye_2021 %>%
   geom_line(size = 1) +
   scale_y_continuous(labels = dollar_format()) +
   labs(
-    title = "📈 Daily Revenue Trend by Product Type",
+    title = "Daily Revenue Trend by Product Type",
     x = "Date",
     y = "Revenue"
   ) +
@@ -218,7 +220,10 @@ sales_blackfriday_xmas_nye_2021 %>%
 
 ```
 
-Group by BusinessName and InventoryType This answers questions like: Who sold the most usable cannabis? Which stores had the most revenue from pre-rolls?
+## Business Name and Inventory Type  
+This answers questions like: 
+  - Who sold the most usable cannabis? 
+  - Which stores had the most revenue from pre-rolls?
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -236,7 +241,7 @@ sales_blackfriday_xmas_nye_2021 %>%
   coord_flip() +
   scale_y_continuous(labels = dollar_format()) +
   labs(
-    title = "💰 Revenue by Product Type and Business",
+    title = "Revenue by Product Type and Business",
     x = "Retailer",
     y = "Revenue"
   ) +
@@ -244,7 +249,8 @@ sales_blackfriday_xmas_nye_2021 %>%
 
 ```
 
-Normalize Revenue by UnitWeightGrams This gives you revenue per gram — useful for comparing product efficiency, price compression, or margin trends.
+## Normalize Revenue by Unit Weight (Grams)  
+This is useful for comparing product efficiency, price compression, and margin trends.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -264,7 +270,7 @@ sales_blackfriday_xmas_nye_2021 %>%
   coord_flip() +
   scale_y_continuous(labels = dollar_format()) +
   labs(
-    title = "⚖️ Avg Revenue per Gram by Product Type",
+    title = "Avg Revenue per Gram by Product Type",
     x = "Product Type",
     y = "Revenue per Gram ($)"
   ) +
@@ -272,7 +278,9 @@ sales_blackfriday_xmas_nye_2021 %>%
 
 ```
 
-Analyze Discount Behavior by Product Type This identifies which products get discounted most — helps you spot pricing pressure, clearance items, or strategic promotions.
+## Discount Behavior by Product Type  
+This identifies which products get discounted most
+  - spot pricing pressure, clearance items, or strategic promotions.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -289,7 +297,7 @@ sales_blackfriday_xmas_nye_2021 %>%
   geom_col(fill = "purple") +
   coord_flip() +
   labs(
-    title = "💸 Average Discount by Product Type",
+    title = "Average Discount by Product Type",
     x = "Product Type",
     y = "Avg Discount ($)"
   ) +
@@ -298,9 +306,11 @@ sales_blackfriday_xmas_nye_2021 %>%
 
 ```
 
-Goal 2: Compute Total Revenue per Licensee This answers: Who made the most money during Black Friday → New Year’s Eve 2021?
+## Total Revenue per Licensee  
+This helps acknowledge: 
+  - Who made the most money during Black Friday to New Year’s Day Period?
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 
 
 # Clean and prepare the dataset
@@ -315,8 +325,8 @@ sales_licensee_summary <- sales_blackfriday_xmas_nye_2021 %>%
   arrange(desc(TotalRevenue))
 
 # View the number of unique licensees
-n_licensees <- n_distinct(sales_licensee_summary$LicenseeId)
-cat("✅ Number of unique licensees:", n_licensees, "\n")
+#n_licensees <- n_distinct(sales_licensee_summary$LicenseeId)
+#cat("✅ Number of unique licensees:", n_licensees, "\n")
 
 library(kableExtra)
 kable(sales_licensee_summary)

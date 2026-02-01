@@ -1,8 +1,9 @@
 ---
-title: "Black Friday to New Year’s 2022 in Washington’s CCRS Era"
+title: "Black Friday 2022 to New Year’s Day 2023 in Washington’s CCRS Era"
 subtitle: "Another Look at Sales Behavior at Year-End Holiday Season"
 date: "2023-01-29"
 categories: [CCRS, Cannabis, Discount, Sales, Holiday]
+tags: [CCRS, cannabis, discount, sales, washington, market, analysis]
 format: html
 fig-height: 4.5
 fig-width: 6
@@ -58,10 +59,11 @@ mutate(
 revenue = UnitPrice * Quantity,
 revenue_per_gram = ifelse(UnitWeightGrams > 0, revenue / (Quantity * UnitWeightGrams), NA_real_),
 net_revenue = revenue - Discount
-)
+) %>%
+distinct(.keep_all = TRUE)
 
 ```
-**What It Means for 2023**
+## What It Means for 2023  
 **The 2022 holiday data underscore several structural trends that would carry into 2023 and beyond:**  
 
 + High Concentrate Dependency: The market is top-heavy — over 60% of total value tied to inhalable extracts.
@@ -78,11 +80,11 @@ Together, these indicators reflect a maturing, efficiency-driven cannabis econom
 | Metric                            | Value                                     |
 | :-------------------------------- | :---------------------------------------- |
 | **Period**                        | Nov 25, 2022 – Jan 1, 2023                |
-| **Total Revenue**                 | ≈ $925 million                            |
-| **Top Product Category**          | Concentrates for Inhalation ($577 M, 62%) |
+| **Total Revenue**                 | ≈ $798 thousand                            |
+| **Top Product Category**          | Useable Cannabis ($366K, 46%) |
 | **Number of Reporting Licensees** | ~60                                       |
 | **Peak Sales Day**                | December 22, 2022                         |
-| **Peak Category Share**           | Concentrates: 65% of total sales          |
+| **Peak Category Share**           | Useable Cannabis: 46% of total sales          |
 
 <br>
 **Overview**
@@ -124,6 +126,7 @@ How efficient was each product in terms of revenue per gram?
 
 holiday_sales %>%
 group_by(InventoryType) %>%
+filter(!is.na(InventoryType)) %>%
 summarise(total_revenue = sum(revenue, na.rm = TRUE)) %>%
 arrange(desc(total_revenue)) %>%
 mutate(total_revenue = dollar(total_revenue)) %>%
@@ -147,9 +150,9 @@ holiday_sales %>%
     total_units = sum(Quantity, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  mutate(
-    total_revenue = pmin(total_revenue, 60000000)
-  ) %>%
+  # mutate(
+  #   total_revenue = pmin(total_revenue, 60000000)
+  # ) %>%
   filter(!is.na(InventoryType), total_units > 0, total_revenue > 0) %>%
   ggplot(aes(x = total_units, y = total_revenue, label = InventoryType)) +
   geom_point(color = "forestgreen", size = 3, alpha = 0.8) +
@@ -193,7 +196,7 @@ yaxis = list(title = "Revenue (USD)")
 
 **What Consumers Bought**
 
-Concentrates for Inhalation absolutely dominated, generating $577 million, or nearly two-thirds of total holiday sales.  Traditional usable cannabis (flower) followed distantly at $76 million, while edibles (solid and liquid combined) made up under 1% of overall sales.
+Useable Cannabis and Concentrates for Inhalation absolutely dominated with nearly half of total holiday sales. Traditional usable cannabis (flower) and concentrate for inhalation led at $366 thousand and $200K, respectively, in sales, while edibles (solid and liquid combined) made up 1% of overall sales.
 
 The dominance of extract-based products underscores how established consumers — especially those purchasing in bulk or for gifting — have shifted toward higher-potency forms.
 
@@ -204,6 +207,7 @@ The dominance of extract-based products underscores how established consumers �
 
 holiday_sales %>%
 group_by(BusinessName, InventoryType) %>%
+filter(!is.na(InventoryType)) %>%
 summarise(total_revenue = sum(revenue, na.rm = TRUE), .groups = "drop") %>%
 arrange(desc(total_revenue)) %>%
 slice_head(n = 20) %>%
@@ -230,6 +234,7 @@ group_by(InventoryType) %>%
 summarise(
 avg_revenue_per_gram = mean(revenue_per_gram, na.rm = TRUE)
 ) %>%
+filter(avg_revenue_per_gram > 3) %>%
 arrange(desc(avg_revenue_per_gram)) %>%
 mutate(avg_revenue_per_gram = dollar(avg_revenue_per_gram)) %>%
 dplyr::rename("Revenue Per Gram (Mean)" = avg_revenue_per_gram, "Inventory Type" = InventoryType) %>%
@@ -241,7 +246,7 @@ kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
 
 **Price and Value: How Much Was a Gram Worth?**
 
-During the holiday window, Transdermals and CO₂ concentrates fetched the highest prices per gram, reflecting niche medical and artisanal segments.  The price stratification shows a clear tiering of Washington’s cannabis economy — from everyday flower under $4/gram to boutique topicals and extracts exceeding $80/gram.
+During the holiday window, Transdermals, Non-solvent based and CO₂ concentrates fetched the highest prices per gram, reflecting niche medical and artisanal segments.  The price stratification shows a clear tiering of Washington’s cannabis economy — from everyday flower under $6/gram to boutique topicals and extracts exceeding $30-80/gram.
 
 **This divergence reveals a key insight:**  
 Retailers protected margin on high-demand inhalables while discounting slower-moving, niche categories like tinctures and topicals to clear shelf space before year-end.
@@ -257,18 +262,17 @@ summarise(
 avg_discount_pct = sum(Discount, na.rm = TRUE) / sum(revenue, na.rm = TRUE) * 100
 ) %>%
 arrange(desc(avg_discount_pct)) %>%
+filter(avg_discount_pct >= 4) %>%
 mutate(avg_discount_pct = percent(avg_discount_pct / 100, accuracy = 0.1)) %>%
 dplyr::rename("Discount Percent (Mean)" = avg_discount_pct, "Inventory Type" = InventoryType) %>%
-kable(caption = "Average Discount % by Product Type") %>%
+kable(caption = "Average Discount % by Product Type (Discount > 4%") %>%
 kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
 
 ```
 <br>
 
-**Discount Behavior: Who Marked Down for the Holidays**
-
-Discounting varied widely across product categories.
-While tinctures and non-solvent concentrates saw double-digit markdowns, inhalable concentrates — the main revenue driver — showed virtually no discounting.
+**Discount Behavior: Who Marked Down for the Holidays**  
+Discounting varied widely across product categories. While tinctures, non-solvent concentrates, topical ointments, and edibles saw double-digit markdowns, from flower to ethanol concentrates — the main revenue driver — showed single digit discount percentages on average.
 
 <br>
 
@@ -280,9 +284,10 @@ holiday_sales %>%
 group_by(BusinessName) %>%
 summarise(total_revenue = sum(revenue, na.rm = TRUE)) %>%
 arrange(desc(total_revenue)) %>%
+filter(total_revenue > 10000) %>%
 mutate(total_revenue = dollar(total_revenue)) %>%
 dplyr::rename("Total Revenue" = total_revenue, "Business Name" = BusinessName) %>%
-kable(caption = "Total Revenue per Licensee – Holiday Season 2022") %>%
+kable(caption = "Total Revenue per Licensee – Holiday Season 2022 (Revenue > $10,000)") %>%
 kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
 
 ```
@@ -290,7 +295,7 @@ kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
 
 **Who Drove the Market: Top Holiday Licensees**  
 Holiday sales were highly concentrated — literally and figuratively.
-The top 10 licensees accounted for nearly 85% of total sales, led by 5th House Farms, Seattle’s Private Reserve, and Mt. Baker Homegrown.
+The top 10 licensees accounted for nearly 85% of total sales, led by Lucid, Free Rain Farms, Origins, and Green Lady.
 
 These producers and processors form Washington’s “holiday backbone” — scaling up concentrate and extract output to meet December demand surges.
 

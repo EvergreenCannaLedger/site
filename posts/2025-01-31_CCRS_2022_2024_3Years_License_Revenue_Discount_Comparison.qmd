@@ -1,6 +1,6 @@
 ---
 title: "2022–2024 Cannabis Retail Trends: Washington’s Cannabis Market Goes Full Scale"
-subtitle: "$731 Million in 2024 Sales Marks New Era for CCRS Data"
+subtitle: "$902 Million in 2024 Sales Marks New Era for CCRS Data"
 date: 2025-01-28
 categories: [CCRS, Cannabis, Revenue, Discount, 3Years]
 format: html
@@ -47,6 +47,10 @@ FROM base
 GROUP BY Month, Year
 ORDER BY Month
 ")
+
+monthly_metrics <- monthly_metrics %>% distinct(.keep_all = TRUE)
+  
+  
 ```
 **The Bottom Line Up Front**  
 Washington’s cannabis market in 2024 was no longer the experimental patchwork it was in early CCRS years. It had matured into a fully integrated, high-volume, price-competitive ecosystem, where both scale and strategy defined success.
@@ -91,9 +95,9 @@ Between 2022 and 2024, total reported revenue increased nearly 9×, while the nu
 
 | Year | Licensees Reporting |  Total Revenue | Avg. Discount % |
 | :--- | ------------------: | -------------: | --------------: |
-| 2022 |                 267 |  $82.6 million |           3.9 % |
-| 2023 |                 291 |  $67.4 million |           2.8 % |
-| 2024 |               4,658 | $730.7 million |           9.5 % |
+| 2022 |                 298 |  $196.6 million |           2.66 % |
+| 2023 |                 433 |  $82.4 million |           2.86 % |
+| 2024 |               4,746 | $902.7 million |           8.48 % |
 <br>
 While 2023 saw a modest dip in revenue, largely tied to transitional reporting issues and consolidation within the retail network, 2024 marked a massive leap—both in total sales and in the number of active CCRS licensees.
 
@@ -105,20 +109,20 @@ This shift underscores a key point: by late 2023, CCRS compliance had reached a 
 
 | Month (2024) | Licensees | Total Revenue | Avg. Discount % |
 | :----------- | --------: | ------------: | --------------: |
-| January      |        46 |        $5.0 M |           6.9 % |
-| June         |        79 |        $8.4 M |           6.8 % |
-| September    |       716 |       $39.2 M |          12.5 % |
-| October      |     1,135 |      $203.9 M |          15.9 % |
-| November     |     1,078 |      $206.9 M |          17.6 % |
-| December     |     1,047 |      $210.6 M |          18.6 % |
+| January      |        56 |        $6.2 M |           6.39 % |
+| June         |        90 |        $9.2 M |           6.72 % |
+| September    |       721 |       $41.0 M |          12.19 % |
+| October      |     1,135 |      $212.6 M |          15.25 % |
+| November     |     1,078 |      $256.0 M |          14.27 % |
+| December     |     1,047 |      $313.2 M |          12.50 % |
 
 **The data tell a clear story:**
 
 + Early 2024 began with modest retail participation (~50–100 licensees).
 
-+ Midyear (June–August) saw steady expansion and normalization of discounting between 6–8%.
++ Midyear (June–August) saw steady expansion and normalization of discounting between 6–12%.
 
-+ By fall 2024, both participation and revenue skyrocketed — over 1,000 active licensees by October, and record-breaking sales exceeding $200 million per month through the end of the year.
++ By fall 2024, both participation and revenue skyrocketed — over 1,000 active licensees by October, and record-breaking sales exceeding $200-300 million per month through the end of the year.
 
 This surge coincided with improved CCRS automation, enhanced data ingestion from third-party POS systems, and more consistent participation from both retailers and processors.
 
@@ -154,7 +158,7 @@ width = 800, height = 400
 <br>
 
 **Discounting Trends: From Margins to Market Signals**  
-Across the three-year period, average discounting climbed from under 4% in 2022 to nearly 10% in 2024, peaking near 19% by December 2024.
+Across the three-year period, average discounting climbed from under 4% in 2022 to nearly 15% in 2024, peaking near 19% by December 2024.
 
 This shift reflects a **new phase of price competition**:
 
@@ -179,7 +183,6 @@ width = 800, height = 400
 
 ```
 <br>
-\
 
 ```{r}
 

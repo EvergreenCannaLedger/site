@@ -93,7 +93,7 @@ Holiday revenue remained concentrated in a narrow set of inventory types:
 
 - **Liquid Edibles:** ~$2.4M
 
-Together, inhalable and edible products dominated holiday sales. Lower-revenue categories — plants, clones, seeds, transdermals — remained marginal despite aggressive markdowns.
+Together, inhalable and edible products dominated holiday sales on average at a total of $19.8 million versus flower at $17.4 million USD. Lower-revenue categories — capsules, tinctures, topicals, CO2 concentrate — remained marginal despite aggressive markdowns.
 
 The holiday market did not meaningfully expand demand into peripheral product categories. Instead, it intensified competition within already saturated segments.  
 
@@ -120,7 +120,7 @@ Plotting total revenue against units sold (log-scale) highlights a critical dist
 
 - **High-volume, Low-value products** (cannabis mix, wet flower) drive throughput but dilute per-unit value.
 
-- **Lower-volume, higher-value products** (capsules, tinctures, topical, and few concentrate types) generate outsized revenue per gram despite smaller unit counts.
+- **Lower-volume, higher-value products** (capsules, tinctures, topical, and few concentrate types) generate outsized revenue per gram despite smaller unit counts and discount percentages.
 
 This divergence explains why discounting pressure was not evenly applied across the market.
 ```{r, warning=FALSE, message=FALSE}
@@ -142,8 +142,8 @@ holiday_sales %>%
   ggplot(aes(x = total_units, y = total_revenue, label = InventoryType)) +
   geom_point(color = "forestgreen", size = 3, alpha = 0.8) +
   ggrepel::geom_text_repel(size = 3.5, max.overlaps = 30) +
-  scale_x_log10(labels = comma_format()) +
-  scale_y_log10(labels = dollar_format()) +
+  scale_x_log10(labels = comma_format(), breaks = c(0, 100, 1000, 10000, 100000, 1000000, 10000000), limits = c(100, 10000000)) +
+  scale_y_log10(labels = dollar_format(), breaks = c(100, 1000, 10000, 100000, 1000000, 10000000, 100000000), limits = c(100, 100000000)) +
   labs(
     title = "Revenue vs. Units Sold by Product Type (Log Scale)",
     x = "Units Sold (log10)",
