@@ -223,9 +223,9 @@ sales_blackfriday_xmas_nye_2021 %>%
 ## Business Name and Inventory Type  
 This answers questions like: 
   - Who sold the most usable cannabis? 
-  - Which stores had the most revenue from pre-rolls?
+  - Which stores had the most revenue from tincture?
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12}
 
 sales_blackfriday_xmas_nye_2021 %>%
   filter(Revenue > 0) %>%

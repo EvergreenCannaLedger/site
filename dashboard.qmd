@@ -115,9 +115,9 @@ ORDER BY Month
 ")
 ```
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 
-product_growth <- product_growth %>% mutate(Month = as.Date(Month))
+product_growth <- product_growth %>% mutate(Month = as.Date(Month)) %>% distinct(.keep_all = TRUE) 
 
 plot_ly(
 data = product_growth,
@@ -136,7 +136,7 @@ legend = list(orientation = 'h', x = 0.1, y = -0.2)
 
 ```
 
-## Total Revenue
+## Wholesale Total Revenue
 
 ```{r, include=FALSE}
 
@@ -155,14 +155,14 @@ retail_wholesale <- dbGetQuery(con, "
 
 ```
 
-```{r}
+```{r, warning=FALSE}
 
 retail_wholesale <- retail_wholesale %>% mutate(Month = as.Date(Month))
 
 plot_ly(retail_wholesale, x = ~Month, y = ~Revenue, color = ~SaleType, type = "bar") %>%
   layout(
     barmode = "group",
-    title = "Total Reported Revenue",
+    title = "Total Reported Wholesale Sales Revenue",
     xaxis = list(title = "Month"),
     yaxis = list(title = "Revenue ($)", tickformat = "$,.0f"),
     legend = list(title = list(text = "Sale Type")),
@@ -176,21 +176,30 @@ plot_ly(retail_wholesale, x = ~Month, y = ~Revenue, color = ~SaleType, type = "b
 ```{r, include=FALSE}
 
 regional_sales <- dbGetQuery(con, "
-SELECT
-l.City,
-SUM(CAST(sd.Quantity AS DOUBLE) * CAST(sd.UnitPrice AS DOUBLE)) AS Revenue
-FROM SalesDetail_all sd
-JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
-JOIN Licensee_all l ON sh.LicenseeId = l.LicenseeId
-WHERE sh.SaleDate IS NOT NULL AND l.City IS NOT NULL
-GROUP BY l.City
-ORDER BY Revenue DESC
-LIMIT 10
+  SELECT
+    City,
+    SUM(Quantity * UnitPrice) AS Revenue
+  FROM (
+    SELECT DISTINCT
+      l.City AS City,
+      TRY_CAST(sd.Quantity AS DOUBLE) AS Quantity,
+      TRY_CAST(sd.UnitPrice AS DOUBLE) AS UnitPrice
+    FROM SalesDetail_all sd
+    JOIN SaleHeader_all sh ON sd.SaleHeaderId = sh.SaleHeaderId
+    JOIN Licensee_all l ON sh.LicenseeId = l.LicenseeId
+    WHERE sh.SaleDate IS NOT NULL
+      AND l.City IS NOT NULL
+      AND TRY_CAST(sd.Quantity AS DOUBLE) IS NOT NULL
+      AND TRY_CAST(sd.UnitPrice AS DOUBLE) IS NOT NULL
+  ) AS distinct_sales
+  GROUP BY City
+  ORDER BY Revenue DESC
+  LIMIT 10
 ")
-
 ```
 
 ```{r}
+
 plot_ly(
   data = regional_sales,
   x = ~reorder(City, Revenue),  # Fixed the reorder logic
@@ -200,11 +209,11 @@ plot_ly(
   marker = list(color = "darkgreen")
 ) %>%
 layout(
-  title = "Top 10 Business Licensee Cities by Revenue",
+  title = "Top 10 Business Licensee Cities by Reported Revenue",
   xaxis = list(title = "City"),
   yaxis = list(
     title = "Revenue",
-    tickformat = "$,.2f"  # Dollar formatting
+    tickformat = "$,"  # Dollar formatting
   ),
   margin = list(b = 100)
 )
@@ -248,6 +257,7 @@ category_summary <- dbGetQuery(con, "
 
 # Format for publication
 category_summary %>%
+  distinct(.keep_all = TRUE) %>%
   filter(
     !InventoryType %in% c(
       "Flower Unlotted", "Other Material Lot", "Other Material Unlotted",

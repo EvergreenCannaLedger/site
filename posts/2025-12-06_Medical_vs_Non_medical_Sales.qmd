@@ -60,7 +60,7 @@ Better tax alignment and medical program participation could protect:
 **Overview**  
 Washington’s cannabis economy has always operated as a dual-track market — medical patients and adult-use consumers share the same shelves, but they behave very differently.
 
-With over 221 million transaction records analyzed through November 2025, the Evergreen Canna Ledger examined how revenue, discounting, and taxation vary between the two consumer groups.
+With over 27 million transaction records analyzed through November 2025, the Evergreen Canna Ledger examined how revenue, discounting, and taxation vary between the two consumer groups.
 
 ```{r}
 
@@ -105,6 +105,8 @@ sales_data <- readRDS("../data/medical_sales_data_table.rds")
 # glimpse(sales_data)
 # Rows: 221,974,902
 # Columns: 13
+
+sales_data <- sales_data %>% distinct(.keep_all = TRUE)
 
 ```
 ## Sales Summary by Category
@@ -197,14 +199,11 @@ max_rev <- max(plot_revenue_marked$WeeklyRevenue, na.rm = TRUE)
 
 ```
 
-```{r, include=TRUE, fig.width=40, fig.height=25}
+```{r, include=TRUE, fig.width=40, fig.height=25, warning=FALSE, message=FALSE}
 
 plot_revenue_marked <- 
-  ggplot(
-  plot_revenue_marked %>% filter(!is.na(Category)),
-  aes(x = WeekStart, y = WeeklyRevenue, color = Category)
-) +
-  geom_line(size = 1) +
+  ggplot(plot_revenue_marked %>% filter(!is.na(Category)), aes(x = WeekStart, y = WeeklyRevenue, color = Category)) +
+  geom_line(linewidth = 1) +
   scale_y_continuous(labels = dollar_format()) +
   labs(
     title = "Weekly Revenue Over Time with Policy Markers",
@@ -213,7 +212,7 @@ plot_revenue_marked <-
     y = "Revenue (USD)",
     color = "Category"
   ) +
-  theme_minimal(base_size = 13) # +
+  theme_minimal(base_size = 13)# +
   # # ---- Policy markers ----
   # geom_vline(
   #   data = policy_events,
